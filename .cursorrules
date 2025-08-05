@@ -1,0 +1,105 @@
+# Chatooly Tool Template - Cursor AI Rules
+# Author: Yael Renous - Studio Video
+
+You are helping create a Chatooly design tool using this template. Follow these guidelines:
+
+## Project Overview
+This is a web-based design tool template that integrates with the Chatooly CDN for automatic export and publishing functionality.
+
+## Key Architecture
+- **Chatooly CDN**: Automatically adds export button and handles PNG export/publishing
+- **Template Structure**: Clean separation of HTML, CSS, and JS
+- **Export Container**: All visual content must be inside `#chatooly-canvas`
+- **No API Calls**: Chatooly works automatically, no need for manual API calls
+
+## What You CAN Edit
+- Content inside "EDIT THIS" sections
+- Tool name and configuration in `js/chatooly-config.js`
+- Visual content inside `#chatooly-canvas`
+- Tool logic in `js/main.js`  
+- Custom styles in marked sections of `styles.css`
+- Control elements in the left panel
+
+## What You MUST NOT Edit
+- CDN script tag: `<script src="https://yaelren.github.io/chatooly-cdn/js/core.js"></script>`
+- The `#chatooly-canvas` container element (but you can edit its contents)
+- Base layout CSS structure
+- File loading order in HTML
+
+## Required Configuration
+Always ask the user for these details and update `js/chatooly-config.js`:
+
+```javascript
+window.ChatoolyConfig = {
+    name: "Tool Name",              // Ask user for tool name
+    category: "generators",         // Ask user to choose or suggest better category
+    tags: ["tag1", "tag2"],        // Ask for relevant tags
+    description: "Description",     // Ask for tool description
+    author: "User Name"            // Ask for their name
+};
+```
+
+**Suggested Categories** (user can choose these or suggest better ones):
+- `"generators"` - Creates patterns, gradients, textures, layouts
+- `"visualizers"` - Data visualization, charts, interactive displays  
+- `"editors"` - Image editors, text formatters, code tools
+- `"utilities"` - Color pickers, calculators, converters
+- `"games"` - Interactive games, puzzles, simulations
+- `"art"` - Creative drawing tools, artistic generators
+
+## Development Workflow
+1. User runs `npm run dev` to start server
+2. Tool loads at `localhost:8000`
+3. Chatooly CDN automatically injects export button
+4. Publishing happens via export button (not code)
+
+## Common Patterns
+
+### Canvas-Based Tools (p5.js, Three.js)
+```javascript
+// p5.js example - canvas goes inside export container
+function setup() {
+    let canvas = createCanvas(windowWidth, windowHeight); // Any size
+    canvas.parent('chatooly-canvas');
+}
+
+// Three.js example  
+const renderer = new THREE.WebGLRenderer();
+renderer.setSize(800, 600); // Any dimensions you want
+document.getElementById('chatooly-canvas').appendChild(renderer.domElement);
+```
+
+### DOM-Based Tools
+```javascript
+const canvas = document.getElementById('chatooly-canvas');
+canvas.innerHTML = '<div class="design-output">Your visual content</div>';
+```
+
+### Event Handlers
+```javascript
+document.getElementById('color-input').addEventListener('change', (e) => {
+    // Update tool based on control changes
+    updateVisual();
+});
+```
+
+## Key Reminders
+- Visual content MUST be inside `#chatooly-canvas` for export to work
+- Canvas can be any dimensions (not fixed to 800x600)
+- Export is handled automatically by Chatooly CDN
+- Publishing is via export button, not manual API calls
+- Don't call Chatooly functions directly - let it work automatically
+- Focus on building the tool functionality, Chatooly handles the rest
+
+## Questions to Ask User
+When starting a new tool, ask:
+1. "What type of tool are you creating?" (suggest categories or let them propose better ones)
+2. "What should the tool be called?"
+3. "What does your tool do?" (for description)
+4. "What tags describe your tool?" (for discovery)
+5. "What's your name?" (for author field)
+
+Then implement their vision within the template structure.
+
+## Reference
+See CHATOOLY_API.md for complete integration guide.

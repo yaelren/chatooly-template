@@ -1,0 +1,419 @@
+# Chatooly Template Specification
+
+This document defines the requirements and structure for creating Chatooly design tools using the template system.
+
+## Overview
+
+Chatooly templates provide a standardized foundation for building web-based design tools that integrate seamlessly with the Chatooly CDN and publishing system. Tools created from this template automatically receive export functionality, publishing capabilities, and consistent UI patterns.
+
+## Required Files
+
+### 1. `package.json`
+Every Chatooly tool must include a package.json with specific fields:
+
+```json
+{
+  "name": "my-design-tool",
+  "version": "1.0.0",
+  "description": "A brief description of what your tool does",
+  "keywords": [
+    "chatooly",
+    "design-tool",
+    "generator",
+    "creative-coding"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "scripts": {
+    "dev": "python3 -m http.server 8000 || python -m http.server 8000",
+    "publish": "node .chatooly/publish.js"
+  },
+  "chatooly": {
+    "category": "generators",
+    "tags": ["gradients", "css", "art"],
+    "private": false,
+    "exportFormats": ["png"]
+  }
+}
+```
+
+**Required Fields:**
+- `name`: Tool name (becomes URL slug)
+- `version`: Semantic version
+- `description`: Brief tool description
+- `keywords`: Array of searchable terms (must include "chatooly")
+- `scripts.dev`: Local development server
+- `scripts.publish`: Publishing command
+
+**Chatooly-Specific Fields:**
+- `chatooly.category`: Tool category (generators, visualizers, editors, utilities)
+- `chatooly.tags`: Descriptive tags for discovery
+- `chatooly.private`: Whether tool is private (default: false)
+- `chatooly.exportFormats`: Supported export formats (default: ["png"])
+
+### 2. `index.html`
+Main tool interface with CDN integration:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Design Tool</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Tool content must be wrapped in #chatooly-canvas for export -->
+    <div id="chatooly-canvas">
+        <!-- Your design tool content here -->
+    </div>
+    
+    <!-- Controls and UI outside of export area -->
+    <div class="controls">
+        <!-- Tool controls here -->
+    </div>
+    
+    <!-- Chatooly CDN Integration -->
+    <script src="https://[username].github.io/chatooly-cdn/core.js"></script>
+    
+    <!-- Tool Configuration -->
+    <script>
+        window.ChatoolyConfig = {
+            name: "My Design Tool",
+            resolution: 2,
+            buttonPosition: "bottom-right",
+            // Publishing configuration
+            category: "generators",
+            tags: ["gradients", "css", "art"],
+            description: "A tool for creating beautiful gradients",
+            version: "1.0.0",
+            author: "Your Name"
+        };
+    </script>
+    
+    <!-- Your tool logic -->
+    <script src="tool.js"></script>
+</body>
+</html>
+```
+
+**Critical Requirements:**
+- Must include `#chatooly-canvas` element containing exportable content
+- CDN script must be loaded before configuration
+- `ChatoolyConfig` must be defined globally
+- Tool controls should be outside the export container
+
+### 3. `style.css`
+Tool styling with responsive design:
+
+```css
+/* Reset and base styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: #f5f5f5;
+    padding: 20px;
+}
+
+/* Export container - this content will be captured */
+#chatooly-canvas {
+    width: 800px;
+    height: 600px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    margin: 0 auto 20px;
+    /* Your design tool content styles */
+}
+
+/* Controls outside export area */
+.controls {
+    max-width: 800px;
+    margin: 0 auto;
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    #chatooly-canvas {
+        width: 100%;
+        max-width: 400px;
+        height: 300px;
+    }
+    
+    body {
+        padding: 10px;
+    }
+}
+```
+
+### 4. `tool.js`
+Main tool logic and functionality:
+
+```javascript
+// Tool state and configuration
+const toolState = {
+    // Your tool's state variables
+};
+
+// Initialize tool when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    initializeTool();
+});
+
+function initializeTool() {
+    // Tool initialization logic
+    setupEventListeners();
+    render();
+}
+
+function setupEventListeners() {
+    // Event handlers for controls
+}
+
+function render() {
+    // Main rendering logic
+    // Update #chatooly-canvas content
+}
+
+// Export additional functionality if needed
+window.ToolAPI = {
+    // Public methods for external access
+};
+```
+
+### 5. `.chatooly/publish.js`
+Publishing configuration (auto-generated):
+
+```javascript
+#!/usr/bin/env node
+
+// This file is auto-generated by the template
+// It uses the CDN's publishing functionality
+console.log('Publishing via Chatooly CDN...');
+
+// In browser environment, the CDN handles publishing
+if (typeof window !== 'undefined' && window.Chatooly) {
+    window.Chatooly.publish.publishFromCLI();
+} else {
+    console.log('Run from browser with development server');
+    process.exit(1);
+}
+```
+
+## Export Container Requirements
+
+The `#chatooly-canvas` element is critical for proper export functionality:
+
+### Canvas-Based Tools (p5.js, Three.js)
+```html
+<div id="chatooly-canvas">
+    <canvas id="myCanvas"></canvas>
+</div>
+```
+
+### DOM-Based Tools
+```html
+<div id="chatooly-canvas">
+    <div class="design-content">
+        <!-- Your visual content -->
+    </div>
+</div>
+```
+
+### Priority System
+The CDN export system follows this priority:
+1. **Canvas Elements**: Largest canvas found (best quality)
+2. **#chatooly-canvas**: Designated export container
+3. **Fallback**: Document body (not recommended)
+
+## Configuration Options
+
+### Core Configuration
+```javascript
+window.ChatoolyConfig = {
+    // Required
+    name: "Tool Name",
+    
+    // Export settings
+    resolution: 2,              // Export resolution multiplier
+    exportFormats: ["png"],     // Supported formats
+    buttonPosition: "bottom-right", // Export button position
+    
+    // Publishing metadata
+    category: "generators",     // Tool category
+    tags: ["css", "gradients"], // Discovery tags
+    description: "Tool description",
+    version: "1.0.0",
+    author: "Your Name",
+    private: false              // Public/private tool
+};
+```
+
+### Advanced Configuration
+```javascript
+window.ChatoolyConfig = {
+    // ... basic config
+    
+    // Custom export settings
+    exportOptions: {
+        backgroundColor: "transparent",
+        quality: 0.9,
+        format: "png"
+    },
+    
+    // UI customization
+    ui: {
+        theme: "light",
+        hideDefaultButton: false
+    }
+};
+```
+
+## Development Workflow
+
+### 1. Clone Template
+```bash
+git clone https://github.com/[username]/chatooly-template.git my-tool
+cd my-tool
+```
+
+### 2. Customize Configuration
+- Update `package.json` with tool details
+- Configure `ChatoolyConfig` in `index.html`
+- Implement tool logic in `tool.js`
+
+### 3. Local Development
+```bash
+npm run dev
+# Opens http://localhost:8000
+```
+
+### 4. Test Export Functionality
+- Click export button to test PNG export
+- Try different resolutions (1x, 2x, 4x)
+- Test with various canvas libraries
+
+### 5. Publish Tool
+```bash
+npm run publish
+# Or use Chatooly export button's publish option
+```
+
+## Library Integration
+
+### p5.js Integration
+```javascript
+// In tool.js
+function setup() {
+    let canvas = createCanvas(800, 600);
+    canvas.parent('chatooly-canvas');
+    // Tool logic
+}
+
+function draw() {
+    // Render loop
+}
+```
+
+### Three.js Integration
+```javascript
+// In tool.js
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(75, 800/600, 0.1, 1000);
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+
+renderer.setSize(800, 600);
+document.getElementById('chatooly-canvas').appendChild(renderer.domElement);
+
+// Make renderer globally accessible for high-res export
+window.renderer = renderer;
+window.scene = scene;
+window.camera = camera;
+```
+
+### Canvas API Integration
+```javascript
+// In tool.js
+const canvas = document.createElement('canvas');
+canvas.width = 800;
+canvas.height = 600;
+document.getElementById('chatooly-canvas').appendChild(canvas);
+
+const ctx = canvas.getContext('2d');
+// Drawing logic
+```
+
+## Best Practices
+
+### Performance
+- Use requestAnimationFrame for animations
+- Implement efficient rendering loops
+- Avoid memory leaks in event listeners
+- Optimize for mobile devices
+
+### Accessibility
+- Include proper ARIA labels
+- Support keyboard navigation
+- Provide alt text for visual elements
+- Ensure sufficient color contrast
+
+### Export Quality
+- Design for high-resolution export (2x, 4x)
+- Use vector graphics when possible
+- Avoid pixelated assets
+- Test exports at different sizes
+
+### Publishing
+- Use descriptive tool names and descriptions
+- Include relevant tags for discoverability
+- Test tool functionality before publishing
+- Follow semantic versioning for updates
+
+## Validation Checklist
+
+Before publishing, ensure your tool:
+
+- [ ] Has all required files (package.json, index.html, style.css, tool.js)
+- [ ] Includes `#chatooly-canvas` export container
+- [ ] Loads Chatooly CDN correctly
+- [ ] Defines `ChatoolyConfig` properly
+- [ ] Export functionality works (test button)
+- [ ] Responsive design functions on mobile
+- [ ] No console errors in browser
+- [ ] Tool name and description are descriptive
+- [ ] Keywords include "chatooly" and relevant terms
+- [ ] Version follows semantic versioning
+
+## Common Issues
+
+### Export Problems
+- **Canvas not found**: Ensure canvas is inside `#chatooly-canvas`
+- **Low quality exports**: Check resolution settings
+- **CORS errors**: Use proper CDN URLs, avoid local files
+
+### Publishing Issues
+- **Validation failed**: Check required configuration fields
+- **Upload errors**: Ensure development mode (localhost)
+- **Missing metadata**: Verify `ChatoolyConfig` completeness
+
+### Integration Problems
+- **CDN not loading**: Check script URL and network connectivity
+- **Library conflicts**: Load libraries before Chatooly CDN
+- **Configuration ignored**: Ensure `ChatoolyConfig` is defined globally
+
+## Support
+
+For technical support and questions:
+- GitHub Issues: [chatooly-template issues](https://github.com/[username]/chatooly-template/issues)
+- Documentation: [Chatooly Docs](https://docs.chatooly.com)
+- Community: [Discord/Forum](https://community.chatooly.com)
