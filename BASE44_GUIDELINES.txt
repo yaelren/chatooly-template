@@ -1,0 +1,209 @@
+Base 44 → Chatooly Compatibility Guide
+
+CONTEXT: This Base 44 project may be converted to a Chatooly tool. Following these patterns will ensure smooth conversion while maintaining full creative freedom.
+
+IMPORTANT: These are suggestions, not restrictions. Build whatever tool you envision - the converter is designed to be flexible.
+
+== Core Principle: Extractable Logic ==
+
+The Chatooly converter needs to find and extract your tool's core functionality. Help it by organizing your code clearly.
+
+1. Keep Core Logic Accessible
+
+Whatever your tool does (generate art, process data, create animations, build patterns), put the main logic in functions that can stand alone:
+
+// Example: Any kind of processing function
+const generatePattern = (config) => {
+  // Your creative logic here
+  return result;
+};
+
+const transformData = (input, settings) => {
+  // Your transformation logic
+  return output;
+};
+
+const createVisualization = (data, parameters) => {
+  // Your visualization logic
+  return visual;
+};
+
+Why: The converter can extract these functions regardless of what they do.
+
+2. Use Standard Web APIs When Possible
+
+Your tool might use:
+- Canvas API for visual output
+- Web Audio API for sound
+- SVG for vector graphics
+- WebGL for 3D
+- File APIs for user input
+- LocalStorage for saving state
+
+// The converter understands standard APIs
+canvas.getContext('2d');
+new AudioContext();
+document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+new FileReader();
+
+3. Organize Controls However You Like
+
+Your tool might have:
+- Sliders for numeric values
+- Dropdowns for options
+- Color pickers
+- Text inputs
+- Checkboxes
+- Custom controls
+
+// Any control pattern works - just keep the structure clear
+<Slider value={someValue} onChange={updateValue} min={0} max={100} />
+<Select value={option} onChange={setOption}>
+  <option value="a">Option A</option>
+</Select>
+<input type="color" value={color} onChange={handleColorChange} />
+
+4. Handle User Input Your Way
+
+Different tools need different inputs:
+- File uploads (images, data, audio)
+- Text input
+- Drawing/mouse input
+- Camera/microphone
+- No input at all (generative tools)
+
+// Examples of different input patterns
+<input type="file" onChange={handleFile} />
+<textarea onChange={handleText} />
+<canvas onMouseMove={handleDraw} />
+<button onClick={generate}>Generate</button>
+
+== Flexible File Structure ==
+
+Name your files in a way that makes sense for your tool:
+
+src/
+├── components/
+│   ├── YourToolName/        # Main tool folder
+│   │   ├── MainCanvas.jsx   # Or MainOutput, MainView, etc.
+│   │   ├── Controls.jsx     # Or Settings, Parameters, etc.
+│   │   └── AnyOther.jsx     # Whatever components you need
+
+Tip: Including keywords like "Canvas", "Controls", "Settings", or "Output" in filenames helps the converter understand your structure.
+
+== Pattern Examples (Not Requirements) ==
+
+Visual Generation Tool:
+
+// Generator functions
+const generateArt = (seed, style) => { /* ... */ };
+const applyEffects = (canvas, effects) => { /* ... */ };
+
+// Output component
+const ArtCanvas = ({ config }) => {
+  useEffect(() => {
+    const art = generateArt(config.seed, config.style);
+    renderToCanvas(art);
+  }, [config]);
+  
+  return <canvas ref={canvasRef} />;
+};
+
+Data Transformation Tool:
+
+// Processing functions
+const parseData = (rawInput) => { /* ... */ };
+const transformData = (data, rules) => { /* ... */ };
+const exportData = (data, format) => { /* ... */ };
+
+// No canvas needed - maybe just text output
+const DataOutput = ({ result }) => {
+  return <pre>{JSON.stringify(result, null, 2)}</pre>;
+};
+
+Interactive Drawing Tool:
+
+// Drawing functions
+const tools = {
+  brush: (ctx, x, y, settings) => { /* ... */ },
+  eraser: (ctx, x, y, settings) => { /* ... */ }
+};
+
+// Interactive canvas
+const DrawingCanvas = ({ currentTool, settings }) => {
+  const handleMouseMove = (e) => {
+    if (isDrawing) {
+      tools[currentTool](ctx, e.x, e.y, settings);
+    }
+  };
+  
+  return <canvas onMouseMove={handleMouseMove} />;
+};
+
+Audio Visualizer:
+
+// Audio processing
+const analyzeAudio = (audioData) => { /* ... */ };
+const generateWaveform = (frequencies) => { /* ... */ };
+
+// Visualization
+const AudioVisualizer = ({ audioSource }) => {
+  // Your creative visualization logic
+};
+
+== What the Converter Looks For ==
+
+The converter tries to identify:
+1. Main functions - Anything that does the core work
+2. Output methods - Canvas, SVG, DOM elements, etc.
+3. User controls - Sliders, inputs, buttons, etc.
+4. File handling - If your tool accepts user files
+
+It's smart enough to work with:
+- Different naming conventions
+- Various React patterns
+- Custom component structures
+- Creative coding approaches
+
+== Best Practices (Not Rules) ==
+
+DO whatever makes sense for your tool:
+- Use any React patterns you like
+- Organize files your way
+- Name things clearly
+- Comment complex logic
+
+CONSIDER these for easier conversion:
+- Put reusable logic in separate functions
+- Use standard web APIs where applicable
+- Keep component structure somewhat logical
+- Name files descriptively
+
+== Freedom to Create ==
+
+Remember: The converter is built to handle variety. Focus on building a great tool, not on following rigid patterns.
+
+Your tool might:
+- Generate without user input
+- Process uploaded files
+- Create real-time visualizations
+- Build interactive experiences
+- Transform data
+- Make music
+- Animate graphics
+- Simulate systems
+- Or something completely unique!
+
+The converter will do its best to understand and transform your creation into a Chatooly tool.
+
+== If Conversion Needs Help ==
+
+Sometimes the converter might need manual adjustments. That's okay! The conversion creates a starting point that can be refined.
+
+Common adjustments:
+- Connecting controls to logic
+- Adjusting layout styles
+- Adding missing functionality
+- Optimizing performance
+
+The goal: Enable creativity first, conversion second.
