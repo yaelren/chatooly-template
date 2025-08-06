@@ -4,7 +4,19 @@
 
 ## 🚀 Quick Start (3 Simple Steps)
 
-### Step 1: Clone the Template
+### Step 1: Get the Template
+
+#### Option A: Use This Template (Recommended)
+1. Click the green **"Use this template"** button at the top of this GitHub repo
+2. Click **"Create a new repository"**
+3. Name your repository (e.g., `my-awesome-tool`)
+4. Clone your new repository:
+```bash
+git clone https://github.com/YOUR-USERNAME/my-awesome-tool
+cd my-awesome-tool
+```
+
+#### Option B: Direct Clone
 ```bash
 git clone https://github.com/yaelren/chatooly-template my-tool
 cd my-tool
