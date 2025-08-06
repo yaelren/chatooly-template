@@ -1,218 +1,106 @@
 # Chatooly Tool Template
 
-**Author: Yael Renous - Studio Video**
+**Build web tools with AI assistance - No coding experience needed!**
 
-A simple template for creating web-based design tools with Chatooly integration.
+## 🚀 Quick Start (3 Simple Steps)
 
-## 🚀 Quick Start
-
-### 1. Get the Template
-
-#### Option A: Use GitHub Template (Recommended)
-1. Go to: https://github.com/yaelren/chatooly-template
-2. Click **"Use this template"** → **"Create a new repository"**
-3. Name your repository (e.g., "my-awesome-tool")
-4. Click **"Create repository"**
-5. Clone your new repository locally:
-```bash
-git clone https://github.com/YOUR-USERNAME/YOUR-REPO-NAME.git
-cd YOUR-REPO-NAME
-```
-
-#### Option B: Clone Directly
+### Step 1: Clone the Template
 ```bash
 git clone https://github.com/yaelren/chatooly-template my-tool
 cd my-tool
 ```
 
-### 2. Open in Cursor
-1. Open Cursor IDE
-2. Click **File** → **Open Folder** (or `Cmd+O` on Mac / `Ctrl+O` on Windows)
-3. Navigate to your cloned project folder and select it
+### Step 2: Open in Cursor
+1. Open **Cursor** (AI code editor)
+2. Click **File** → **Open Folder**
+3. Select your `my-tool` folder
 4. Click **Open**
 
-Your project will now open in Cursor with all the template files ready for editing.
+### Step 3: Start Building with AI
+1. Open Cursor Chat (Cmd+L or Ctrl+L)
+2. Drag the `START_HERE.md` file into the chat
+3. Type: **"Let's start building"**
+4. Answer a few questions and watch AI build your tool!
 
-### 3. Start Development Server
+## 🎨 Testing Your Tool
 
-Choose one of these options:
-
-#### Option A: Using npm (simplest)
-```bash
-npm run dev
-```
-
-#### Option B: Using Python (cross-platform)
-```bash
-# Python 3
-python3 -m http.server 8000
-
-# Python 2 (older systems)
-python -m http.server 8000
-```
-
-#### Option C: Using Node.js
-```bash
-# Install a simple server
-npm install -g http-server
-
-# Run server
-http-server -p 8000
-```
-
-#### Option D: Using VS Code
-1. Install "Live Server" extension
-2. Right-click on `index.html`
-3. Select "Open with Live Server"
-
-### 4. Open in Browser
-Go to: `http://localhost:8000`
-
-## 📝 How to Build Your Tool
-
-### 1. Configure Your Tool
-Edit `js/chatooly-config.js`:
-```javascript
-window.ChatoolyConfig = {
-    name: "My Amazing Tool",           // ← Change this
-    category: "generators",            // ← Choose from options below
-    tags: ["gradient", "color"],       // ← Add relevant tags
-    description: "What your tool does", // ← Describe your tool
-    author: "Your Name"                // ← Your name
-};
-```
-
-**Category Options:**
-- `"generators"` - Creates patterns, gradients, textures, layouts
-- `"visualizers"` - Data visualization, charts, interactive displays  
-- `"editors"` - Image editors, text formatters, code tools
-- `"utilities"` - Color pickers, calculators, converters
-- `"games"` - Interactive games, puzzles, simulations
-- `"art"` - Creative drawing tools, artistic generators
-
-### 2. Add Your Controls
-Edit `index.html` in the controls section:
-```html
-<!-- Uncomment and modify these examples: -->
-<div class="control-group">
-    <label for="color-input">Color</label>
-    <input type="color" id="color-input" value="#3498db">
-</div>
-
-<div class="control-group">
-    <label for="size-slider">Size</label>
-    <input type="range" id="size-slider" min="10" max="100" value="50">
-</div>
-```
-
-### 3. Add Your Visual Output
-Edit the `#chatooly-canvas` section in `index.html`:
-```html
-<!-- For canvas-based tools (p5.js, Three.js): -->
-<canvas id="myCanvas"></canvas>
-
-<!-- For DOM-based tools: -->
-<div class="design-output"></div>
-```
-
-### 4. Add Your Logic
-Edit `js/main.js`:
-```javascript
-// Your tool's JavaScript code goes here
-// Examples:
-// - Event listeners for your controls
-// - Canvas drawing functions  
-// - p5.js sketches
-// - Three.js scenes
-```
-
-### 5. Style Your Tool
-Edit `styles.css` in the "EDIT" sections to customize the appearance.
-
-## 🎨 What You Can Edit vs. What You Shouldn't
-
-### ✅ EDIT THESE:
-- Tool name and title
-- Controls in the left panel
-- Content inside `#chatooly-canvas`
-- Custom styles in marked sections
-- All of `js/main.js`
-- Configuration in `js/chatooly-config.js`
-
-### ⚠️ DON'T EDIT THESE:
-- CDN script tag
-- `#chatooly-canvas` container (but edit contents)
-- Base layout structure
-- Core CSS layout styles
+Once AI builds your tool:
+1. Run `npm run dev` in terminal
+2. Open http://localhost:8000 in your browser
+3. Test your tool and the export button (📥)
+4. Ask AI to make any changes you want!
 
 ## 📤 Publishing Your Tool
 
-1. Make sure your development server is running (`npm run dev`)
-2. Open your tool in the browser
-3. Click the export button (📥) in the bottom-right corner
-4. Select "📤 Publish" from the menu
-5. Enter your tool name when prompted
-6. Your tool will upload to staging for review
-7. After approval, it goes live at `tools.chatooly.com/your-tool`
+When you're happy with your tool:
+1. Click the export button (📥) in bottom-right
+2. Select "📤 Publish"
+3. Enter your tool name
+4. Your tool goes live at `tools.chatooly.com/your-tool`!
 
-## 🛠 Development Tips
+---
 
-### Testing Export
-- Click the export button to test PNG export
-- Try different resolutions (1x, 2x, 4x)
-- Make sure your visual content is inside `#chatooly-canvas`
+## 📚 Want to Know More?
 
-### Common Issues
-- **Export button not appearing**: Check that the CDN script loaded
-- **Export not working**: Ensure content is in `#chatooly-canvas`
-- **Server not starting**: Try different port: `python3 -m http.server 3000`
+<details>
+<summary><b>Manual Setup Options</b></summary>
 
-### Working with Libraries
+### Alternative ways to start the server:
 
-#### p5.js
-```javascript
-// In js/main.js
-function setup() {
-    let canvas = createCanvas(800, 600);
-    canvas.parent('chatooly-canvas');
-}
-
-function draw() {
-    // Your drawing code
-}
+**Python:**
+```bash
+python3 -m http.server 8000
 ```
 
-#### Three.js
-```javascript
-// In js/main.js
-const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(75, 800/600, 0.1, 1000);
-const renderer = new THREE.WebGLRenderer();
-
-renderer.setSize(800, 600);
-document.getElementById('chatooly-canvas').appendChild(renderer.domElement);
+**Node.js:**
+```bash
+npm install -g http-server
+http-server -p 8000
 ```
 
-## 📁 File Structure
+**VS Code Live Server:**
+1. Install "Live Server" extension
+2. Right-click on `index.html`
+3. Select "Open with Live Server"
+</details>
+
+<details>
+<summary><b>Understanding the Files</b></summary>
 
 ```
 my-tool/
-├── index.html              # Main HTML structure  
-├── styles.css              # All CSS styling
+├── START_HERE.md          # Instructions for AI
+├── index.html             # Your tool's structure
+├── styles.css             # How it looks
 ├── js/
-│   ├── main.js            # Your tool logic
-│   └── chatooly-config.js # Chatooly configuration
-├── package.json           # Simple dev script
-└── README.md              # This file
+│   ├── main.js           # How it works
+│   └── chatooly-config.js # Tool settings
+└── package.json          # Project setup
 ```
+</details>
 
-## 🆘 Need Help?
+<details>
+<summary><b>Manual Editing (Advanced)</b></summary>
 
-- **Template Issues**: [GitHub Issues](https://github.com/yaelren/chatooly-template/issues)
+If you want to edit files yourself:
 
-## 📄 License
+1. **Config**: Edit `js/chatooly-config.js` for tool name and info
+2. **Controls**: Add HTML controls in `index.html`
+3. **Logic**: Write JavaScript in `js/main.js`
+4. **Styles**: Customize appearance in `styles.css`
 
-MIT License - feel free to use for any project!
+Remember: Keep visual content inside `#chatooly-canvas` div!
+</details>
+
+<details>
+<summary><b>Troubleshooting</b></summary>
+
+- **No export button?** Check if server is running
+- **Export is blank?** Content must be in `#chatooly-canvas`
+- **Can't publish?** Must run locally first (`npm run dev`)
+- **Need help?** [Create an issue](https://github.com/yaelren/chatooly-template/issues)
+</details>
 
 ---
-**Template created by Yael Renous - Studio Video**
+
+**Built with ❤️ by Yael Renous - Studio Video**
