@@ -94,21 +94,78 @@ Tell the user:
 - The export button (📥) appears automatically in the bottom-right corner
 - Click it to test PNG export at different resolutions (1x, 2x, 4x)
 
-## Step 6: Publishing
-When the user is ready to publish, explain:
-1. Make sure the tool is running locally (`npm run dev`)
-2. Click the export button (📥) in the bottom-right corner
-3. Select "📤 Publish" from the menu (only available in development mode)
-4. Enter your tool name when prompted
-5. The tool uploads to staging for review
-6. After approval, it goes live at `tools.chatooly.com/[tool-name]`
+## Step 6: Saving Your Progress with Git
 
-## Step 7: Iteration
+### Why Use Git?
+Git is like a save system for your code - it lets you:
+- Save snapshots of your work at any point
+- Go back to earlier versions if something breaks
+- Share your code with others
+- Keep your work safe in the cloud (using GitHub)
+
+### Basic Git Commands the User Should Know:
+
+#### First Time Setup (do this once):
+```bash
+git init  # Initialize git in your project
+git add .  # Stage all your files
+git commit -m "Initial commit - my first tool"  # Save your first snapshot
+```
+
+#### Saving Your Work (do this regularly):
+```bash
+git add .  # Stage your changes
+git commit -m "Added new feature"  # Save a snapshot with a description
+```
+
+#### Pushing to GitHub (to save in the cloud):
+1. Create a repository on GitHub.com
+2. Connect your local project:
+```bash
+git remote add origin https://github.com/yourusername/your-tool.git
+git push -u origin main  # Push your code to GitHub
+```
+
+3. Future saves to GitHub:
+```bash
+git push  # Send your latest commits to GitHub
+```
+
+### When to Save with Git:
+Tell the user to commit their work:
+- After getting something working
+- Before making big changes
+- At the end of each coding session
+- Before publishing to Chatooly
+
+### Simple Git Workflow for Beginners:
+1. Make changes to your tool
+2. Test that it works
+3. Save with git:
+   ```bash
+   git add .
+   git commit -m "Describe what you changed"
+   git push  # If you have GitHub set up
+   ```
+
+## Step 7: Publishing
+When the user is ready to publish, explain:
+1. First, save your work with git: `git add . && git commit -m "Ready to publish"`
+2. Make sure the tool is running locally (`npm run dev`)
+3. Click the export button (📥) in the bottom-right corner
+4. Select "📤 Publish" from the menu (only available in development mode)
+5. Enter your tool name when prompted
+6. The tool uploads to staging for review
+7. After approval, it goes live at `tools.chatooly.com/[tool-name]`
+
+## Step 8: Iteration
 After initial build:
+- Remind user to save progress: `git add . && git commit -m "Description of changes"`
 - Ask "What would you like to change or add?"
 - Make adjustments based on feedback
 - Always test export functionality after changes
 - Ensure tool works well at different screen sizes
+- Encourage regular git commits after each successful change
 
 ## What Chatooly Handles Automatically:
 - ✅ Export button creation and positioning

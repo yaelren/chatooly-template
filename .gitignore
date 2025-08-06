@@ -31,3 +31,6 @@ yarn-error.log*
 # Local development
 .env
 .env.local
+
+# Template development files
+template-dev/

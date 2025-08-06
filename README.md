@@ -30,13 +30,47 @@ Once AI builds your tool:
 3. Test your tool and the export button (📥)
 4. Ask AI to make any changes you want!
 
+## 💾 Saving Your Progress with Git
+
+**Important:** Besides publishing to Chatooly, you should save your work regularly using Git!
+
+### Quick Git Setup (First Time Only)
+```bash
+git init                    # Start tracking your project
+git add .                   # Add all files
+git commit -m "First save"  # Save your first snapshot
+```
+
+### Save Your Work Regularly
+```bash
+git add .                   # Stage your changes
+git commit -m "What you changed"  # Save a snapshot
+```
+
+### Back Up to GitHub (Optional but Recommended)
+1. Create a new repository on [GitHub.com](https://github.com)
+2. Connect and push your code:
+```bash
+git remote add origin https://github.com/yourusername/your-repo.git
+git push -u origin main
+```
+
+### When to Save?
+- ✅ After getting a feature working
+- ✅ Before trying something new
+- ✅ End of each coding session
+- ✅ Before publishing to Chatooly
+
+**Pro tip:** Think of git commits like save points in a video game - save often so you can always go back if needed!
+
 ## 📤 Publishing Your Tool
 
 When you're happy with your tool:
-1. Click the export button (📥) in bottom-right
-2. Select "📤 Publish"
-3. Enter your tool name
-4. Your tool goes live at `tools.chatooly.com/your-tool`!
+1. Save your work first: `git add . && git commit -m "Ready to publish"`
+2. Click the export button (📥) in bottom-right
+3. Select "📤 Publish"
+4. Enter your tool name
+5. Your tool goes live at `tools.chatooly.com/your-tool`!
 
 ---
 
