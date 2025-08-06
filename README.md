@@ -7,17 +7,33 @@ A simple template for creating web-based design tools with Chatooly integration.
 ## 🚀 Quick Start
 
 ### 1. Get the Template
-```bash
-# Option A: Use GitHub Template (recommended)
-# Go to: https://github.com/yaelren/chatooly-template
-# Click "Use this template" → "Create a new repository"
 
-# Option B: Clone directly
+#### Option A: Use GitHub Template (Recommended)
+1. Go to: https://github.com/yaelren/chatooly-template
+2. Click **"Use this template"** → **"Create a new repository"**
+3. Name your repository (e.g., "my-awesome-tool")
+4. Click **"Create repository"**
+5. Clone your new repository locally:
+```bash
+git clone https://github.com/YOUR-USERNAME/YOUR-REPO-NAME.git
+cd YOUR-REPO-NAME
+```
+
+#### Option B: Clone Directly
+```bash
 git clone https://github.com/yaelren/chatooly-template my-tool
 cd my-tool
 ```
 
-### 2. Start Development Server
+### 2. Open in Cursor
+1. Open Cursor IDE
+2. Click **File** → **Open Folder** (or `Cmd+O` on Mac / `Ctrl+O` on Windows)
+3. Navigate to your cloned project folder and select it
+4. Click **Open**
+
+Your project will now open in Cursor with all the template files ready for editing.
+
+### 3. Start Development Server
 
 Choose one of these options:
 
@@ -49,7 +65,7 @@ http-server -p 8000
 2. Right-click on `index.html`
 3. Select "Open with Live Server"
 
-### 3. Open in Browser
+### 4. Open in Browser
 Go to: `http://localhost:8000`
 
 ## 📝 How to Build Your Tool
