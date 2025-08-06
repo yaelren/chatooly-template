@@ -97,39 +97,27 @@ Tell the user:
 ## Step 6: Saving Your Progress with Git
 
 ### Why Use Git?
-Git is like a save system for your code - it lets you:
-- Save snapshots of your work at any point
+Since the user cloned this template from GitHub, they already have git set up! Git lets them:
+- Save snapshots of their work at any point
 - Go back to earlier versions if something breaks
-- Share your code with others
-- Keep your work safe in the cloud (using GitHub)
+- Push changes back to their GitHub repository
+- Keep their work safe in the cloud
 
-### Basic Git Commands the User Should Know:
+### The Git Setup is Already Done!
+The user's project is already connected to their GitHub repository because they cloned the template. They can start saving right away!
 
-#### First Time Setup (do this once):
-```bash
-git init  # Initialize git in your project
-git add .  # Stage all your files
-git commit -m "Initial commit - my first tool"  # Save your first snapshot
-```
-
-#### Saving Your Work (do this regularly):
+### Saving Work Locally (do this regularly):
 ```bash
 git add .  # Stage your changes
 git commit -m "Added new feature"  # Save a snapshot with a description
 ```
 
-#### Pushing to GitHub (to save in the cloud):
-1. Create a repository on GitHub.com
-2. Connect your local project:
-```bash
-git remote add origin https://github.com/yourusername/your-tool.git
-git push -u origin main  # Push your code to GitHub
-```
-
-3. Future saves to GitHub:
+### Pushing to GitHub (to backup in the cloud):
 ```bash
 git push  # Send your latest commits to GitHub
 ```
+
+That's it! Since they cloned the template, the connection to GitHub is already set up.
 
 ### When to Save with Git:
 Tell the user to commit their work:

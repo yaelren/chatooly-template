@@ -32,28 +32,16 @@ Once AI builds your tool:
 
 ## 💾 Saving Your Progress with Git
 
-**Important:** Besides publishing to Chatooly, you should save your work regularly using Git!
+**Good news:** Your project is already set up with Git since you cloned it from GitHub!
 
-### Quick Git Setup (First Time Only)
-```bash
-git init                    # Start tracking your project
-git add .                   # Add all files
-git commit -m "First save"  # Save your first snapshot
-```
-
-### Save Your Work Regularly
+### Save Your Work (Do This Often!)
 ```bash
 git add .                   # Stage your changes
 git commit -m "What you changed"  # Save a snapshot
+git push                    # Back up to GitHub
 ```
 
-### Back Up to GitHub (Optional but Recommended)
-1. Create a new repository on [GitHub.com](https://github.com)
-2. Connect and push your code:
-```bash
-git remote add origin https://github.com/yourusername/your-repo.git
-git push -u origin main
-```
+That's it! No setup needed - just save and push.
 
 ### When to Save?
 - ✅ After getting a feature working
