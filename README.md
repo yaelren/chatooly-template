@@ -6,33 +6,52 @@
 
 ### Step 1: Get the Template
 
-#### Option A: Use This Template (Recommended)
-1. Click the green **"Use this template"** button at the top of this GitHub repo
-2. Click **"Create a new repository"**
-3. Name your repository (e.g., `my-awesome-tool`)
-4. Clone your new repository:
+Choose one option below:
+
+#### Option A: Download Without Git (Easiest for Beginners)
+**What's this?** Simply download the files like any other download - no special tools needed!
+
+1. Go to https://github.com/yaelren/chatooly-template
+2. Click the green **Code** button
+3. Click **Download ZIP**
+4. Extract the ZIP to your desired folder
+5. Rename the folder from `chatooly-template-main` to your project name (e.g., `my-tool`)
+6. **Open this folder in your IDE** (Cursor or Visual Studio Code)
+
+#### Option B: Clone with Git (Better for Updates)
+**What's Git?** A tool that tracks changes to your code and makes it easy to save/share your work. Like Google Docs version history, but for code!
+
+1. **Open your IDE** (Cursor or Visual Studio Code)
+2. **Open the terminal** in your IDE (Terminal → New Terminal)
+3. **Choose how to clone:**
+
+**Option 1: Clone into current folder** (if you already created an empty project folder)
 ```bash
-git clone https://github.com/YOUR-USERNAME/my-awesome-tool
-cd my-awesome-tool
+git clone https://github.com/yaelren/chatooly-template.git .
 ```
 
-#### Option B: Direct Clone
+**Option 2: Clone into a new subfolder** (creates a new folder with your chosen name)
 ```bash
-git clone https://github.com/yaelren/chatooly-template my-tool
+git clone https://github.com/yaelren/chatooly-template.git my-tool
 cd my-tool
 ```
+**Important:** Replace `my-tool` with your own project name (e.g., `fisheye-tool`, `color-picker`)
 
-### Step 2: Open in Cursor
-1. Open **Cursor** (AI code editor)
-2. Click **File** → **Open Folder**
-3. Select your `my-tool` folder
-4. Click **Open**
+**If you used Option 2:** You created a subfolder, so you need to open it:
+- In your IDE: **File → Open Folder** → Select the `my-tool` folder you just created
+
+### Step 2: Open Your Project Files
+
+1. **Open the file viewer** in your IDE to see all the files in your folder
+   - In Cursor/VS Code: Look at the left sidebar
+   - You should see your project files like `index.html`, `styles.css`, etc.
 
 ### Step 3: Start Building with AI
-1. Open Cursor Chat (Cmd+L or Ctrl+L)
-2. Drag the `START_HERE.md` file into the chat
-3. Type: **"Let's start building"**
-4. Answer a few questions and watch AI build your tool!
+
+1. **Find the `START_HERE.md` file** in your file viewer
+2. **Drag and drop** the `START_HERE.md` file into the Cursor Chat window
+3. **Type:** "Let's start building" 
+4. **Answer the AI's questions** and watch it build your tool!
 
 ## 🎨 Testing Your Tool
 
