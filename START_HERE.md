@@ -56,6 +56,7 @@ After config is set, ask: "Great! Now tell me what you want to create and I'll b
 
 ### CRITICAL Chatooly API Requirements:
 - **Export Container**: ALL visual content MUST be inside `#chatooly-canvas` div
+- **Clean Export Container**: ONLY put the canvas or visual elements inside `#chatooly-canvas` - no extra divs, overlays, UI controls, or decorative elements that shouldn't appear in the final exported PNG
 - **CDN Script**: Already included via `<script src="https://yaelren.github.io/chatooly-cdn/js/core.js"></script>`
 - **Export Button**: Automatically appears in bottom-right corner (don't create your own)
 - **Canvas Size**: Minimum 800x600px for visual area
@@ -103,6 +104,40 @@ document.getElementById('chatooly-canvas').appendChild(canvas);
     <div class="design-output">
         <!-- Visual elements here -->
     </div>
+</div>
+```
+
+### ❌ WHAT NOT TO PUT IN #chatooly-canvas:
+```html
+<!-- DON'T DO THIS - UI controls should be outside -->
+<div id="chatooly-canvas">
+    <canvas id="myCanvas"></canvas>
+    <button>Download</button>  <!-- NO! -->
+    <div class="controls">     <!-- NO! -->
+        <input type="range">   <!-- NO! -->
+    </div>
+</div>
+
+<!-- DON'T DO THIS - decorative elements -->
+<div id="chatooly-canvas">
+    <div class="fancy-border">  <!-- NO! -->
+        <canvas id="myCanvas"></canvas>
+        <div class="watermark">Made with MyTool</div>  <!-- NO! -->
+    </div>
+</div>
+```
+
+### ✅ CORRECT WAY:
+```html
+<!-- Controls outside export container -->
+<div class="controls">
+    <button>Download</button>
+    <input type="range">
+</div>
+
+<!-- Only visual content inside -->
+<div id="chatooly-canvas">
+    <canvas id="myCanvas"></canvas>
 </div>
 ```
 
@@ -197,14 +232,16 @@ If any check fails, immediately fix it before proceeding!
 
 ## What You Must Ensure:
 - ✅ All visual content is inside `#chatooly-canvas`
+- ✅ Only visual content (no UI controls or decorative elements) is inside `#chatooly-canvas`
 - ✅ ChatoolyConfig is properly configured
 - ✅ Canvas/visual area is at least 800x600px
 - ✅ Tool works on both desktop and mobile
-- ✅ Export produces the expected visual output
+- ✅ Export produces the expected visual output (no unwanted UI elements)
 
 ## Common Issues & Solutions:
 - **No export button?** Check if CDN script loaded, verify no JS errors
 - **Export is blank?** Ensure content is inside `#chatooly-canvas`
+- **Export has unwanted UI elements?** Make sure only visual content is inside `#chatooly-canvas` - move controls outside
 - **Button in wrong position?** Adjust `buttonPosition` in ChatoolyConfig
 - **Publishing not available?** Must be running on localhost (dev mode)
 
