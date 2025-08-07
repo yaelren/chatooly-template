@@ -1,5 +1,14 @@
 # Chatooly Tool Builder - AI Assistant Instructions
 
+## ⚠️ IMPORTANT: BEFORE YOU START
+1. **READ THE .cursorrules FILE** - It contains critical rules that MUST be followed
+2. **VERIFY AFTER EVERY CHANGE** - Check that all Chatooly rules are still being followed
+3. **ADD TO MEMORY** - Remember these rules throughout the entire conversation:
+   - ALL visual content goes inside #chatooly-canvas
+   - NEVER modify the CDN script
+   - NEVER create custom export buttons
+   - ALWAYS test exports after changes
+
 ## When User Wants to Build a Tool
 The user might say things like:
 - "Let's start building"
@@ -7,6 +16,13 @@ The user might say things like:
 - "I want to make something"
 - "Build a [type] tool"
 - Or any variation indicating they want to create something
+
+## Step 0: Verify Project Location
+First, check if we're in the correct project folder:
+- Look for `index.html`, `package.json`, and the `js` folder
+- If these files aren't visible, we might be in the wrong folder
+- Ask the user to navigate to their project folder or open it in the IDE
+- The correct folder should contain the chatooly-template files
 
 ## Step 1: Gather Basic Information
 Ask the user these questions to fill out the config:
@@ -16,6 +32,7 @@ Ask the user these questions to fill out the config:
 4. Your name (for author credit)
 
 ## Step 2: Update Configuration
+Make sure to navigate to the correct file path (relative to the project root).
 Update `js/chatooly-config.js` with their answers:
 ```javascript
 window.ChatoolyConfig = {
@@ -34,6 +51,8 @@ window.ChatoolyConfig = {
 After config is set, ask: "Great! Now tell me what you want to create and I'll build it for you."
 
 ## Step 4: Build According to Chatooly Rules
+
+**🔴 BEFORE WRITING ANY CODE: Re-read .cursorrules file to ensure compliance**
 
 ### CRITICAL Chatooly API Requirements:
 - **Export Container**: ALL visual content MUST be inside `#chatooly-canvas` div
@@ -89,7 +108,9 @@ document.getElementById('chatooly-canvas').appendChild(canvas);
 
 ## Step 5: Testing & Viewing
 Tell the user:
+- Make sure you're in the project root folder (where package.json is located)
 - Run `npm run dev` to start the local server
+- If the command fails, navigate to the correct folder first
 - Open http://localhost:8000 to see your tool
 - The export button (📥) appears automatically in the bottom-right corner
 - Click it to test PNG export at different resolutions (1x, 2x, 4x)
@@ -150,10 +171,22 @@ When the user is ready to publish, explain:
 After initial build:
 - Remind user to save progress: `git add . && git commit -m "Description of changes"`
 - Ask "What would you like to change or add?"
+- **BEFORE making changes: Review .cursorrules file**
 - Make adjustments based on feedback
+- **AFTER making changes: Verify all Chatooly rules are still followed**
 - Always test export functionality after changes
 - Ensure tool works well at different screen sizes
 - Encourage regular git commits after each successful change
+
+## 🔴 VERIFICATION AFTER EVERY CHANGE
+After ANY code modification, check:
+1. Is all visual content still inside #chatooly-canvas?
+2. Is the CDN script intact?
+3. Does the export button still work?
+4. Are there any console errors?
+5. Does the tool still export correctly?
+
+If any check fails, immediately fix it before proceeding!
 
 ## What Chatooly Handles Automatically:
 - ✅ Export button creation and positioning

@@ -1,105 +1,81 @@
-# Chatooly Tool Template - Cursor AI Rules
-# Author: Yael Renous - Studio Video
+# Chatooly Development Rules - ALWAYS FOLLOW THESE
 
-You are helping create a Chatooly design tool using this template. Follow these guidelines:
+## CRITICAL: After EVERY change, verify these rules are followed:
 
-## Project Overview
-This is a web-based design tool template that integrates with the Chatooly CDN for automatic export and publishing functionality.
+### 1. EXPORT CONTAINER RULE (MOST IMPORTANT)
+- ALL visual content MUST be inside `<div id="chatooly-canvas">` 
+- NEVER create visual elements outside this container
+- NEVER rename or remove the #chatooly-canvas ID
 
-## Key Architecture
-- **Chatooly CDN**: Automatically adds export button and handles PNG export/publishing
-- **Template Structure**: Clean separation of HTML, CSS, and JS
-- **Export Container**: All visual content must be inside `#chatooly-canvas`
-- **No API Calls**: Chatooly works automatically, no need for manual API calls
+### 2. CDN SCRIPT RULE
+- NEVER modify or remove: `<script src="https://yaelren.github.io/chatooly-cdn/js/core.js"></script>`
+- This script handles all export and publishing functionality
 
-## What You CAN Edit
-- Content inside "EDIT THIS" sections
-- Tool name and configuration in `js/chatooly-config.js`
-- Visual content inside `#chatooly-canvas`
-- Tool logic in `js/main.js`  
-- Custom styles in marked sections of `styles.css`
-- Control elements in the left panel
+### 3. EXPORT BUTTON RULE
+- NEVER create your own export button
+- The Chatooly CDN automatically adds the export button
+- Button position is controlled by `buttonPosition` in chatooly-config.js
 
-## What You MUST NOT Edit
-- CDN script tag: `<script src="https://yaelren.github.io/chatooly-cdn/js/core.js"></script>`
-- The `#chatooly-canvas` container element (but you can edit its contents)
-- Base layout CSS structure
-- File loading order in HTML
+### 4. CANVAS SIZE RULE
+- Visual area must be at least 800x600px
+- Ensure responsive design works on mobile
 
-## Required Configuration
-Always ask the user for these details and update `js/chatooly-config.js`:
+### 5. FILE EDITING RULES
+You CAN edit:
+- index.html (add controls and content INSIDE #chatooly-canvas)
+- styles.css (only sections marked "EDIT THIS SECTION")
+- js/main.js (all tool logic)
+- js/chatooly-config.js (tool metadata)
 
+You CANNOT edit:
+- The CDN script tag
+- The base layout structure
+- Core CSS layout styles
+- The #chatooly-canvas container ID
+
+### 6. LIBRARY INTEGRATION RULES
+When using external libraries:
+
+For p5.js:
 ```javascript
-window.ChatoolyConfig = {
-    name: "Tool Name",              // Ask user for tool name
-    category: "generators",         // Ask user to choose or suggest better category
-    tags: ["tag1", "tag2"],        // Ask for relevant tags
-    description: "Description",     // Ask for tool description
-    author: "User Name"            // Ask for their name
-};
+function setup() {
+    let canvas = createCanvas(800, 600);
+    canvas.parent('chatooly-canvas'); // CRITICAL: Attach to export container
+}
 ```
 
-**Suggested Categories** (user can choose these or suggest better ones):
-- `"generators"` - Creates patterns, gradients, textures, layouts
-- `"visualizers"` - Data visualization, charts, interactive displays  
-- `"editors"` - Image editors, text formatters, code tools
-- `"utilities"` - Color pickers, calculators, converters
-- `"games"` - Interactive games, puzzles, simulations
-- `"art"` - Creative drawing tools, artistic generators
-
-## Development Workflow
-1. User runs `npm run dev` to start server
-2. Tool loads at `localhost:8000`
-3. Chatooly CDN automatically injects export button
-4. Publishing happens via export button (not code)
-
-## Common Patterns
-
-### Canvas-Based Tools (p5.js, Three.js)
+For Three.js:
 ```javascript
-// p5.js example - canvas goes inside export container
-function setup() {
-    let canvas = createCanvas(windowWidth, windowHeight); // Any size
-    canvas.parent('chatooly-canvas');
-}
-
-// Three.js example  
 const renderer = new THREE.WebGLRenderer();
-renderer.setSize(800, 600); // Any dimensions you want
+renderer.setSize(800, 600);
 document.getElementById('chatooly-canvas').appendChild(renderer.domElement);
 ```
 
-### DOM-Based Tools
+For regular canvas:
 ```javascript
-const canvas = document.getElementById('chatooly-canvas');
-canvas.innerHTML = '<div class="design-output">Your visual content</div>';
+const canvas = document.createElement('canvas');
+canvas.width = 800;
+canvas.height = 600;
+document.getElementById('chatooly-canvas').appendChild(canvas);
 ```
 
-### Event Handlers
-```javascript
-document.getElementById('color-input').addEventListener('change', (e) => {
-    // Update tool based on control changes
-    updateVisual();
-});
-```
+### 7. VERIFICATION CHECKLIST
+After EVERY code change, verify:
+✓ All visual content is inside #chatooly-canvas
+✓ CDN script is intact and loading
+✓ Export button appears in correct position
+✓ Tool exports properly when button is clicked
+✓ No JavaScript errors in console
+✓ Tool works on mobile devices
 
-## Key Reminders
-- Visual content MUST be inside `#chatooly-canvas` for export to work
-- Canvas can be any dimensions (not fixed to 800x600)
-- Export is handled automatically by Chatooly CDN
-- Publishing is via export button, not manual API calls
-- Don't call Chatooly functions directly - let it work automatically
-- Focus on building the tool functionality, Chatooly handles the rest
+### 8. TESTING COMMAND
+Always test with: `npm run dev` and check http://localhost:8000
 
-## Questions to Ask User
-When starting a new tool, ask:
-1. "What type of tool are you creating?" (suggest categories or let them propose better ones)
-2. "What should the tool be called?"
-3. "What does your tool do?" (for description)
-4. "What tags describe your tool?" (for discovery)
-5. "What's your name?" (for author field)
+### 9. COMMON MISTAKES TO AVOID
+❌ Creating visual elements outside #chatooly-canvas
+❌ Adding custom export buttons
+❌ Modifying the CDN script
+❌ Changing the #chatooly-canvas ID
+❌ Forgetting to attach canvases to the export container
 
-Then implement their vision within the template structure.
-
-## Reference
-See CHATOOLY_API.md for complete integration guide.
+## REMINDER: Read START_HERE.md for full implementation details

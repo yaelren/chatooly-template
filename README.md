@@ -21,9 +21,11 @@ Choose one option below:
 #### Option B: Clone with Git (Better for Updates)
 **What's Git?** A tool that tracks changes to your code and makes it easy to save/share your work. Like Google Docs version history, but for code!
 
-1. **Open your IDE** (Cursor or Visual Studio Code)
-2. **Open the terminal** in your IDE (Terminal → New Terminal)
-3. **Choose how to clone:**
+1. **Create a folder** for your projects (e.g., on your Desktop or Documents)
+2. **Open that folder in your IDE** (Cursor or Visual Studio Code)
+   - File → Open Folder → Select the folder you just created
+3. **Open the terminal** in your IDE (Terminal → New Terminal)
+4. **Choose how to clone:**
 
 **Option 1: Clone into current folder** (if you already created an empty project folder)
 ```bash
