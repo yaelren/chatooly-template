@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "python3 -m http.server 8000 || python -m http.server 8000",
     "dev:tool": "cd converted-tools && python3 -m http.server 8000 || python -m http.server 8000",
-    "convert:base44": "node scripts/convert-base44.js"
+    "convert:base44": "node scripts/convert-base44.js",
+    "publish": "node scripts/publish.js"
   },
   "type": "module",
   "license": "MIT"

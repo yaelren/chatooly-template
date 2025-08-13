@@ -2,11 +2,17 @@
 
 ## ⚠️ IMPORTANT: BEFORE YOU START
 1. **READ THE .cursorrules FILE** - It contains critical rules that MUST be followed
-2. **VERIFY AFTER EVERY CHANGE** - Check that all Chatooly rules are still being followed
-3. **ADD TO MEMORY** - Remember these rules throughout the entire conversation:
+2. **CHECK LIVE CSS LINKS** - Before ANY styling change, check these ACTIVE links:
+   - 🔗 [CSS Variables](https://raw.githubusercontent.com/yaelren/chatooly-cdn/main/css/variables.css)
+   - 🔗 [Components](https://raw.githubusercontent.com/yaelren/chatooly-cdn/main/css/components.css) 
+   - 🔗 [Base Styles](https://raw.githubusercontent.com/yaelren/chatooly-cdn/main/css/base.css)
+3. **VERIFY AFTER EVERY CHANGE** - Check that all Chatooly rules are still being followed
+4. **REMIND USER AFTER CHANGES** - Always say: "✅ This follows Chatooly design system - your tool gets automatic CDN updates"
+5. **ADD TO MEMORY** - Remember these rules throughout the entire conversation:
    - ALL visual content goes inside #chatooly-canvas
    - NEVER modify the CDN script
    - NEVER create custom export buttons
+   - USE CSS variables, not hardcoded values
    - ALWAYS test exports after changes
 
 ## When User Wants to Build a Tool
@@ -223,7 +229,144 @@ After ANY code modification, check:
 
 If any check fails, immediately fix it before proceeding!
 
+## 🎨 CSS Styling with CDN v2.0 (NEW!)
+
+### ✅ AUTOMATICALLY STYLED ELEMENTS
+These HTML elements get the Chatooly design system automatically (no classes needed):
+
+```html
+<!-- Form Controls - Automatically styled -->
+<input type="text" placeholder="Enter text">     <!-- ✅ Dark theme input -->
+<input type="range" min="0" max="100">           <!-- ✅ Dark theme slider -->
+<input type="color" value="#ff0000">             <!-- ✅ Dark theme color picker -->
+<select><option>Option 1</option></select>       <!-- ✅ Dark theme dropdown -->
+<textarea placeholder="Description"></textarea>   <!-- ✅ Dark theme textarea -->
+<button>Click Me</button>                        <!-- ✅ Dark theme button -->
+
+<!-- Typography - Automatically styled -->
+<h1>Tool Title</h1>                             <!-- ✅ Lucida Console font -->
+<h2>Section Title</h2>                          <!-- ✅ Proper sizing -->
+<p>Description text</p>                          <!-- ✅ White text on dark -->
+<label>Input Label</label>                       <!-- ✅ Consistent labels -->
+```
+
+### 🎨 ENHANCED CHATOOLY CLASSES (Optional)
+Use these for additional styling options:
+
+```html
+<!-- Button Variants -->
+<button class="btn-secondary">Secondary</button>
+<button class="btn-success">Success</button>
+<button class="btn-danger">Delete</button>
+<button class="btn-outline">Outline Style</button>
+
+<!-- Layout Classes -->
+<div class="chatooly-app-container">             <!-- Full app layout -->
+<div class="chatooly-controls-panel">            <!-- Left sidebar -->
+<div class="chatooly-preview-panel">             <!-- Right canvas area -->
+<div class="chatooly-control-group">             <!-- Control wrapper -->
+
+<!-- Utility Classes -->
+<p class="chatooly-text-muted">Muted text</p>
+<p class="chatooly-text-small">Small text</p>
+<div class="chatooly-mt-3">Add margin top</div>
+<div class="chatooly-p-2">Add padding</div>
+```
+
+### 🔧 CUSTOM STYLING (Use CSS Variables)
+When you need custom styles, use Chatooly CSS variables for consistency:
+
+```css
+/* ✅ GOOD: Uses design system variables */
+.my-special-button {
+  background: var(--chatooly-color-primary);
+  color: var(--chatooly-color-text);
+  border: var(--chatooly-border-width) solid var(--chatooly-color-border);
+  border-radius: var(--chatooly-border-radius);
+  padding: var(--chatooly-spacing-2) var(--chatooly-spacing-4);
+  font-family: var(--chatooly-font-family);
+}
+
+/* ❌ BAD: Hard-coded values break theme consistency */
+.my-button {
+  background: #ff0000;        /* Won't match theme */
+  color: blue;               /* Wrong text color */
+  font-family: Arial;        /* Wrong font */
+}
+```
+
+### 📋 LIVE CSS REFERENCE - CHECK BEFORE EVERY STYLING CHANGE
+
+🚨 **MANDATORY: Check these ACTIVE links before making ANY styling decisions:**
+
+🔗 **[LIVE CSS Variables](https://raw.githubusercontent.com/yaelren/chatooly-cdn/main/css/variables.css)** - All colors, fonts, spacing, breakpoints
+🔗 **[LIVE Components](https://raw.githubusercontent.com/yaelren/chatooly-cdn/main/css/components.css)** - Buttons, forms, cards, tabs, dropdowns  
+🔗 **[LIVE Base Styles](https://raw.githubusercontent.com/yaelren/chatooly-cdn/main/css/base.css)** - Typography, forms, universal styling
+🔗 **[LIVE Layout Classes](https://raw.githubusercontent.com/yaelren/chatooly-cdn/main/css/layouts/sidebar.css)** - Sidebar, responsive grid, containers
+
+**🔗 Complete Variable List:** [View all CSS variables](https://github.com/yaelren/chatooly-cdn/blob/main/css/variables.css)
+
+The CDN provides 100+ CSS variables for consistent styling. Most commonly used:
+
+```css
+/* Most commonly used variables */
+--chatooly-color-text: #ffffff           /* Main text color */
+--chatooly-color-background: #2b2b2b     /* Page background */
+--chatooly-color-border: #ffffff         /* Borders */
+--chatooly-color-primary: #007bff        /* Accent color */
+
+--chatooly-font-family: 'Lucida Console', Monaco, monospace
+--chatooly-font-size-base: 14px          /* Default text size */
+
+--chatooly-spacing-2: 8px                /* Small spacing */
+--chatooly-spacing-3: 12px               /* Medium spacing */
+--chatooly-spacing-4: 16px               /* Large spacing */
+
+--chatooly-border-radius: 0px            /* Sharp corners */
+--chatooly-border-width: 2px             /* Standard border */
+```
+
+**📖 View Complete CSS Source Files:**
+- [variables.css](https://raw.githubusercontent.com/yaelren/chatooly-cdn/main/css/variables.css) - All design variables (LIVE LINK)
+- [base.css](https://raw.githubusercontent.com/yaelren/chatooly-cdn/main/css/base.css) - Element styling (LIVE LINK)
+- [components.css](https://raw.githubusercontent.com/yaelren/chatooly-cdn/main/css/components.css) - UI components (LIVE LINK)
+
+### ⚡ AUTOMATIC STYLING ACTIVATION
+The CDN automatically injects styles when you include the script:
+
+```html
+<!-- This script automatically styles your entire page -->
+<script src="https://yaelren.github.io/chatooly-cdn/js/core.min.js"></script>
+```
+
+### 🎯 STYLING EXAMPLE
+Here's how to build a tool with consistent styling:
+
+```html
+<!-- Controls (automatically styled) -->
+<div class="controls-section">
+  <h2>Settings</h2>
+  <div class="chatooly-control-group">
+    <label>Background Color</label>
+    <input type="color" id="bgColor" value="#000000">
+  </div>
+  <div class="chatooly-control-group">
+    <label>Size</label>
+    <input type="range" id="size" min="10" max="100" value="50">
+  </div>
+  <button id="generateBtn">Generate</button>
+</div>
+
+<!-- Canvas (put visual output here) -->
+<div id="chatooly-canvas">
+  <canvas id="myCanvas" width="800" height="600"></canvas>
+</div>
+```
+
+All inputs, buttons, and text will automatically use the dark Chatooly theme!
+
 ## What Chatooly Handles Automatically:
+- ✅ **Design System Injection** - Dark theme, fonts, colors applied automatically
 - ✅ Export button creation and positioning
 - ✅ PNG export at multiple resolutions
 - ✅ File downloads
