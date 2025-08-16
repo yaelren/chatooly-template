@@ -187,12 +187,26 @@ renderer.setSize(800, 600);
 document.getElementById('chatooly-canvas').appendChild(renderer.domElement);
 ```
 
-#### For regular canvas:
+#### For regular canvas (RECOMMENDED - Direct Canvas):
+```html
+<!-- BEST: Direct canvas with chatooly-canvas ID -->
+<div id="chatooly-container">
+    <canvas id="chatooly-canvas" width="800" height="600"></canvas>
+</div>
+```
+
 ```javascript
-const canvas = document.createElement('canvas');
-canvas.width = 800;
-canvas.height = 600;
-document.getElementById('chatooly-canvas').appendChild(canvas);
+// JavaScript setup
+const canvas = document.getElementById('chatooly-canvas');
+const ctx = canvas.getContext('2d');
+```
+
+#### For complex canvas tools (Alternative):
+```html
+<!-- GOOD: Canvas inside container -->
+<div id="chatooly-canvas">
+    <canvas id="main-canvas" width="800" height="600"></canvas>
+</div>
 ```
 
 #### For DOM-based tools:
@@ -465,6 +479,11 @@ All inputs, buttons, and text will automatically use the dark Chatooly theme!
 - ✅ **Mouse Coordinate Utilities** - `Chatooly.utils.mapMouseToCanvas()` 
 - ✅ **Zoom/Pan Controls** - Ctrl+scroll to zoom, **spacebar + drag** to pan (no conflicts)
 - ✅ **Automatic Scrollbars** - Appear when zoomed content exceeds canvas area
+- ✅ **Smart Export Detection** - Automatically finds the best export target using priority order:
+  1. `canvas#chatooly-canvas` (HIGHEST PRIORITY - direct canvas export)
+  2. Canvas inside `div#chatooly-canvas` (finds any canvas inside)  
+  3. Largest standalone canvas element
+  4. DOM containers as fallback
 - ✅ Export button creation and positioning
 - ✅ PNG export at multiple resolutions
 - ✅ File downloads
@@ -483,16 +502,28 @@ All inputs, buttons, and text will automatically use the dark Chatooly theme!
 - ✅ Export produces the expected visual output (no unwanted UI elements)
 
 ## Common Issues & Solutions:
+
+### **🎯 Canvas Export Issues (MOST COMMON)**
+- **Export shows blank/background instead of canvas?** 
+  - ✅ **SOLUTION**: Use `<canvas id="chatooly-canvas">` directly for highest export priority
+  - ❌ **AVOID**: `<canvas id="my-canvas">` inside `<div id="chatooly-canvas">` 
+  - ❌ **AVOID**: Canvas with `display: none` during export
+- **Export has wrong proportions?** 
+  - ✅ **SOLUTION**: Remove wrapper divs, use direct canvas structure
+  - ❌ **AVOID**: Multiple nested containers around canvas
+
+### **🔄 Canvas Resize & Interaction Issues**
 - **Image disappears when changing aspect ratios?** Missing canvas resize event handling - implement the code from top of this file
 - **Mouse clicks don't align with canvas?** Not using `mapMouseToCanvas()` - use proper coordinate mapping
 - **Interactive elements jump to wrong positions?** Not scaling elements on resize - implement scaling in `onCanvasResized()`
 - **Pan conflicts with canvas interactions?** CDN now requires **spacebar + click** to pan when zoomed - canvas interactions work normally without spacebar
+
+### **🎨 General Export Issues**
 - **No scrollbars when zoomed?** Scrollbars appear automatically when content exceeds canvas area bounds
 - **No export button?** Check if CDN script loaded, verify no JS errors
 - **Export is blank?** Ensure content is inside `#chatooly-canvas`
 - **Export has unwanted UI elements?** Make sure only visual content is inside `#chatooly-canvas` - move controls outside
 - **"Insecure connection" error during export?** Normal when running locally on HTTP - exports still work, just ignore the console warning
-- **Wrong image exported?** Ensure your canvas has `id="chatooly-canvas"` for proper targeting
 - **Button in wrong position?** Adjust `buttonPosition` in ChatoolyConfig
 - **Publishing not available?** Must be running on localhost (dev mode)
 
@@ -511,10 +542,13 @@ Remember: The Chatooly CDN handles all export and publishing functionality autom
 
 ## 🎯 FINAL CHECKLIST FOR AI AGENTS:
 Before completing any tool implementation, verify:
+- [ ] **Canvas ID**: Use `<canvas id="chatooly-canvas">` for direct export (RECOMMENDED)
+- [ ] **Canvas Structure**: Avoid nested wrappers around canvas that affect export
 - [ ] Canvas resize event listener added
 - [ ] Mouse coordinate mapping implemented  
 - [ ] Interactive elements scale properly on resize
-- [ ] All visual content in #chatooly-canvas
+- [ ] All visual content in export container
 - [ ] Export button works at all aspect ratios
-- [ ] No console errors
+- [ ] No console errors during export
 - [ ] Tool tested with HD, Square, and Portrait modes
+- [ ] **Export Test**: Verify exported image shows canvas content, not background
