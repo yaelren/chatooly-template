@@ -463,6 +463,8 @@ All inputs, buttons, and text will automatically use the dark Chatooly theme!
 - ✅ **Design System Injection** - Dark theme, fonts, colors applied automatically
 - ✅ **Canvas Resize Events** - Dispatches `chatooly:canvas-resized` with scale info
 - ✅ **Mouse Coordinate Utilities** - `Chatooly.utils.mapMouseToCanvas()` 
+- ✅ **Zoom/Pan Controls** - Ctrl+scroll to zoom, **spacebar + drag** to pan (no conflicts)
+- ✅ **Automatic Scrollbars** - Appear when zoomed content exceeds canvas area
 - ✅ Export button creation and positioning
 - ✅ PNG export at multiple resolutions
 - ✅ File downloads
@@ -484,9 +486,13 @@ All inputs, buttons, and text will automatically use the dark Chatooly theme!
 - **Image disappears when changing aspect ratios?** Missing canvas resize event handling - implement the code from top of this file
 - **Mouse clicks don't align with canvas?** Not using `mapMouseToCanvas()` - use proper coordinate mapping
 - **Interactive elements jump to wrong positions?** Not scaling elements on resize - implement scaling in `onCanvasResized()`
+- **Pan conflicts with canvas interactions?** CDN now requires **spacebar + click** to pan when zoomed - canvas interactions work normally without spacebar
+- **No scrollbars when zoomed?** Scrollbars appear automatically when content exceeds canvas area bounds
 - **No export button?** Check if CDN script loaded, verify no JS errors
 - **Export is blank?** Ensure content is inside `#chatooly-canvas`
 - **Export has unwanted UI elements?** Make sure only visual content is inside `#chatooly-canvas` - move controls outside
+- **"Insecure connection" error during export?** Normal when running locally on HTTP - exports still work, just ignore the console warning
+- **Wrong image exported?** Ensure your canvas has `id="chatooly-canvas"` for proper targeting
 - **Button in wrong position?** Adjust `buttonPosition` in ChatoolyConfig
 - **Publishing not available?** Must be running on localhost (dev mode)
 
