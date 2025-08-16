@@ -82,6 +82,180 @@ fallbackMouseMapping(e) {
 - ✅ Mouse clicks map to correct canvas coordinates at all resolutions
 - ✅ Tool works seamlessly across all export sizes
 
+## 🔥 HIGH-RESOLUTION EXPORT IMPLEMENTATION (CRITICAL)
+
+**MANDATORY**: All canvas-based tools MUST implement `window.renderHighResolution()` for quality exports.
+
+### ⚡ Quick Implementation Template:
+
+```javascript
+// Add this function to your main.js file
+window.renderHighResolution = function(targetCanvas, scale) {
+    // 1. Validate your tool is ready
+    if (!yourTool || !yourTool.isInitialized) {
+        console.warn('Tool not ready for high-res export');
+        return;
+    }
+    
+    // 2. Set up high-resolution canvas
+    const ctx = targetCanvas.getContext('2d');
+    targetCanvas.width = yourTool.canvas.width * scale;
+    targetCanvas.height = yourTool.canvas.height * scale;
+    
+    // 3. Clear canvas
+    ctx.clearRect(0, 0, targetCanvas.width, targetCanvas.height);
+    
+    // 4. TOOL-SPECIFIC: Re-create your content at high resolution
+    // This is where you implement your tool's specific high-res logic
+    
+    console.log(`High-res export completed at ${scale}x resolution`);
+};
+```
+
+### 🎯 Tool-Specific Implementation Examples:
+
+#### For Image Processing Tools (like Fisheye):
+```javascript
+window.renderHighResolution = function(targetCanvas, scale) {
+    if (!myImageTool.originalImage) return;
+    
+    const ctx = targetCanvas.getContext('2d');
+    const scaledWidth = myImageTool.canvas.width * scale;
+    const scaledHeight = myImageTool.canvas.height * scale;
+    
+    // 1. Draw original image at high resolution
+    ctx.drawImage(myImageTool.originalImage, 0, 0, scaledWidth, scaledHeight);
+    
+    // 2. Apply effects at high resolution
+    myImageTool.effects.forEach(effect => {
+        const scaledEffect = {
+            x: effect.x * scale,
+            y: effect.y * scale,
+            radius: effect.radius * scale,
+            strength: effect.strength // Keep strength same
+        };
+        myImageTool.applyEffectToCanvas(ctx, scaledEffect, scaledWidth, scaledHeight);
+    });
+};
+```
+
+#### For Drawing/Painting Tools:
+```javascript
+window.renderHighResolution = function(targetCanvas, scale) {
+    const ctx = targetCanvas.getContext('2d');
+    
+    // Re-draw all strokes at high resolution
+    myDrawingTool.strokes.forEach(stroke => {
+        ctx.beginPath();
+        ctx.strokeStyle = stroke.color;
+        ctx.lineWidth = stroke.width * scale; // Scale line width
+        
+        stroke.points.forEach((point, index) => {
+            const scaledX = point.x * scale;
+            const scaledY = point.y * scale;
+            
+            if (index === 0) {
+                ctx.moveTo(scaledX, scaledY);
+            } else {
+                ctx.lineTo(scaledX, scaledY);
+            }
+        });
+        ctx.stroke();
+    });
+};
+```
+
+#### For Generative Art Tools:
+```javascript
+window.renderHighResolution = function(targetCanvas, scale) {
+    const ctx = targetCanvas.getContext('2d');
+    
+    // Re-run generation algorithm at high resolution
+    const scaledParams = {
+        seed: myGenerativeTool.seed, // Keep seed same
+        complexity: myGenerativeTool.complexity * scale, // Scale complexity
+        density: myGenerativeTool.density * (scale * scale), // Scale density by area
+        strokeWidth: myGenerativeTool.strokeWidth * scale
+    };
+    
+    myGenerativeTool.generateArt(ctx, scaledParams, targetCanvas.width, targetCanvas.height);
+};
+```
+
+#### For Chart/Data Visualization Tools:
+```javascript
+window.renderHighResolution = function(targetCanvas, scale) {
+    const ctx = targetCanvas.getContext('2d');
+    
+    // Re-render chart at high resolution
+    const scaledConfig = {
+        ...myChartTool.config,
+        fontSize: myChartTool.config.fontSize * scale,
+        lineWidth: myChartTool.config.lineWidth * scale,
+        pointRadius: myChartTool.config.pointRadius * scale
+    };
+    
+    myChartTool.renderChart(ctx, myChartTool.data, scaledConfig, targetCanvas.width, targetCanvas.height);
+};
+```
+
+### 🚨 Critical Implementation Rules:
+
+#### ✅ DO:
+- **Re-create content from source data** (original images, stroke data, parameters)
+- **Scale coordinates and sizes** (x, y, radius, lineWidth) by the scale factor
+- **Keep ratios and strengths unchanged** (colors, opacity, effect strength)
+- **Use the original canvas dimensions * scale** for the target canvas size
+- **Clear the target canvas** before rendering
+- **Test with 1x, 2x, and 4x scales** to ensure it works
+
+#### ❌ DON'T:
+- **Copy pixels from the existing canvas** (that's what CDN fallback does)
+- **Scale effect strengths or colors** (only scale spatial properties)
+- **Assume canvas is the same size** (use the provided targetCanvas)
+- **Forget to handle edge cases** (no data, tool not initialized)
+
+### 🔍 How CDN Calls Your Function:
+
+```javascript
+// CDN export flow when user clicks 2x export:
+if (window.renderHighResolution && typeof window.renderHighResolution === 'function') {
+    // 1. CDN creates high-res canvas
+    const scaledCanvas = document.createElement('canvas');
+    
+    // 2. CDN calls YOUR function
+    window.renderHighResolution(scaledCanvas, 2); // scale = 2
+    
+    // 3. CDN exports the result
+    dataURL = scaledCanvas.toDataURL('image/png');
+} else {
+    // Fallback: CDN upscales existing canvas (poor quality)
+    console.warn('No renderHighResolution function - using upscaling fallback');
+}
+```
+
+### 📋 Testing Your High-Res Implementation:
+
+```javascript
+// Add this debug function to test your implementation
+function testHighResExport() {
+    const testCanvas = document.createElement('canvas');
+    
+    console.log('Testing 2x export...');
+    window.renderHighResolution(testCanvas, 2);
+    console.log('2x canvas size:', testCanvas.width, 'x', testCanvas.height);
+    
+    console.log('Testing 4x export...');
+    window.renderHighResolution(testCanvas, 4);
+    console.log('4x canvas size:', testCanvas.width, 'x', testCanvas.height);
+    
+    console.log('High-res export test completed');
+}
+
+// Call this after your tool is initialized
+// testHighResExport();
+```
+
 ## ⚠️ IMPORTANT: BEFORE YOU START
 1. **READ THE .cursorrules FILE** - It contains critical rules that MUST be followed
 2. **CHECK LIVE CSS LINKS** - Before ANY styling change, check these ACTIVE links:
@@ -533,22 +707,33 @@ All inputs, buttons, and text will automatically use the dark Chatooly theme!
 3. **Implement canvas resize handling** (if using interactive canvas)
 4. **Use proper mouse coordinate mapping** (for all mouse events)
 5. Implement functionality in main.js
-6. Style with CSS as needed
-7. **Test with different aspect ratios** (HD, Square, Portrait, etc.)
-8. Test export functionality works
-9. Keep asking user for feedback and iterate
+6. **Implement `window.renderHighResolution()` function** (for quality exports)
+7. Style with CSS as needed
+8. **Test with different aspect ratios** (HD, Square, Portrait, etc.)
+9. **Test export functionality works** (1x, 2x, 4x resolutions)
+10. Keep asking user for feedback and iterate
 
 Remember: The Chatooly CDN handles all export and publishing functionality automatically. Focus on building the tool's core functionality and ensuring all visual content is properly contained within the export container.
 
 ## 🎯 FINAL CHECKLIST FOR AI AGENTS:
 Before completing any tool implementation, verify:
+
+### **🎨 Canvas Setup & Export**
 - [ ] **Canvas ID**: Use `<canvas id="chatooly-canvas">` for direct export (RECOMMENDED)
 - [ ] **Canvas Structure**: Avoid nested wrappers around canvas that affect export
+- [ ] **High-Res Function**: Implemented `window.renderHighResolution(targetCanvas, scale)` 
+- [ ] **Export Test**: Verify exported image shows canvas content, not background
+- [ ] **Quality Test**: Test 1x, 2x, 4x exports - high-res should be crisp, not pixelated
+
+### **🔄 Canvas Interactions**
 - [ ] Canvas resize event listener added
 - [ ] Mouse coordinate mapping implemented  
 - [ ] Interactive elements scale properly on resize
 - [ ] All visual content in export container
 - [ ] Export button works at all aspect ratios
+
+### **🧪 Final Validation**
 - [ ] No console errors during export
 - [ ] Tool tested with HD, Square, and Portrait modes
-- [ ] **Export Test**: Verify exported image shows canvas content, not background
+- [ ] High-res export produces sharp, detailed images
+- [ ] Tool handles edge cases (no data, initialization states)
