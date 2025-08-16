@@ -15,7 +15,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <!-- ========== EDIT THIS: Your Tool Name ========== -->
-    <title>My Design Tool - Chatooly</title>
+    <title>fisheyezzz - Chatooly</title>
     
     <!-- ========== DO NOT EDIT: Required CDN Styles ========== -->
     <link rel="stylesheet" href="https://yaelren.github.io/chatooly-cdn/css/unified.min.css">
@@ -26,28 +26,54 @@
         <div class="chatooly-controls-panel">
             <!-- ========== EDIT THIS: Your Tool Title ========== -->
             <div class="chatooly-controls-header">
-                <h1>My Design Tool</h1>
-                <p>Design something amazing</p>
+                <h1>fisheyezzz</h1>
+                <p>Create fisheye distortion effects on your images</p>
             </div>
             
             <div class="chatooly-controls-content">
                 <!-- ========== EDIT BELOW: Add Your Tool Controls Here ========== -->
-                <!-- Example controls - uncomment and modify:
+                
+                <!-- Image Upload -->
                 <div class="chatooly-control-group">
-                    <label for="color-input">Color</label>
-                    <input type="color" id="color-input" value="#3498db">
+                    <label for="image-upload">Upload Image</label>
+                    <input type="file" id="image-upload" accept="image/*">
                 </div>
                 
+                <!-- Fisheye Points List -->
                 <div class="chatooly-control-group">
-                    <label for="size-slider">Size</label>
-                    <input type="range" id="size-slider" min="10" max="100" value="50">
-                    <span class="chatooly-value-display">50</span>
+                    <h3>Fisheye Points</h3>
+                    <div id="fisheye-points-list">
+                        <p class="chatooly-text-muted">Click on the image to add fisheye points</p>
+                    </div>
                 </div>
                 
+                <!-- Global Settings -->
                 <div class="chatooly-control-group">
-                    <button id="reset-btn" class="chatooly-btn chatooly-btn-secondary">Reset</button>
+                    <h3>Settings</h3>
+                    <label for="global-strength">Global Strength</label>
+                    <input type="range" id="global-strength" min="0" max="2" step="0.1" value="1">
+                    <span class="chatooly-value-display">1.0</span>
                 </div>
-                -->
+                
+                <!-- Action Buttons -->
+                <div class="chatooly-control-group">
+                    <button id="clear-all-btn" class="chatooly-btn chatooly-btn-danger">Clear All Points</button>
+                    <button id="reset-image-btn" class="chatooly-btn chatooly-btn-secondary">Reset Image</button>
+                </div>
+                
+                <!-- Instructions -->
+                <div class="chatooly-control-group">
+                    <h3>How to Use</h3>
+                    <ul class="chatooly-text-small">
+                        <li>Upload an image</li>
+                        <li>Click anywhere to add fisheye points</li>
+                        <li>Drag points to move them</li>
+                        <li>Use sliders to adjust intensity</li>
+                        <li>Click the X or press Delete/Backspace to remove points</li>
+                        <li>Press Escape to deselect</li>
+                        <li>Hover over points for visual feedback</li>
+                    </ul>
+                </div>
                 
                 <!-- ========== END EDIT SECTION ========== -->
             </div>
@@ -59,12 +85,13 @@
             <div id="chatooly-canvas">
                 <!-- ========== EDIT BELOW: Add Your Visual Output Here ========== -->
                 <!-- This content will be exported as PNG -->
-                <!-- Your canvas or design elements go here -->
-                <!-- Examples:
-                     - <canvas id="myCanvas"></canvas> for p5.js/Three.js
-                     - <div class="design-output"></div> for DOM-based tools
-                -->
-                
+                <div id="image-container" style="position: relative; display: flex; justify-content: center; align-items: center; min-height: 600px; background: var(--chatooly-color-background);">
+                    <div id="upload-prompt" style="text-align: center; color: var(--chatooly-color-text-muted);">
+                        <h2>Upload an image to get started</h2>
+                        <p>Click the upload button on the left to begin</p>
+                    </div>
+                    <canvas id="fisheye-canvas" style="display: none; max-width: 100%; max-height: 100%;"></canvas>
+                </div>
                 <!-- ========== END EDIT SECTION ========== -->
             </div>
         </div>

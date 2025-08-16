@@ -1,5 +1,87 @@
 # Chatooly Tool Builder - AI Assistant Instructions
 
+## 🚨 CRITICAL: Canvas Resize & Mouse Coordinate Handling
+
+**MANDATORY FOR ALL CANVAS-BASED TOOLS**: When using canvas elements, you MUST handle Chatooly's resize events properly or your tool will break when users change aspect ratios.
+
+### ⚡ Quick Implementation (COPY THIS CODE):
+
+```javascript
+// 1. In constructor - track canvas dimensions
+constructor() {
+    this.previousCanvasSize = { width: 0, height: 0 };
+}
+
+// 2. In setupEventListeners() - listen for resize events
+setupEventListeners() {
+    // ... your other listeners
+    document.addEventListener('chatooly:canvas-resized', (e) => this.onCanvasResized(e));
+}
+
+// 3. Handle resize events - scale your interactive elements
+onCanvasResized(e) {
+    if (!this.hasContent) return; // Only if you have content to preserve
+    
+    const oldWidth = this.previousCanvasSize.width;
+    const oldHeight = this.previousCanvasSize.height;
+    const newWidth = e.detail.canvas.width;
+    const newHeight = e.detail.canvas.height;
+    
+    if (oldWidth === 0 || oldHeight === 0) {
+        this.previousCanvasSize = { width: newWidth, height: newHeight };
+        this.redrawContent();
+        return;
+    }
+    
+    const scaleX = newWidth / oldWidth;
+    const scaleY = newHeight / oldHeight;
+    
+    // Scale ALL interactive elements (points, shapes, etc.)
+    this.interactiveElements.forEach(element => {
+        element.x *= scaleX;
+        element.y *= scaleY;
+        if (element.radius) element.radius *= Math.min(scaleX, scaleY);
+    });
+    
+    this.previousCanvasSize = { width: newWidth, height: newHeight };
+    this.redrawContent(); // Your redraw method
+}
+
+// 4. Use proper mouse coordinate mapping
+onMouseClick(e) {
+    const coords = window.Chatooly ? 
+        window.Chatooly.utils.mapMouseToCanvas(e, this.canvas) :
+        this.fallbackMouseMapping(e);
+    
+    const x = coords.x; // These are canvas coordinates
+    const y = coords.y;
+    // Use x, y for all canvas operations
+}
+
+// 5. Fallback for coordinate mapping
+fallbackMouseMapping(e) {
+    const rect = this.canvas.getBoundingClientRect();
+    const displayX = e.clientX - rect.left;
+    const displayY = e.clientY - rect.top;
+    const scaleX = this.canvas.width / rect.width;
+    const scaleY = this.canvas.height / rect.height;
+    return { x: displayX * scaleX, y: displayY * scaleY };
+}
+```
+
+### 🔴 Why This Is Critical:
+- Users click Chatooly CDN button to change aspect ratios (HD, Square, Instagram, etc.)
+- Canvas internal resolution changes (800x600 → 1920x1080)
+- **Browser automatically clears canvas** when dimensions change
+- Mouse coordinates need mapping between display size and canvas resolution
+- Without this: content disappears, mouse clicks are misaligned
+
+### ✅ What Gets Fixed:
+- ✅ Content doesn't disappear when changing aspect ratios
+- ✅ Interactive elements stay in correct relative positions  
+- ✅ Mouse clicks map to correct canvas coordinates at all resolutions
+- ✅ Tool works seamlessly across all export sizes
+
 ## ⚠️ IMPORTANT: BEFORE YOU START
 1. **READ THE .cursorrules FILE** - It contains critical rules that MUST be followed
 2. **CHECK LIVE CSS LINKS** - Before ANY styling change, check these ACTIVE links:
@@ -14,6 +96,7 @@
    - NEVER create custom export buttons
    - USE CSS variables, not hardcoded values
    - ALWAYS test exports after changes
+   - ALWAYS implement canvas resize handling for interactive tools
 
 ## When User Wants to Build a Tool
 The user might say things like:
@@ -60,7 +143,15 @@ After config is set, ask: "Great! Now tell me what you want to create and I'll b
 
 **🔴 BEFORE WRITING ANY CODE: Re-read .cursorrules file to ensure compliance**
 
-### CRITICAL Chatooly API Requirements:
+### 🚨 CRITICAL Canvas Implementation Requirements:
+
+#### For Interactive Canvas Tools (MOST IMPORTANT):
+1. **Canvas Resize Event Handling** - COPY the code from the top of this file
+2. **Mouse Coordinate Mapping** - Use `Chatooly.utils.mapMouseToCanvas()`
+3. **Track Canvas Dimensions** - Store `previousCanvasSize` in constructor
+4. **Scale Interactive Elements** - When canvas resizes, scale all points/shapes proportionally
+
+#### Universal Chatooly API Requirements:
 - **Export Container**: ALL visual content MUST be inside `#chatooly-canvas` div
 - **Clean Export Container**: ONLY put the canvas or visual elements inside `#chatooly-canvas` - no extra divs, overlays, UI controls, or decorative elements that shouldn't appear in the final exported PNG
 - **CDN Script**: Already included via `<script src="https://yaelren.github.io/chatooly-cdn/js/core.js"></script>`
@@ -221,11 +312,14 @@ After initial build:
 
 ## 🔴 VERIFICATION AFTER EVERY CHANGE
 After ANY code modification, check:
-1. Is all visual content still inside #chatooly-canvas?
-2. Is the CDN script intact?
-3. Does the export button still work?
-4. Are there any console errors?
-5. Does the tool still export correctly?
+1. **Canvas Resize Handling**: Is the resize event listener implemented?
+2. **Mouse Coordinate Mapping**: Are you using `mapMouseToCanvas()` for mouse events?
+3. **Export Container**: Is all visual content still inside #chatooly-canvas?
+4. **CDN Script**: Is the CDN script intact?
+5. **Export Button**: Does the export button still work?
+6. **Console Errors**: Are there any console errors?
+7. **Export Quality**: Does the tool still export correctly?
+8. **Aspect Ratio Test**: Test changing aspect ratios - does content stay in place?
 
 If any check fails, immediately fix it before proceeding!
 
@@ -367,6 +461,8 @@ All inputs, buttons, and text will automatically use the dark Chatooly theme!
 
 ## What Chatooly Handles Automatically:
 - ✅ **Design System Injection** - Dark theme, fonts, colors applied automatically
+- ✅ **Canvas Resize Events** - Dispatches `chatooly:canvas-resized` with scale info
+- ✅ **Mouse Coordinate Utilities** - `Chatooly.utils.mapMouseToCanvas()` 
 - ✅ Export button creation and positioning
 - ✅ PNG export at multiple resolutions
 - ✅ File downloads
@@ -374,6 +470,9 @@ All inputs, buttons, and text will automatically use the dark Chatooly theme!
 - ✅ Staging upload (in dev mode)
 
 ## What You Must Ensure:
+- 🚨 **Canvas resize event handling** - Listen for `chatooly:canvas-resized` event
+- 🚨 **Proper mouse coordinate mapping** - Use `mapMouseToCanvas()` for all mouse events
+- 🚨 **Interactive element scaling** - Scale points/shapes when canvas resizes
 - ✅ All visual content is inside `#chatooly-canvas`
 - ✅ Only visual content (no UI controls or decorative elements) is inside `#chatooly-canvas`
 - ✅ ChatoolyConfig is properly configured
@@ -382,6 +481,9 @@ All inputs, buttons, and text will automatically use the dark Chatooly theme!
 - ✅ Export produces the expected visual output (no unwanted UI elements)
 
 ## Common Issues & Solutions:
+- **Image disappears when changing aspect ratios?** Missing canvas resize event handling - implement the code from top of this file
+- **Mouse clicks don't align with canvas?** Not using `mapMouseToCanvas()` - use proper coordinate mapping
+- **Interactive elements jump to wrong positions?** Not scaling elements on resize - implement scaling in `onCanvasResized()`
 - **No export button?** Check if CDN script loaded, verify no JS errors
 - **Export is blank?** Ensure content is inside `#chatooly-canvas`
 - **Export has unwanted UI elements?** Make sure only visual content is inside `#chatooly-canvas` - move controls outside
@@ -391,9 +493,22 @@ All inputs, buttons, and text will automatically use the dark Chatooly theme!
 ## Development Flow:
 1. Update config file first
 2. Add HTML controls based on user needs
-3. Implement functionality in main.js
-4. Style with CSS as needed
-5. Test export functionality works
-6. Keep asking user for feedback and iterate
+3. **Implement canvas resize handling** (if using interactive canvas)
+4. **Use proper mouse coordinate mapping** (for all mouse events)
+5. Implement functionality in main.js
+6. Style with CSS as needed
+7. **Test with different aspect ratios** (HD, Square, Portrait, etc.)
+8. Test export functionality works
+9. Keep asking user for feedback and iterate
 
 Remember: The Chatooly CDN handles all export and publishing functionality automatically. Focus on building the tool's core functionality and ensuring all visual content is properly contained within the export container.
+
+## 🎯 FINAL CHECKLIST FOR AI AGENTS:
+Before completing any tool implementation, verify:
+- [ ] Canvas resize event listener added
+- [ ] Mouse coordinate mapping implemented  
+- [ ] Interactive elements scale properly on resize
+- [ ] All visual content in #chatooly-canvas
+- [ ] Export button works at all aspect ratios
+- [ ] No console errors
+- [ ] Tool tested with HD, Square, and Portrait modes
