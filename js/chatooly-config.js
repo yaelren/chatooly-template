@@ -6,16 +6,16 @@
 // ========== EDIT THIS: Chatooly Configuration ==========
 window.ChatoolyConfig = {
     // REQUIRED: Your tool name
-    name: "fisheyezzz",
+    name: "",  // e.g., "my-awesome-tool"
     
     // OPTIONAL: Export settings
     resolution: 2,              // 1, 2, or 4
     buttonPosition: "bottom-right",
     
     // REQUIRED FOR PUBLISHING: Tool metadata
-    category: "art",     // Choose one: "generators", "visualizers", "editors", "utilities", "games", "art"
-    tags: ["art", "fisheye", "creative"],   // Add relevant tags
-    description: "Create stunning fisheye distortion effects on your images with multiple interactive points, adjustable radius and strength controls",
+    category: "",     // Choose one: "generators", "visualizers", "editors", "utilities", "games", "art"
+    tags: [],         // Add relevant tags e.g., ["creative", "interactive", "design"]
+    description: "",  // Brief description of what your tool does
     version: "1.0.0",
-    author: "yael"
+    author: ""        // Your name or handle
 };
