@@ -362,6 +362,207 @@ After config is set, ask: "Great! Now tell me what you want to create and I'll b
 - Core CSS layout styles
 - The `#chatooly-canvas` container ID (but you can add content inside it)
 
+## 🎯 JAVASCRIPT LIBRARY SELECTION GUIDE
+
+### **🚨 AI AGENTS: Use this guide to choose the right library for any tool request**
+
+| **User Request Type** | **Recommended Library** | **CDN Link** | **Key Benefits** |
+|---------------------|----------------------|-------------|----------------|
+| **Animations & Interactive Graphics** | **GSAP** | `https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js` | Smooth animations, timeline control, performance |
+| **Creative Coding & Generative Art** | **p5.js** | `https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js` | Easy drawing API, built-in event handling |
+| **Vector Graphics & Illustrations** | **Paper.js** | `https://cdnjs.cloudflare.com/ajax/libs/paper.js/0.12.17/paper-full.min.js` | Vector manipulation, SVG export, scalable graphics |
+| **3D Graphics & Scenes** | **Three.js** | `https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js` | WebGL 3D, lighting, complex 3D scenes |
+| **Data Visualization** | **Chart.js** | `https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js` | Charts, graphs, data presentation |
+| **Image Processing** | **HTML5 Canvas** | *Native* | Direct pixel manipulation, filters |
+
+### **📋 Quick Decision Tree for AI Agents:**
+
+```
+User says: "animated", "transitions", "smooth movement" 
+→ Use GSAP
+
+User says: "drawing", "painting", "creative", "generative", "particles"
+→ Use p5.js  
+
+User says: "vector", "logo", "illustration", "scalable", "SVG"
+→ Use Paper.js
+
+User says: "3D", "models", "lighting", "camera", "perspective", "WebGL"
+→ Use Three.js
+
+User says: "chart", "graph", "data", "statistics", "plot"
+→ Use Chart.js
+
+User says: "photo", "filter", "image editing", "pixel manipulation"
+→ Use HTML5 Canvas
+```
+
+### **🔧 Library-Specific Implementation Templates:**
+
+#### **Three.js Setup (CRITICAL: preserveDrawingBuffer)**
+```javascript
+// 🚨 CRITICAL: Must include preserveDrawingBuffer: true for exports
+const renderer = new THREE.WebGLRenderer({ 
+    canvas: document.getElementById('chatooly-canvas'),
+    antialias: true, 
+    preserveDrawingBuffer: true  // ← REQUIRED FOR EXPORTS
+});
+
+// Common Three.js export issues:
+// ❌ Missing preserveDrawingBuffer → Blank exports
+// ❌ Wrong canvas ID → Export fails  
+// ❌ Canvas not in DOM → Renderer fails
+```
+
+#### **GSAP Animation Setup**
+```javascript
+// Target elements with smooth animations
+gsap.to("#myElement", {
+    duration: 2,
+    x: 100,
+    rotation: 360,
+    ease: "power2.inOut"
+});
+
+// Timeline for complex sequences
+const tl = gsap.timeline();
+tl.to(".item1", {duration: 1, x: 100})
+  .to(".item2", {duration: 1, y: 50}, "-=0.5");
+```
+
+#### **p5.js Creative Coding Setup**
+```javascript
+function setup() {
+    let canvas = createCanvas(800, 600);
+    canvas.parent('chatooly-canvas'); // ← CRITICAL: Connect to export system
+}
+
+function draw() {
+    // Your creative code here
+}
+
+// High-res export for p5.js
+window.renderHighResolution = function(targetCanvas, scale) {
+    const ctx = targetCanvas.getContext('2d');
+    targetCanvas.width = width * scale;
+    targetCanvas.height = height * scale;
+    
+    // Re-run your drawing logic at higher resolution
+    redrawAtScale(ctx, scale);
+};
+```
+
+#### **Paper.js Vector Graphics Setup**
+```javascript
+// Setup Paper.js with canvas
+paper.setup('chatooly-canvas');
+
+// Create vector shapes
+const circle = new paper.Path.Circle({
+    center: [100, 100],
+    radius: 50,
+    fillColor: 'red'
+});
+
+// Vector graphics scale naturally for high-res exports
+```
+
+### **⚠️ CRITICAL EXPORT CONSIDERATIONS BY LIBRARY:**
+
+#### **Three.js Export Issues & Solutions:**
+```javascript
+// 🚨 PROBLEM: Blank exports
+// ✅ SOLUTION: Add preserveDrawingBuffer: true
+const renderer = new THREE.WebGLRenderer({ 
+    preserveDrawingBuffer: true  // ← This line is MANDATORY
+});
+
+// 🚨 PROBLEM: WebGL context lost during export  
+// ✅ SOLUTION: Implement proper high-res rendering
+window.renderHighResolution = function(targetCanvas, scale) {
+    // Create new renderer for high-res
+    const tempRenderer = new THREE.WebGLRenderer({ 
+        canvas: targetCanvas, 
+        preserveDrawingBuffer: true 
+    });
+    tempRenderer.setSize(width * scale, height * scale);
+    tempRenderer.render(scene, camera);
+};
+```
+
+#### **p5.js Export Optimization:**
+```javascript
+// ✅ GOOD: Re-render at high resolution
+window.renderHighResolution = function(targetCanvas, scale) {
+    const ctx = targetCanvas.getContext('2d');
+    targetCanvas.width = width * scale;
+    targetCanvas.height = height * scale;
+    
+    // Save current p5 state
+    push();
+    
+    // Scale drawing context
+    ctx.scale(scale, scale);
+    
+    // Re-run drawing logic
+    redraw();
+    
+    // Restore state
+    pop();
+};
+
+// ❌ BAD: Just copying existing canvas (pixelated)
+window.renderHighResolution = function(targetCanvas, scale) {
+    ctx.drawImage(canvas, 0, 0, width * scale, height * scale); // Don't do this
+};
+```
+
+#### **Paper.js Vector Export Benefits:**
+```javascript
+// ✅ ADVANTAGE: Vectors scale perfectly
+// Paper.js handles high-resolution automatically since it's vector-based
+window.renderHighResolution = function(targetCanvas, scale) {
+    targetCanvas.width = paper.view.size.width * scale;
+    targetCanvas.height = paper.view.size.height * scale;
+    
+    const ctx = targetCanvas.getContext('2d');
+    ctx.scale(scale, scale);
+    
+    // Re-export vector content at higher resolution
+    paper.view.draw();
+};
+```
+
+### **🛠️ Library CDN Integration Template:**
+
+```html
+<!-- Add to index.html head section -->
+<!-- GSAP for Animations -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+<!-- p5.js for Creative Coding -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+
+<!-- Paper.js for Vector Graphics -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/paper.js/0.12.17/paper-full.min.js"></script>
+
+<!-- Three.js for 3D Graphics -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+<!-- Chart.js for Data Visualization -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+```
+
+### **🎯 AI Agent Library Selection Checklist:**
+
+Before choosing a library, ask:
+- [ ] **Does the user want animations?** → GSAP or p5.js
+- [ ] **Does the user want 3D graphics?** → Three.js + `preserveDrawingBuffer: true`
+- [ ] **Does the user want vector graphics?** → Paper.js  
+- [ ] **Does the user want data charts?** → Chart.js
+- [ ] **Does the user want creative/generative art?** → p5.js
+- [ ] **Does the user want simple drawing/image editing?** → HTML5 Canvas
+
 ### Library Integration Examples:
 
 #### For p5.js tools:
