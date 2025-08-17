@@ -15,7 +15,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <!-- ========== EDIT THIS: Your Tool Name ========== -->
-    <title>fisheyezzz - Chatooly</title>
+    <title>Your Tool Name - Chatooly</title>
     
     <!-- ========== DO NOT EDIT: Required CDN Styles ========== -->
     <link rel="stylesheet" href="https://yaelren.github.io/chatooly-cdn/css/unified.min.css">
@@ -26,54 +26,20 @@
         <div class="chatooly-controls-panel">
             <!-- ========== EDIT THIS: Your Tool Title ========== -->
             <div class="chatooly-controls-header">
-                <h1>fisheyezzz</h1>
-                <p>Create fisheye distortion effects on your images</p>
+                <h1>Tool Name</h1>
+                <p>Tool description goes here</p>
             </div>
             
             <div class="chatooly-controls-content">
                 <!-- ========== EDIT BELOW: Add Your Tool Controls Here ========== -->
                 
-                <!-- Image Upload -->
+                <!-- Example control group -->
                 <div class="chatooly-control-group">
-                    <label for="image-upload">Upload Image</label>
-                    <input type="file" id="image-upload" accept="image/*">
+                    <label for="example-input">Example Control</label>
+                    <input type="text" id="example-input" placeholder="Add your controls here">
                 </div>
                 
-                <!-- Fisheye Points List -->
-                <div class="chatooly-control-group">
-                    <h3>Fisheye Points</h3>
-                    <div id="fisheye-points-list">
-                        <p class="chatooly-text-muted">Click on the image to add fisheye points</p>
-                    </div>
-                </div>
-                
-                <!-- Global Settings -->
-                <div class="chatooly-control-group">
-                    <h3>Settings</h3>
-                    <label for="global-strength">Global Strength</label>
-                    <input type="range" id="global-strength" min="0" max="2" step="0.1" value="1">
-                    <span class="chatooly-value-display">1.0</span>
-                </div>
-                
-                <!-- Action Buttons -->
-                <div class="chatooly-control-group">
-                    <button id="clear-all-btn" class="chatooly-btn chatooly-btn-danger">Clear All Points</button>
-                    <button id="reset-image-btn" class="chatooly-btn chatooly-btn-secondary">Reset Image</button>
-                </div>
-                
-                <!-- Instructions -->
-                <div class="chatooly-control-group">
-                    <h3>How to Use</h3>
-                    <ul class="chatooly-text-small">
-                        <li>Upload an image</li>
-                        <li>Click anywhere to add fisheye points</li>
-                        <li>Drag points to move them</li>
-                        <li>Use sliders to adjust intensity</li>
-                        <li>Click the X or press Delete/Backspace to remove points</li>
-                        <li>Press Escape to deselect</li>
-                        <li>Hover over points for visual feedback</li>
-                    </ul>
-                </div>
+                <!-- Add more controls as needed -->
                 
                 <!-- ========== END EDIT SECTION ========== -->
             </div>
@@ -82,16 +48,11 @@
         <!-- Right Panel: Preview/Canvas Area -->
         <div class="chatooly-preview-panel">
             <!-- ========== DO NOT EDIT: Required Export Container ========== -->
-            <div id="chatooly-canvas">
+            <div id="chatooly-container">
                 <!-- ========== EDIT BELOW: Add Your Visual Output Here ========== -->
                 <!-- This content will be exported as PNG -->
-                <div id="image-container" style="position: relative; display: flex; justify-content: center; align-items: center; min-height: 600px; background: var(--chatooly-color-background);">
-                    <div id="upload-prompt" style="text-align: center; color: var(--chatooly-color-text-muted);">
-                        <h2>Upload an image to get started</h2>
-                        <p>Click the upload button on the left to begin</p>
-                    </div>
-                    <canvas id="fisheye-canvas" style="display: none; max-width: 100%; max-height: 100%;"></canvas>
-                </div>
+                <!-- IMPORTANT: Your main canvas MUST have id="chatooly-canvas" -->
+                <canvas id="chatooly-canvas"></canvas>
                 <!-- ========== END EDIT SECTION ========== -->
             </div>
         </div>

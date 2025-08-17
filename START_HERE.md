@@ -1,5 +1,23 @@
 # Chatooly Tool Builder - AI Assistant Instructions
 
+## 🚨 CRITICAL: Required Canvas Structure
+
+**MANDATORY FOR ALL TOOLS**: Use this exact HTML structure to prevent publishing issues:
+
+```html
+<div id="chatooly-container">
+    <canvas id="chatooly-canvas"></canvas>
+</div>
+```
+
+**JavaScript MUST use:**
+```javascript
+const canvas = document.getElementById('chatooly-canvas');
+```
+
+❌ **DO NOT** use other IDs like `tool-canvas`, `main-canvas`, etc.
+❌ **DO NOT** nest containers differently - this breaks publishing
+
 ## 🚨 CRITICAL: Canvas Resize & Mouse Coordinate Handling
 
 **MANDATORY FOR ALL CANVAS-BASED TOOLS**: When using canvas elements, you MUST handle Chatooly's resize events properly or your tool will break when users change aspect ratios.
@@ -361,27 +379,24 @@ renderer.setSize(800, 600);
 document.getElementById('chatooly-canvas').appendChild(renderer.domElement);
 ```
 
-#### For regular canvas (RECOMMENDED - Direct Canvas):
+#### For regular canvas (MANDATORY STRUCTURE):
 ```html
-<!-- BEST: Direct canvas with chatooly-canvas ID -->
+<!-- REQUIRED: Use this exact structure -->
 <div id="chatooly-container">
     <canvas id="chatooly-canvas" width="800" height="600"></canvas>
 </div>
 ```
 
 ```javascript
-// JavaScript setup
+// JavaScript setup - MUST use chatooly-canvas ID
 const canvas = document.getElementById('chatooly-canvas');
 const ctx = canvas.getContext('2d');
 ```
 
-#### For complex canvas tools (Alternative):
-```html
-<!-- GOOD: Canvas inside container -->
-<div id="chatooly-canvas">
-    <canvas id="main-canvas" width="800" height="600"></canvas>
-</div>
-```
+🚨 **CRITICAL**: 
+- Container MUST be `id="chatooly-container"`
+- Canvas MUST be `id="chatooly-canvas"`
+- This structure prevents publishing issues
 
 #### For DOM-based tools:
 ```html
