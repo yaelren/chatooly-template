@@ -50,10 +50,20 @@ cd my-tool
 
 ### Step 3: Start Building with AI
 
+#### For Cursor Users:
 1. **Find the `START_HERE.md` file** in your file viewer
 2. **Drag and drop** the `START_HERE.md` file into the Cursor Chat window
 3. **Type:** "Let's start building" 
 4. **Answer the AI's questions** and watch it build your tool!
+
+#### For Claude Code Users:
+1. **Open your terminal** in the chatooly-template folder
+2. **Type to Claude Code:** "Let's start building a Chatooly tool"
+3. **Answer the questions** Claude Code asks you
+4. **Describe your tool idea** when prompted
+5. **Watch Claude Code build** your tool automatically!
+
+Claude Code will automatically read the CLAUDE.md file and follow all the proper Chatooly development rules.
 
 ## 🎨 Testing Your Tool
 
