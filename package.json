@@ -4,10 +4,7 @@
   "description": "Template for creating Chatooly design tools",
   "author": "Yael Renous - Studio Video",
   "scripts": {
-    "dev": "python3 -m http.server 8000 || python -m http.server 8000",
-    "dev:tool": "cd converted-tools && python3 -m http.server 8000 || python -m http.server 8000",
-    "convert:base44": "node scripts/convert-base44.js"
+    "dev": "node scripts/dev-server.js"
   },
-  "type": "module",
   "license": "MIT"
 }
