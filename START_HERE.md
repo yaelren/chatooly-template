@@ -274,6 +274,99 @@ function testHighResExport() {
 // testHighResExport();
 ```
 
+## 🎬 ANIMATION EXPORT SUPPORT (NEW!)
+
+**The Chatooly CDN now automatically detects and captures animations using MediaRecorder API!**
+
+### ✅ Automatically Supported Frameworks
+- **p5.js**: Detects `draw()` loop and captures each frame
+- **Three.js**: Hooks into render loop with `preserveDrawingBuffer: true`
+- **HTML5 Canvas**: Timer-based capture for custom animations
+- **DOM Animations**: GSAP, CSS animations, and transitions
+
+### 🔧 How It Works
+1. **Auto-Detection**: CDN scans your tool and detects animation type
+2. **Smart Export Menu**: Video export option appears automatically for animated tools
+3. **Native MediaRecorder**: Uses browser's MediaRecorder API for smooth video recording
+4. **Zero Setup**: No additional code required - just build your animation normally!
+
+### 🎯 Framework-Specific Tips
+
+#### For p5.js Tools:
+```javascript
+function setup() {
+    let canvas = createCanvas(800, 600);
+    canvas.parent('chatooly-canvas'); // CRITICAL: Connect to export system
+}
+
+function draw() {
+    // Your animation code here
+    // CDN automatically captures each draw() call for video recording
+}
+
+// Optional: Add time-based control for smoother recording
+window.setAnimationTime = function(time) {
+    // Update animation based on time (0 to duration)
+    // Example: angle = time * TWO_PI;
+};
+```
+
+#### For Three.js Tools:
+```javascript
+// CRITICAL: Must include preserveDrawingBuffer for exports
+const renderer = new THREE.WebGLRenderer({ 
+    canvas: document.getElementById('chatooly-canvas'),
+    antialias: true, 
+    preserveDrawingBuffer: true  // ← REQUIRED FOR ANIMATION EXPORT
+});
+
+function animate() {
+    requestAnimationFrame(animate);
+    
+    // Your animation logic
+    cube.rotation.x += 0.01;
+    
+    renderer.render(scene, camera);
+    // CDN automatically captures frames during video recording
+}
+```
+
+#### For Canvas Animations:
+```javascript
+const canvas = document.getElementById('chatooly-canvas');
+const ctx = canvas.getContext('2d');
+
+function animate() {
+    // Clear and draw
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // Your drawing code
+    
+    requestAnimationFrame(animate);
+    // CDN uses MediaRecorder for smooth video capture
+}
+```
+
+### 📝 Video Export Process
+1. **Build Your Tool**: Create animations using any supported framework
+2. **Test Locally**: Run `npm run dev` and verify animation works
+3. **Export Video**: Click export button (📥) → select "🎥 Video Export"
+4. **Configure Settings**: Choose duration (1-10 seconds), framerate (24-60 FPS), and format (MP4/WebM/MKV)
+5. **Download Video**: Get high-quality MP4/WebM/MKV video file directly
+
+### 🎨 Video Export Best Practices
+- **Keep animations short**: 3-5 seconds work best for client-side recording
+- **Optimize frame rate**: 30 FPS is sufficient for most animations
+- **Use time-based animation**: Base movement on time, not frame count
+- **Test export early**: Check video exports work during development
+- **Choose right format**: MP4 for compatibility, WebM for smaller files
+
+### 📋 Troubleshooting
+- **No video export option?** Tool may be detected as static - ensure you have active animation loops
+- **Blank video frames?** Check canvas structure and `preserveDrawingBuffer` for WebGL
+- **Performance issues?** Reduce duration or framerate for complex animations
+- **Format not supported?** Browser may not support selected codec - try auto-detect option
+- **Recording fails?** Ensure canvas has content and animation is running
+
 ## ⚠️ IMPORTANT: BEFORE YOU START
 1. **READ THE .cursorrules FILE** - It contains critical rules that MUST be followed
 2. **CHECK LIVE CSS LINKS** - Before ANY styling change, check these ACTIVE links:
@@ -876,6 +969,7 @@ All inputs, buttons, and text will automatically use the dark Chatooly theme!
   4. DOM containers as fallback
 - ✅ Export button creation and positioning
 - ✅ PNG export at multiple resolutions
+- ✅ **Video export** (MP4/WebM/MKV) using MediaRecorder API
 - ✅ File downloads
 - ✅ Publishing workflow
 - ✅ Staging upload (in dev mode)
