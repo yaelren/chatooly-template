@@ -114,8 +114,35 @@ function askUser(question) {
 }
 
 function startServer(port) {
-  log('green', `🚀 Starting Chatooly dev server on port ${port}...`);
-  log('blue', `   Open: http://localhost:${port}`);
+  console.log('');
+  console.log('='.repeat(60));
+  log('bold', '🚀 CHATOOLY DEV SERVER IS RUNNING!');
+  console.log('='.repeat(60));
+  console.log('');
+  
+  // Main URL display - very prominent
+  log('bold', '🌐 YOUR TOOL IS LIVE AT:');
+  console.log('');
+  log('green', '┌─────────────────────────────────────────────────────────┐');
+  log('green', '│                                                         │');
+  log('green', `│    🔗 http://localhost:${port}    │`);
+  log('green', '│                                                         │');
+  log('green', '└─────────────────────────────────────────────────────────┘');
+  console.log('');
+  
+  log('yellow', '📱 Quick Access:');
+  log('blue', `   • Local: http://localhost:${port}`);
+  log('blue', `   • Network: http://[your-ip]:${port}`);
+  console.log('');
+  
+  log('bold', '🎨 Ready to build your tool!');
+  log('green', '   • Open the link above in your browser');
+  log('green', '   • Refresh browser to see changes');
+  log('green', '   • Check browser console for errors'); 
+  log('green', '   • Press Ctrl+C to stop server');
+  console.log('');
+  console.log('='.repeat(60));
+  console.log('');
   
   // Try Python 3 first, then Python 2
   const pythonCommand = process.platform === 'win32' ? 'python' : 'python3';
@@ -132,7 +159,8 @@ function startServer(port) {
       
       fallbackServer.on('error', (fallbackErr) => {
         log('red', '❌ Error: Python is required to run the dev server');
-        log('yellow', 'Please install Python from https://python.org');
+        log('yellow', '💡 Please install Python from https://python.org');
+        log('yellow', '💡 Or use: npm install -g http-server && http-server');
         process.exit(1);
       });
     }
@@ -140,7 +168,10 @@ function startServer(port) {
 
   // Handle Ctrl+C gracefully
   process.on('SIGINT', () => {
-    log('yellow', '\n🛑 Shutting down dev server...');
+    console.log('');
+    log('yellow', '🛑 Shutting down dev server...');
+    log('green', '✅ Server stopped. Happy building! 🎨');
+    console.log('');
     server.kill();
     rl.close();
     process.exit(0);
@@ -150,7 +181,9 @@ function startServer(port) {
 async function main() {
   const preferredPort = 8000;
   
-  log('bold', '🛠️  Chatooly Dev Server');
+  console.log('');
+  log('bold', '🛠️  CHATOOLY DEV SERVER');
+  log('blue', '   Starting your development environment...');
   console.log('');
 
   // Check if preferred port is available
