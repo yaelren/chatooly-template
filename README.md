@@ -2,6 +2,23 @@
 
 **Build web tools with AI assistance - No coding experience needed!**
 
+## 📋 Table of Contents
+
+- [🚀 Quick Start (3 Simple Steps)](#-quick-start-3-simple-steps)
+  - [Step 1: Get the Template](#step-1-get-the-template)
+  - [Step 2: Open Your Project Files](#step-2-open-your-project-files)
+  - [Step 3: Start Building with AI](#step-3-start-building-with-ai)
+- [🎨 Testing Your Tool](#-testing-your-tool)
+- [💾 Saving Your Progress with Git](#-saving-your-progress-with-git)
+- [📤 Publishing Your Tool](#-publishing-your-tool)
+- [📚 Want to Know More?](#-want-to-know-more)
+  - [Manual Setup Options](#manual-setup-options)
+  - [Understanding the Files](#understanding-the-files)
+  - [Manual Editing (Advanced)](#manual-editing-advanced)
+  - [Troubleshooting](#troubleshooting)
+
+---
+
 ## 🚀 Quick Start (3 Simple Steps)
 
 ### Step 1: Get the Template
