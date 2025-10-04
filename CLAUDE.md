@@ -24,10 +24,21 @@ This CLAUDE.md file references focused rule modules to optimize token usage and 
 
 When a designer says **"Let's build a tool"** or **"I want to create..."**:
 
-1. **Read Core Rules**: Start with `claude-rules/01-core-rules.md`
+1. **Read ALL Claude Rules FIRST**: You MUST read all files in `claude-rules/` directory before starting:
+   - `01-core-rules.md` - MANDATORY canvas structure, CDN setup
+   - `02-workflow-setup.md` - Step-by-step build process
+   - `03-canvas-resize.md` - Canvas resize handling (for interactive tools)
+   - `04-high-res-export.md` - Export implementation (MANDATORY)
+   - `05-library-selection.md` - Choose the right framework
+   - `06-design-system.md` - CSS variables and styling
+   - `07-publishing-troubleshooting.md` - Publishing workflow
+   - `08-background-system.md` - Background controls wiring (MANDATORY)
+
 2. **Follow Workflow**: Use `claude-rules/02-workflow-setup.md` step-by-step
-3. **Reference Technical Files**: Load specific implementation files as needed
+3. **Reference Technical Files**: Re-read specific files during implementation
 4. **Use TodoWrite**: Track all tasks systematically
+
+**⚠️ CRITICAL**: Reading all claude-rules files ensures you implement ALL required features (canvas resize, background controls, high-res export, etc.)
 
 ## 💡 Key Benefits of This System
 
@@ -46,12 +57,16 @@ When a designer says **"Let's build a tool"** or **"I want to create..."**:
 
 ```
 User: "Build a gradient generator"
-→ Claude reads: 01-core-rules.md + 02-workflow-setup.md
+→ Claude reads ALL claude-rules files (01-08) FIRST
 → Creates TodoWrite task list
-→ Loads: 05-library-selection.md (for Canvas API)
-→ Implements tool following core rules
-→ References: 04-high-res-export.md for export function
-→ Uses: 06-design-system.md for UI styling
+→ Implements tool following all rules:
+  • Canvas structure (01-core-rules.md)
+  • Background controls wiring (08-background-system.md)
+  • High-res export (04-high-res-export.md)
+  • Canvas resize handling (03-canvas-resize.md)
+  • CSS styling (06-design-system.md)
+→ Re-references specific files during implementation
+→ Tests all features work correctly
 ```
 
 ## 📚 Additional Resources
