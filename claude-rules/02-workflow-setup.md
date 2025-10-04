@@ -1,5 +1,29 @@
 # Chatooly Workflow & Setup
 
+## 📁 PROJECT FILE STRUCTURE
+
+**AI Agents: Follow this file organization strictly:**
+
+```
+chatooly-template/
+├── index.html              # Main HTML structure
+├── js/
+│   ├── main.js            # Canvas/tool logic and rendering
+│   ├── ui.js              # UI controls, collapsible sections, form interactions
+│   └── chatooly-config.js # Tool configuration and metadata
+```
+
+### File Responsibilities:
+- **`js/main.js`**: Canvas rendering, tool logic, game loops, animations, data processing, export functions
+- **`js/ui.js`**: Collapsible sections, show/hide controls, form validation, UI state management, DOM interactions
+- **`js/chatooly-config.js`**: Tool metadata only (name, category, tags, export settings)
+
+### When to Use Which File:
+- Adding canvas click handlers? → `js/main.js`
+- Adding collapsible menu? → `js/ui.js`
+- Adding slider that affects rendering? → Event listener in `js/ui.js`, render logic in `js/main.js`
+- Changing tool name/category? → `js/chatooly-config.js`
+
 ## 🎯 When User Says "Let's Start" or "Build a Tool"
 
 ### Step 0: Verify Project Location

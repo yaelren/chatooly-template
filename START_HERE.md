@@ -367,11 +367,29 @@ function animate() {
 - **Format not supported?** Browser may not support selected codec - try auto-detect option
 - **Recording fails?** Ensure canvas has content and animation is running
 
+## 📁 PROJECT FILE STRUCTURE
+
+This template uses a clear separation of concerns for AI agents and developers:
+
+```
+chatooly-template/
+├── index.html              # Main HTML structure
+├── js/
+│   ├── main.js            # Canvas/tool logic and rendering
+│   ├── ui.js              # UI controls, collapsible sections, form interactions
+│   └── chatooly-config.js # Tool configuration and metadata
+```
+
+**AI Agents: Follow this file organization:**
+- **`js/main.js`**: Canvas rendering, tool logic, game loops, animations, data processing
+- **`js/ui.js`**: Collapsible sections, show/hide controls, form validation, UI state
+- **`js/chatooly-config.js`**: Tool name, category, tags, export settings only
+
 ## ⚠️ IMPORTANT: BEFORE YOU START
 1. **READ THE .cursorrules FILE** - It contains critical rules that MUST be followed
 2. **CHECK LIVE CSS LINKS** - Before ANY styling change, check these ACTIVE links:
    - 🔗 [CSS Variables](https://raw.githubusercontent.com/yaelren/chatooly-cdn/main/css/variables.css)
-   - 🔗 [Components](https://raw.githubusercontent.com/yaelren/chatooly-cdn/main/css/components.css) 
+   - 🔗 [Components](https://raw.githubusercontent.com/yaelren/chatooly-cdn/main/css/components.css)
    - 🔗 [Base Styles](https://raw.githubusercontent.com/yaelren/chatooly-cdn/main/css/base.css)
 3. **VERIFY AFTER EVERY CHANGE** - Check that all Chatooly rules are still being followed
 4. **REMIND USER AFTER CHANGES** - Always say: "✅ This follows Chatooly design system - your tool gets automatic CDN updates"
@@ -382,6 +400,7 @@ function animate() {
    - USE CSS variables, not hardcoded values
    - ALWAYS test exports after changes
    - ALWAYS implement canvas resize handling for interactive tools
+   - UI logic goes in `js/ui.js`, canvas logic goes in `js/main.js`
 
 ## When User Wants to Build a Tool
 The user might say things like:
