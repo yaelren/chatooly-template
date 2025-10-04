@@ -47,9 +47,44 @@
 
                 <!-- Add more controls as needed -->
 
-                <!-- ========== BACKGROUND CONTROLS AUTO-INJECTED BY CDN ========== -->
-                <!-- The CDN automatically injects background controls (color, transparency, images) -->
-                <!-- You only need to connect event listeners - see claude-rules/08-background-system.md -->
+                <!-- ========== BACKGROUND CONTROLS ========== -->
+                <h3 class="section-header" id="background-header">
+                    ◼ Background <span class="section-toggle">▼</span>
+                </h3>
+                <div id="background-section" class="section-content">
+                    <!-- Transparent Background Checkbox -->
+                    <div class="chatooly-control-group">
+                        <label>
+                            <input type="checkbox" id="transparent-bg"> Transparent Background
+                        </label>
+                    </div>
+
+                    <!-- Background Color Picker -->
+                    <div class="chatooly-control-group" id="bg-color-group">
+                        <label for="bg-color">Background Color</label>
+                        <input type="color" id="bg-color" value="#CCFD50">
+                    </div>
+
+                    <!-- Background Image Upload with Remove Button (X) -->
+                    <div class="chatooly-control-group">
+                        <label for="bg-image">Background Image</label>
+                        <div class="chatooly-bg-image-wrapper">
+                            <input type="file" id="bg-image" accept="image/*">
+                            <button id="clear-bg-image" type="button" class="chatooly-bg-image-remove" style="display: none;" title="Remove image">×</button>
+                        </div>
+                    </div>
+
+                    <!-- Image Fit Dropdown (hidden until image uploaded) -->
+                    <div class="chatooly-control-group" id="bg-fit-group" style="display: none;">
+                        <label for="bg-fit">Image Fit</label>
+                        <select id="bg-fit">
+                            <option value="cover">Fill Frame</option>
+                            <option value="contain">Fit in Frame</option>
+                            <option value="fill">Stretch to Fill</option>
+                        </select>
+                    </div>
+                </div>
+                <!-- ========== END BACKGROUND CONTROLS ========== -->
 
                 <!-- ========== END EDIT SECTION ========== -->
             </div>

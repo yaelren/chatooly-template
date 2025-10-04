@@ -1,120 +1,112 @@
 # Background System Implementation
 
 ## Overview
-The Chatooly CDN provides a **fully automatic** background management system. Background controls are **auto-injected** into every Chatooly tool - no HTML setup required!
+The Chatooly template provides background control HTML by default. Your job is to connect these controls to the `Chatooly.backgroundManager` API.
 
-## What the CDN Provides Automatically
+## 🤖 For AI Agents: What You Need to Do
 
-### 1. Background Controls (Auto-Injected)
-The CDN automatically injects these controls into `.chatooly-controls-content`:
-- ✅ Transparent background checkbox
-- ✅ Background color picker
-- ✅ Background image upload with remove button (X)
-- ✅ Background fit dropdown (Fill/Fit/Stretch)
+### What's Already Provided
 
-**You don't add any HTML** - it's already there when the page loads!
+#### 1. Background Controls HTML (in index.html)
+These controls are already in the template:
+- ✅ Transparent checkbox (`#transparent-bg`)
+- ✅ Color picker (`#bg-color`)
+- ✅ Image upload (`#bg-image`)
+- ✅ Remove button (`#clear-bg-image`) - X button, hidden by default
+- ✅ Fit dropdown (`#bg-fit`) - hidden until image uploaded
 
-### 2. Background Manager Module
-The `Chatooly.backgroundManager` API provides:
-- State management for all background settings
-- Image loading and dimension calculations
-- Transparent background with automatic checkered pattern
-- Canvas drawing helpers
+**Don't create these - they're already there!**
 
-## Quick Start (3 Steps)
+#### 2. Background Manager API (CDN)
+`Chatooly.backgroundManager` provides all background logic:
+- Color and transparency management
+- Image loading and fit calculations
+- Canvas rendering helpers
+- CSS generation for DOM tools
 
-### Step 1: Initialize in your `main.js`
+#### 3. Background CSS (CDN)
+Automatic styling for:
+- Checkered transparency pattern
+- Red X button with hover effects
+- Image wrapper layout
+
+### Implementation Steps
+
+#### Step 1: Initialize Background Manager
 
 ```javascript
-// Initialize background manager with your canvas
+// In your initialization code
+const canvas = document.getElementById('chatooly-canvas');
 Chatooly.backgroundManager.init(canvas);
 ```
 
-### Step 2: Connect Event Listeners
+#### Step 2: Connect Event Listeners
 
-Add these event listeners after DOM is ready:
+Wire up the HTML controls:
 
 ```javascript
-// Transparent background checkbox
+// Transparent Background
 document.getElementById('transparent-bg').addEventListener('change', (e) => {
     Chatooly.backgroundManager.setTransparent(e.target.checked);
-    document.getElementById('bg-color-group').style.display = e.target.checked ? 'none' : 'block';
+    // Hide color picker when transparent
+    document.getElementById('bg-color-group').style.display =
+        e.target.checked ? 'none' : 'block';
     render();
 });
 
-// Background color picker
+// Background Color
 document.getElementById('bg-color').addEventListener('input', (e) => {
     Chatooly.backgroundManager.setBackgroundColor(e.target.value);
     render();
 });
 
-// Background image upload
+// Background Image Upload
 document.getElementById('bg-image').addEventListener('change', async (e) => {
     const file = e.target.files[0];
-    if (file) {
-        try {
-            await Chatooly.backgroundManager.setBackgroundImage(file);
-            document.getElementById('clear-bg-image').style.display = 'block';
-            document.getElementById('bg-fit-group').style.display = 'block';
-            render();
-        } catch (error) {
-            alert('Failed to load image: ' + error.message);
-        }
+    if (!file) return;
+
+    try {
+        await Chatooly.backgroundManager.setBackgroundImage(file);
+        // Show X button and fit dropdown
+        document.getElementById('clear-bg-image').style.display = 'block';
+        document.getElementById('bg-fit-group').style.display = 'block';
+        render();
+    } catch (error) {
+        alert('Failed to load image: ' + error.message);
     }
 });
 
-// Clear background image
+// Clear Image (X Button)
 document.getElementById('clear-bg-image').addEventListener('click', () => {
     Chatooly.backgroundManager.clearBackgroundImage();
+    // Hide X button and fit dropdown
     document.getElementById('clear-bg-image').style.display = 'none';
     document.getElementById('bg-fit-group').style.display = 'none';
     document.getElementById('bg-image').value = '';
     render();
 });
 
-// Background fit mode
+// Image Fit Mode
 document.getElementById('bg-fit').addEventListener('change', (e) => {
     Chatooly.backgroundManager.setFit(e.target.value);
     render();
 });
 ```
 
-### Step 3: Draw Background in Render Loop
+#### Step 3: Render Background
 
+Choose based on your framework:
+
+##### Canvas API:
 ```javascript
 function render() {
-    // ALWAYS draw background FIRST
+    // Draw background FIRST
     Chatooly.backgroundManager.drawToCanvas(ctx, canvas.width, canvas.height);
-
-    // Then draw your content on top
-    // ... your drawing code ...
+    // Your content on top...
 }
 ```
 
-## Export Support (Mandatory)
-
-Add background to your `renderHighResolution()` function:
-
-```javascript
-window.renderHighResolution = function(targetCanvas, scale) {
-    const exportCtx = targetCanvas.getContext('2d');
-    targetCanvas.width = canvas.width * scale;
-    targetCanvas.height = canvas.height * scale;
-    exportCtx.scale(scale, scale);
-
-    // Draw background at export resolution
-    Chatooly.backgroundManager.drawToCanvas(exportCtx, canvas.width, canvas.height);
-
-    // Your content drawing...
-};
-```
-
-## Framework-Specific Rendering
-
-### Canvas API / HTML5 Canvas
-Use `drawToCanvas()` as shown above.
-
-### p5.js
+##### p5.js:
 ```javascript
 function draw() {
     const bg = Chatooly.backgroundManager.getBackgroundState();
@@ -127,15 +119,13 @@ function draw() {
     } else {
         background(bg.bgColor);
     }
-
-    // Your p5.js code...
+    // Your drawing...
 }
 ```
 
-### Three.js
+##### Three.js:
 ```javascript
 const bg = Chatooly.backgroundManager.getBackgroundState();
-
 if (bg.bgTransparent) {
     renderer.setClearAlpha(0);
 } else {
@@ -143,83 +133,107 @@ if (bg.bgTransparent) {
 }
 ```
 
-### DOM-based Tools
+##### DOM-based:
 ```javascript
 const bgCSS = Chatooly.backgroundManager.getBackgroundCSS();
 document.getElementById('chatooly-canvas').style.background = bgCSS;
 ```
 
-## Complete Implementation Example
+#### Step 4: Export Support (MANDATORY)
+
+Include background in high-res export:
 
 ```javascript
-// main.js
-
-const canvas = document.getElementById('chatooly-canvas');
-const ctx = canvas.getContext('2d');
-
-// Initialize background manager
-Chatooly.backgroundManager.init(canvas);
-
-// Connect event listeners (after DOM ready)
-document.getElementById('transparent-bg').addEventListener('change', (e) => {
-    Chatooly.backgroundManager.setTransparent(e.target.checked);
-    document.getElementById('bg-color-group').style.display = e.target.checked ? 'none' : 'block';
-    render();
-});
-
-document.getElementById('bg-color').addEventListener('input', (e) => {
-    Chatooly.backgroundManager.setBackgroundColor(e.target.value);
-    render();
-});
-
-document.getElementById('bg-image').addEventListener('change', async (e) => {
-    if (e.target.files[0]) {
-        await Chatooly.backgroundManager.setBackgroundImage(e.target.files[0]);
-        document.getElementById('clear-bg-image').style.display = 'block';
-        document.getElementById('bg-fit-group').style.display = 'block';
-        render();
-    }
-});
-
-document.getElementById('clear-bg-image').addEventListener('click', () => {
-    Chatooly.backgroundManager.clearBackgroundImage();
-    document.getElementById('clear-bg-image').style.display = 'none';
-    document.getElementById('bg-fit-group').style.display = 'none';
-    document.getElementById('bg-image').value = '';
-    render();
-});
-
-document.getElementById('bg-fit').addEventListener('change', (e) => {
-    Chatooly.backgroundManager.setFit(e.target.value);
-    render();
-});
-
-// Render function
-function render() {
-    // Draw background first
-    Chatooly.backgroundManager.drawToCanvas(ctx, canvas.width, canvas.height);
-
-    // Your content drawing...
-}
-
-// High-res export
 window.renderHighResolution = function(targetCanvas, scale) {
     const exportCtx = targetCanvas.getContext('2d');
     targetCanvas.width = canvas.width * scale;
     targetCanvas.height = canvas.height * scale;
     exportCtx.scale(scale, scale);
 
+    // Draw background at export resolution
     Chatooly.backgroundManager.drawToCanvas(exportCtx, canvas.width, canvas.height);
+
     // Your content...
 };
 ```
 
+## Background Manager API Reference
+
+### Methods
+
+**`init(canvasElement)`**
+Initialize with your canvas element.
+
+**`setBackgroundColor(color)`**
+Set color (hex string like "#CCFD50").
+
+**`setTransparent(transparent)`**
+Enable/disable transparency (boolean).
+
+**`setBackgroundImage(file)`**
+Load image from File object. Returns Promise.
+
+**`clearBackgroundImage()`**
+Remove background image.
+
+**`setFit(mode)`**
+Set fit mode: `'cover'`, `'contain'`, or `'fill'`.
+
+**`getBackgroundState()`**
+Returns:
+```javascript
+{
+    bgColor: string,
+    bgTransparent: boolean,
+    bgImage: Image | null,
+    bgImageURL: string | null,
+    bgFit: 'cover' | 'contain' | 'fill'
+}
+```
+
+**`calculateImageDimensions(canvasWidth, canvasHeight)`**
+Returns:
+```javascript
+{
+    drawWidth: number,
+    drawHeight: number,
+    offsetX: number,
+    offsetY: number
+}
+```
+
+**`drawToCanvas(ctx, canvasWidth, canvasHeight)`**
+Draw background to 2D context.
+
+**`getBackgroundCSS()`**
+Generate CSS background string.
+
+**`reset()`**
+Reset to defaults.
+
 ## Testing Checklist
 
-✅ Background controls appear automatically (no HTML needed)
-✅ Transparent checkbox shows checkered pattern
-✅ Color picker updates background
-✅ Image upload shows remove button (X)
-✅ Fit modes work correctly
-✅ Background appears in PNG/video exports
-✅ Color picker hidden when transparent is checked
+- [ ] Transparent checkbox shows checkered pattern
+- [ ] Color picker changes background
+- [ ] Image upload works
+- [ ] X button appears when image uploaded
+- [ ] X button clears image and hides dropdown
+- [ ] Fit dropdown appears with image
+- [ ] Fill/Fit/Stretch modes all work
+- [ ] Color picker hides when transparent
+- [ ] Background in PNG exports
+
+## Troubleshooting
+
+**Background not visible?**
+- Call `drawToCanvas()` or apply CSS
+- Draw background BEFORE your content
+
+**Image not showing?**
+- Check fit mode setting
+- Check console for errors
+- Verify image format
+
+**Export missing background?**
+- Include background in `renderHighResolution()`
+- Draw background FIRST in export

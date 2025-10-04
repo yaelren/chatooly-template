@@ -14,7 +14,7 @@ This CLAUDE.md file references focused rule modules to optimize token usage and 
 - **[03-canvas-resize.md](claude-rules/03-canvas-resize.md)** - Canvas resize handling and mouse coordinate mapping
 - **[04-high-res-export.md](claude-rules/04-high-res-export.md)** - High-resolution export implementation (mandatory)
 - **[05-library-selection.md](claude-rules/05-library-selection.md)** - Library selection guide and setup code
-- **[08-background-system.md](claude-rules/08-background-system.md)** - Background management (color, transparency, images) - DEFAULT for all tools
+- **[08-background-system.md](claude-rules/08-background-system.md)** - Background controls (wire up HTML to backgroundManager API)
 
 ### Design & Publishing
 - **[06-design-system.md](claude-rules/06-design-system.md)** - Chatooly CSS variables and styling system
