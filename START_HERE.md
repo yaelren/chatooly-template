@@ -442,6 +442,7 @@ After config is set, ask: "Great! Now tell me what you want to create and I'll b
 - **CDN Script**: Already included via `<script src="https://yaelren.github.io/chatooly-cdn/js/core.js"></script>`
 - **Export Button**: Automatically appears in bottom-right corner (don't create your own)
 - **Canvas Size**: Minimum 800x600px for visual area
+- **Background Controls**: Wire up the existing background controls in HTML to `Chatooly.backgroundManager` API (see Step 4.5 below)
 
 ### Files You Can Edit:
 - `index.html` - Add controls in the controls section, add visual elements inside `#chatooly-canvas`
@@ -687,10 +688,76 @@ const canvas = document.getElementById('chatooly-canvas');
 const ctx = canvas.getContext('2d');
 ```
 
-🚨 **CRITICAL**: 
+🚨 **CRITICAL**:
 - Container MUST be `id="chatooly-container"`
 - Canvas MUST be `id="chatooly-canvas"`
 - This structure prevents publishing issues
+
+### Step 4.5: Wire Up Background Controls (MANDATORY)
+
+**🎨 Background controls are already in the HTML** - You must connect them to the Background Manager API:
+
+```javascript
+// 1. Initialize Background Manager
+const canvas = document.getElementById('chatooly-canvas');
+Chatooly.backgroundManager.init(canvas);
+
+// 2. Connect Event Listeners (add these to your initialization)
+document.getElementById('transparent-bg').addEventListener('change', (e) => {
+    Chatooly.backgroundManager.setTransparent(e.target.checked);
+    document.getElementById('bg-color-group').style.display = e.target.checked ? 'none' : 'block';
+    render(); // Call your render function
+});
+
+document.getElementById('bg-color').addEventListener('input', (e) => {
+    Chatooly.backgroundManager.setBackgroundColor(e.target.value);
+    render();
+});
+
+document.getElementById('bg-image').addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (file) {
+        await Chatooly.backgroundManager.setBackgroundImage(file);
+        document.getElementById('clear-bg-image').style.display = 'block';
+        document.getElementById('bg-fit-group').style.display = 'block';
+        render();
+    }
+});
+
+document.getElementById('clear-bg-image').addEventListener('click', () => {
+    Chatooly.backgroundManager.clearBackgroundImage();
+    document.getElementById('clear-bg-image').style.display = 'none';
+    document.getElementById('bg-fit-group').style.display = 'none';
+    document.getElementById('bg-image').value = '';
+    render();
+});
+
+document.getElementById('bg-fit').addEventListener('change', (e) => {
+    Chatooly.backgroundManager.setFit(e.target.value);
+    render();
+});
+
+// 3. Draw Background in Your Render Loop (FIRST before your content)
+function render() {
+    // For Canvas API:
+    Chatooly.backgroundManager.drawToCanvas(ctx, canvas.width, canvas.height);
+    // Then draw your content...
+}
+
+// 4. Include Background in Export (MANDATORY)
+window.renderHighResolution = function(targetCanvas, scale) {
+    const exportCtx = targetCanvas.getContext('2d');
+    targetCanvas.width = canvas.width * scale;
+    targetCanvas.height = canvas.height * scale;
+    exportCtx.scale(scale, scale);
+
+    // Draw background FIRST
+    Chatooly.backgroundManager.drawToCanvas(exportCtx, canvas.width, canvas.height);
+    // Your content...
+};
+```
+
+**For other frameworks**, see [claude-rules/08-background-system.md](claude-rules/08-background-system.md) for p5.js, Three.js, and DOM examples.
 
 #### For DOM-based tools:
 ```html
