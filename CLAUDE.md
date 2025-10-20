@@ -24,7 +24,19 @@ This CLAUDE.md file references focused rule modules to optimize token usage and 
 
 When a designer says **"Let's build a tool"** or **"I want to create..."**:
 
-1. **Read ALL Claude Rules FIRST**: You MUST read all files in `claude-rules/` directory before starting:
+### 🎨 STEP 0: Design Discovery & References (DO THIS FIRST!)
+
+**Before reading technical rules**, ask the designer:
+- "Do you have any reference images, design documents, or links to share?"
+- "Would you like to create a comprehensive design document first?"
+
+📋 **See [02-workflow-setup.md](claude-rules/02-workflow-setup.md) Step 0.5** for complete design discovery process.
+
+⚠️ **CRITICAL**: Any design decisions MUST be validated against Chatooly rules. After gathering references, always verify they align with mandatory requirements (canvas structure, export containers, CDN usage, etc.).
+
+### 📖 STEP 1: Read ALL Claude Rules
+
+You MUST read all files in `claude-rules/` directory before starting:
    - `01-core-rules.md` - MANDATORY canvas structure, CDN setup
    - `02-workflow-setup.md` - Step-by-step build process
    - `03-canvas-resize.md` - Canvas resize handling (for interactive tools)
@@ -34,11 +46,19 @@ When a designer says **"Let's build a tool"** or **"I want to create..."**:
    - `07-publishing-troubleshooting.md` - Publishing workflow
    - `08-background-system.md` - Background controls wiring (MANDATORY)
 
-2. **Follow Workflow**: Use `claude-rules/02-workflow-setup.md` step-by-step
-3. **Reference Technical Files**: Re-read specific files during implementation
-4. **Use TodoWrite**: Track all tasks systematically
+### 📋 STEP 2: Follow Structured Workflow
 
-**⚠️ CRITICAL**: Reading all claude-rules files ensures you implement ALL required features (canvas resize, background controls, high-res export, etc.)
+1. **Follow Workflow**: Use `claude-rules/02-workflow-setup.md` step-by-step
+2. **Validate Design Against Rules**: Cross-check references with Chatooly requirements
+3. **Create Comprehensive TodoWrite**: Include design validation tasks
+4. **Reference Technical Files**: Re-read specific files during implementation
+5. **Continuous Validation**: After EVERY change, verify Chatooly rules compliance
+
+**⚠️ CRITICAL VALIDATION POINTS**:
+- After gathering design references → Validate against Chatooly rules
+- After creating comprehensive todo list → Ensure all MANDATORY features included
+- During implementation → Re-validate design decisions align with rules
+- After each code change → Verify canvas structure, export containers, CDN intact
 
 ## 💡 Key Benefits of This System
 

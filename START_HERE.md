@@ -417,6 +417,93 @@ First, check if we're in the correct project folder:
 - Ask the user to navigate to their project folder or open it in the IDE
 - The correct folder should contain the chatooly-template files
 
+## Step 0.5: Design Discovery & Reference Gathering (CRITICAL!)
+
+**🎨 BEFORE creating any code**, gather design context:
+
+### Ask for References First
+
+Ask the designer:
+
+1. **"Do you have any reference materials to share?"**
+   - Screenshots or images of desired look/feel
+   - Links to similar tools or inspirations
+   - Design mockups, wireframes, or Figma files
+   - Color palettes or style references
+   - Example interactions or animations
+
+2. **"Would you like to create a comprehensive design document first?"**
+   - **If YES**: Create structured `design-spec.md` with:
+     - Tool concept & goals
+     - Visual design (colors, layout, style)
+     - Interaction patterns
+     - Feature requirements
+     - Technical considerations
+     - Reference materials
+   - **If NO**: Proceed conversationally, but document key points
+
+### Process Reference Materials
+
+For each reference:
+- **Images**: Analyze layout, extract colors, note UI patterns
+- **Links**: Test referenced tools, document key features
+- **Design Docs**: Read thoroughly, flag ambiguities
+
+### **CRITICAL VALIDATION** - Align Design with Chatooly Rules
+
+**⚠️ THIS IS THE MOST IMPORTANT STEP!**
+
+Before coding, validate EVERY design decision against ALL Chatooly rules:
+
+**Validation Checklist:**
+
+✅ **Export Container** - All visual content fits inside `#chatooly-canvas`?
+✅ **CDN Script** - Design doesn't require modifying CDN?
+✅ **Export Button** - No custom export buttons needed?
+✅ **Canvas Size** - Visual area minimum 800x600px?
+✅ **CSS Variables** - Design uses Chatooly CSS variables?
+✅ **File Structure** - Follows `main.js` (logic) + `ui.js` (controls) + `chatooly-config.js` (metadata)?
+✅ **Canvas Resize** - If interactive, elements can scale on resize?
+✅ **High-Res Export** - Tool can re-render at 2x, 4x resolution?
+✅ **Library Integration** - Selected library works with `#chatooly-canvas`?
+✅ **Design System** - Controls use Chatooly CSS variables and dark theme?
+✅ **Background System** - Background controls will wire to `Chatooly.backgroundManager`?
+
+### Document Design Validation
+
+Create a Design Validation Summary:
+
+```markdown
+## Design Validation Summary
+
+### ✅ Chatooly-Compliant Decisions
+- [List design aspects that align with rules]
+
+### ⚠️ Design Adjustments Needed
+- [List modifications needed to comply with rules]
+
+### ❓ Clarifications Needed
+- [List any conflicts with Chatooly rules]
+- [Ask user how to resolve]
+```
+
+**If conflicts found**, discuss with user BEFORE Step 1:
+- Explain conflicts with Chatooly rules
+- Propose alternative approaches
+- Get user approval
+
+### Ready to Proceed?
+
+Only move to Step 1 when ALL are true:
+- [ ] All reference materials gathered and analyzed
+- [ ] Design document created (if requested)
+- [ ] Design validated against Chatooly rules
+- [ ] Design validation summary created
+- [ ] Any conflicts resolved with user
+- [ ] Clear technical approach identified
+
+**🚨 DO NOT SKIP! Validating design against Chatooly rules BEFORE coding saves massive rework!**
+
 ## Step 1: Gather Basic Information
 Ask the user these questions to fill out the config:
 1. What should your tool be called?
