@@ -18,6 +18,63 @@ const canvas = document.getElementById('chatooly-canvas');
 ❌ **DO NOT** use other IDs like `tool-canvas`, `main-canvas`, etc.
 ❌ **DO NOT** nest containers differently - this breaks publishing
 
+## 🚨 CRITICAL: Background System Connection (MANDATORY)
+
+**ALL TOOLS MUST connect background controls to the canvas background system:**
+
+The template provides background control HTML (transparent checkbox, color picker, image upload). **You MUST wire these to the `Chatooly.backgroundManager` API:**
+
+```javascript
+// 1. Initialize background manager
+Chatooly.backgroundManager.init(canvas);
+
+// 2. Connect transparent background
+document.getElementById('transparent-bg').addEventListener('change', (e) => {
+    Chatooly.backgroundManager.setTransparent(e.target.checked);
+    document.getElementById('bg-color-group').style.display = e.target.checked ? 'none' : 'block';
+    render();
+});
+
+// 3. Connect background color
+document.getElementById('bg-color').addEventListener('input', (e) => {
+    Chatooly.backgroundManager.setBackgroundColor(e.target.value);
+    render();
+});
+
+// 4. Connect image upload
+document.getElementById('bg-image').addEventListener('change', async (e) => {
+    if (e.target.files[0]) {
+        await Chatooly.backgroundManager.setBackgroundImage(e.target.files[0]);
+        document.getElementById('clear-bg-image').style.display = 'block';
+        document.getElementById('bg-fit-group').style.display = 'block';
+        render();
+    }
+});
+
+// 5. Connect clear button
+document.getElementById('clear-bg-image').addEventListener('click', () => {
+    Chatooly.backgroundManager.clearBackgroundImage();
+    document.getElementById('clear-bg-image').style.display = 'none';
+    document.getElementById('bg-fit-group').style.display = 'none';
+    document.getElementById('bg-image').value = '';
+    render();
+});
+
+// 6. Connect fit mode
+document.getElementById('bg-fit').addEventListener('change', (e) => {
+    Chatooly.backgroundManager.setFit(e.target.value);
+    render();
+});
+
+// 7. Render background FIRST in your render function
+function render() {
+    Chatooly.backgroundManager.drawToCanvas(ctx, canvas.width, canvas.height);
+    // Your content here...
+}
+```
+
+**📋 See [claude-rules/08-background-system.md](claude-rules/08-background-system.md) for framework-specific implementations (p5.js, Three.js, DOM)**
+
 ## 🚨 CRITICAL: Canvas Resize & Mouse Coordinate Handling
 
 **MANDATORY FOR ALL CANVAS-BASED TOOLS**: When using canvas elements, you MUST handle Chatooly's resize events properly or your tool will break when users change aspect ratios.
@@ -799,9 +856,11 @@ const ctx = canvas.getContext('2d');
 - Canvas MUST be `id="chatooly-canvas"`
 - This structure prevents publishing issues
 
-### Step 4.5: Wire Up Background Controls (MANDATORY)
+### Step 4.5: Wire Up Background Controls (MANDATORY - DO NOT SKIP!)
 
-**🎨 Background controls are already in the HTML** - You must connect them to the Background Manager API:
+**🎨 Background controls are already in the HTML** - You MUST connect them to the Background Manager API.
+
+**⚠️ THIS IS A REQUIRED STEP FOR ALL TOOLS - See example at top of this file or [claude-rules/08-background-system.md](claude-rules/08-background-system.md)**
 
 ```javascript
 // 1. Initialize Background Manager

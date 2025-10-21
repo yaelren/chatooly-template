@@ -158,10 +158,13 @@ Before proceeding, validate EVERY design decision against Chatooly rules by read
 - [ ] Design is simple enough to implement in template structure?
 - [ ] No complex dependencies that break publishing?
 
-**08-background-system.md:**
-- [ ] Background controls will be wired to `Chatooly.backgroundManager`?
+**08-background-system.md (CRITICAL - ALWAYS REQUIRED):**
+- [ ] Background controls WILL be wired to `Chatooly.backgroundManager` API?
+- [ ] All 6 event listeners will be connected (transparent, color, image, clear, fit)?
+- [ ] Background will render FIRST in render loop (before tool content)?
 - [ ] Transparent backgrounds supported in design?
-- [ ] Background renders in exports?
+- [ ] Background will be included in high-res export function?
+- [ ] Background rendering tested with color, image, and transparency?
 
 #### Phase E: Document Design Decisions & Flag Conflicts
 
@@ -211,11 +214,12 @@ Immediately create a todo list to track the build process:
 ```
 ✅ Gather tool information
 ✅ Update configuration
-✅ Build HTML structure  
+✅ Build HTML structure
 ✅ Implement main functionality
+✅ Wire background controls to backgroundManager API (MANDATORY)
 ✅ Add canvas resize handling (if needed)
-✅ Implement high-res export
-✅ Test export functionality
+✅ Implement high-res export with background rendering
+✅ Test export functionality (including background in exports)
 ```
 
 ### Step 2: Gather Basic Information
@@ -245,10 +249,11 @@ After config is set, ask: "Great! Now tell me what you want to create and I'll b
 
 ### Step 5: Build According to Chatooly Rules
 BEFORE WRITING ANY CODE:
-- Re-read the MANDATORY DEVELOPMENT RULES above
+- Re-read the MANDATORY DEVELOPMENT RULES in [01-core-rules.md](01-core-rules.md)
 - Verify all visual content will go inside #chatooly-canvas
 - Plan which library to use (if any)
-- Update TodoWrite with specific implementation tasks
+- **Plan background system integration** (see [08-background-system.md](08-background-system.md))
+- Update TodoWrite with specific implementation tasks including background wiring
 
 ## 📋 Claude Code Workflow
 
@@ -288,7 +293,9 @@ Claude Code will:
 
 4. **Build According to Rules**
    - All visual content in `#chatooly-canvas`
+   - **Wire background controls to `Chatooly.backgroundManager` API** (MANDATORY)
    - Implement resize handling for interactive tools
    - Use proper mouse coordinate mapping
-   - Create high-resolution export function
+   - Create high-resolution export function with background rendering
    - Test at different aspect ratios
+   - Test background system (color, image upload, transparency)

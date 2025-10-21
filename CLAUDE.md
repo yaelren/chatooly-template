@@ -14,7 +14,7 @@ This CLAUDE.md file references focused rule modules to optimize token usage and 
 - **[03-canvas-resize.md](claude-rules/03-canvas-resize.md)** - Canvas resize handling and mouse coordinate mapping
 - **[04-high-res-export.md](claude-rules/04-high-res-export.md)** - High-resolution export implementation (mandatory)
 - **[05-library-selection.md](claude-rules/05-library-selection.md)** - Library selection guide and setup code
-- **[08-background-system.md](claude-rules/08-background-system.md)** - Background controls (wire up HTML to backgroundManager API)
+- **[08-background-system.md](claude-rules/08-background-system.md)** - **MANDATORY: Wire background controls to backgroundManager API**
 
 ### Design & Publishing
 - **[06-design-system.md](claude-rules/06-design-system.md)** - Chatooly CSS variables and styling system
@@ -44,7 +44,7 @@ You MUST read all files in `claude-rules/` directory before starting:
    - `05-library-selection.md` - Choose the right framework
    - `06-design-system.md` - CSS variables and styling
    - `07-publishing-troubleshooting.md` - Publishing workflow
-   - `08-background-system.md` - Background controls wiring (MANDATORY)
+   - `08-background-system.md` - **MANDATORY: Connect background UI controls to canvas**
 
 ### 📋 STEP 2: Follow Structured Workflow
 
@@ -81,8 +81,8 @@ User: "Build a gradient generator"
 → Creates TodoWrite task list
 → Implements tool following all rules:
   • Canvas structure (01-core-rules.md)
-  • Background controls wiring (08-background-system.md)
-  • High-res export (04-high-res-export.md)
+  • **Background controls connection to backgroundManager API** (08-background-system.md)
+  • High-res export with background rendering (04-high-res-export.md)
   • Canvas resize handling (03-canvas-resize.md)
   • CSS styling (06-design-system.md)
 → Re-references specific files during implementation

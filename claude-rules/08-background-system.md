@@ -1,11 +1,32 @@
 # Background System Implementation
 
+## 🚨 CRITICAL - MANDATORY FOR ALL TOOLS
+
+**Every Chatooly tool MUST connect the background UI controls to the canvas background system. This is NOT optional.**
+
 ## Overview
-The Chatooly template provides background control HTML by default. Your job is to connect these controls to the `Chatooly.backgroundManager` API.
+The Chatooly template provides background control HTML by default. **Your job is to connect these controls to the `Chatooly.backgroundManager` API.**
 
-## 🤖 For AI Agents: What You Need to Do
+**This is a REQUIRED implementation step - do not skip this!**
 
-### What's Already Provided
+## 🤖 For AI Agents: Implementation Checklist
+
+**Before marking a tool as complete, verify ALL of these:**
+
+- [ ] `Chatooly.backgroundManager.init(canvas)` called during initialization
+- [ ] Transparent checkbox connected with event listener
+- [ ] Color picker connected with event listener
+- [ ] Image upload connected with event listener
+- [ ] Clear button (X) connected with event listener
+- [ ] Fit dropdown connected with event listener
+- [ ] Background renders FIRST in render loop (before tool content)
+- [ ] Background included in `renderHighResolution()` export function
+- [ ] Tested with: solid color background, transparent background, image background
+- [ ] Tested that background appears in PNG exports
+
+**If ANY checkbox is unchecked, the implementation is incomplete.**
+
+## What's Already Provided
 
 #### 1. Background Controls HTML (in index.html)
 These controls are already in the template:
