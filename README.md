@@ -28,36 +28,33 @@ Choose one option below:
 #### Option A: Download Without Git (Easiest for Beginners)
 **What's this?** Simply download the files like any other download - no special tools needed!
 
-1. Go to https://github.com/yaelren/chatooly-template
-2. Click the green **Code** button
-3. Click **Download ZIP**
-4. Extract the ZIP to your desired folder
-5. Rename the folder from `chatooly-template-main` to your project name (e.g., `my-tool`)
-6. **Open this folder in your IDE** (Cursor or Visual Studio Code)
+1. Click the green **Code** button (at the top of this page)
+2. Click **Download ZIP**
+3. Extract the ZIP to your desired folder
+4. Rename the folder from `chatooly-template-main` to your project name (e.g., `my-tool`)
+5. **Open this folder in your IDE** (Cursor or Visual Studio Code)
 
-#### Option B: Clone with Git (Better for Updates)
-**What's Git?** A tool that tracks changes to your code and makes it easy to save/share your work. Like Google Docs version history, but for code!
+#### Option B: Create Your Own GitHub Copy (Recommended)
+**What's this?** Creates your own version of this template on GitHub - perfect for saving and sharing your work!
 
-1. **Create a folder** for your projects (e.g., on your Desktop or Documents)
-2. **Open that folder in your IDE** (Cursor or Visual Studio Code)
-   - File → Open Folder → Select the folder you just created
-3. **Open the terminal** in your IDE (Terminal → New Terminal)
-4. **Choose how to clone:**
+1. Click the green **"Use this template"** button (at the top of this page)
+2. Click **"Create a new repository"**
+3. Name your repository (e.g., `my-awesome-tool`)
+4. Choose **Public** or **Private**
+5. Click **"Create repository"**
+6. **On your new repository page**, click the green **Code** button
+7. **Copy:** The HTTPS URL shown (looks like `https://github.com/YOUR-USERNAME/my-awesome-tool.git`)
+8. **Open your IDE** (Cursor or Visual Studio Code)
+9. **Open the terminal** in your IDE (Terminal → New Terminal)
+10. **Type:** `git clone` then paste your copied URL and press Enter
+11. **Open the new folder** in your IDE:
+    - File → Open Folder → Select the folder that was just created
 
-**Option 1: Clone into current folder** (if you already created an empty project folder)
-```bash
-git clone https://github.com/yaelren/chatooly-template.git .
-```
-
-**Option 2: Clone into a new subfolder** (creates a new folder with your chosen name)
-```bash
-git clone https://github.com/yaelren/chatooly-template.git my-tool
-cd my-tool
-```
-**Important:** Replace `my-tool` with your own project name (e.g., `fisheye-tool`, `color-picker`)
-
-**If you used Option 2:** You created a subfolder, so you need to open it:
-- In your IDE: **File → Open Folder** → Select the `my-tool` folder you just created
+**Why use this option?**
+- ✅ Your own copy on GitHub (not connected to the original)
+- ✅ Easy to save and backup your work with `git push`
+- ✅ Can share your tool with others
+- ✅ Full version history
 
 ### Step 2: Open Your Project Files
 
