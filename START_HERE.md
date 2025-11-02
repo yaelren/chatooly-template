@@ -75,6 +75,8 @@ function render() {
 
 **📋 See [claude-rules/08-background-system.md](claude-rules/08-background-system.md) for framework-specific implementations (p5.js, Three.js, DOM)**
 
+**🔴 CRITICAL FOR THREE.JS TOOLS:** Background images require special CanvasTexture implementation! Three.js cannot directly render HTML Image elements. You MUST create a temporary 2D canvas and convert it to a THREE.CanvasTexture. See the complete Three.js section in [claude-rules/08-background-system.md](claude-rules/08-background-system.md) - DO NOT skip the background image implementation!
+
 ## 🚨 CRITICAL: Canvas Resize & Mouse Coordinate Handling
 
 **MANDATORY FOR ALL CANVAS-BASED TOOLS**: When using canvas elements, you MUST handle Chatooly's resize events properly or your tool will break when users change aspect ratios.
@@ -656,20 +658,30 @@ User says: "photo", "filter", "image editing", "pixel manipulation"
 
 ### **🔧 Library-Specific Implementation Templates:**
 
-#### **Three.js Setup (CRITICAL: preserveDrawingBuffer)**
+#### **Three.js Setup (CRITICAL: preserveDrawingBuffer + Background Images)**
 ```javascript
 // 🚨 CRITICAL: Must include preserveDrawingBuffer: true for exports
-const renderer = new THREE.WebGLRenderer({ 
+const renderer = new THREE.WebGLRenderer({
     canvas: document.getElementById('chatooly-canvas'),
-    antialias: true, 
+    antialias: true,
     preserveDrawingBuffer: true  // ← REQUIRED FOR EXPORTS
 });
 
 // Common Three.js export issues:
 // ❌ Missing preserveDrawingBuffer → Blank exports
-// ❌ Wrong canvas ID → Export fails  
+// ❌ Wrong canvas ID → Export fails
 // ❌ Canvas not in DOM → Renderer fails
+// ❌ Background images not working → MUST use CanvasTexture (see 08-background-system.md)
 ```
+
+**🔴 CRITICAL: Three.js Background Images**
+Three.js requires special handling for background images. You MUST:
+1. Create a temporary 2D canvas element
+2. Draw the background image to this canvas using `calculateImageDimensions()`
+3. Create a `THREE.CanvasTexture` from the canvas
+4. Set `scene.background = texture`
+
+**DO NOT skip this!** See the complete implementation in [claude-rules/08-background-system.md](claude-rules/08-background-system.md).
 
 #### **GSAP Animation Setup**
 ```javascript

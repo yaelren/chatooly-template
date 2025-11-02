@@ -23,8 +23,14 @@ The Chatooly template provides background control HTML by default. **Your job is
 - [ ] Background included in `renderHighResolution()` export function
 - [ ] Tested with: solid color background, transparent background, image background
 - [ ] Tested that background appears in PNG exports
+- [ ] **🔴 FOR THREE.JS TOOLS:** Complete `updateBackground()` function implemented with CanvasTexture creation
+- [ ] **🔴 FOR THREE.JS TOOLS:** Background image uploads are tested and visible (not just colors)
+- [ ] **🔴 FOR THREE.JS TOOLS:** `updateBackground()` called in ALL background event listeners
+- [ ] **🔴 FOR THREE.JS TOOLS:** Texture disposal implemented to prevent memory leaks
 
 **If ANY checkbox is unchecked, the implementation is incomplete.**
+
+**⚠️ COMMON MISTAKE:** Many agents skip background image implementation for Three.js because they only implement solid color/transparency. This causes user frustration when image uploads don't work. READ THE COMPLETE THREE.JS SECTION BELOW!
 
 ## What's Already Provided
 
@@ -144,15 +150,104 @@ function draw() {
 }
 ```
 
-##### Three.js:
+##### Three.js (🚨 CRITICAL - COMPLETE IMPLEMENTATION REQUIRED):
+
+**⚠️ Three.js requires special handling for background images because WebGL cannot directly render HTML Image elements. You MUST create a CanvasTexture for background images.**
+
 ```javascript
-const bg = Chatooly.backgroundManager.getBackgroundState();
-if (bg.bgTransparent) {
-    renderer.setClearAlpha(0);
-} else {
-    renderer.setClearColor(bg.bgColor);
+// Background texture for images (declare at top level)
+let backgroundTexture = null;
+
+// Update background for Three.js
+function updateBackground() {
+    if (!window.Chatooly || !window.Chatooly.backgroundManager) return;
+
+    const bg = Chatooly.backgroundManager.getBackgroundState();
+
+    // Handle transparent background
+    if (bg.bgTransparent) {
+        renderer.setClearAlpha(0);
+        scene.background = null;
+        // Clean up old texture
+        if (backgroundTexture) {
+            backgroundTexture.dispose();
+            backgroundTexture = null;
+        }
+        return;
+    }
+
+    // Handle background image - CRITICAL: Must use CanvasTexture
+    if (bg.bgImage && bg.bgImageURL) {
+        // Remove old texture if it exists
+        if (backgroundTexture) {
+            backgroundTexture.dispose();
+            backgroundTexture = null;
+        }
+
+        // Get canvas dimensions
+        const canvasWidth = renderer.domElement.width;
+        const canvasHeight = renderer.domElement.height;
+        const dims = Chatooly.backgroundManager.calculateImageDimensions(canvasWidth, canvasHeight);
+
+        // Create canvas texture with properly fitted image
+        const tempCanvas = document.createElement('canvas');
+        tempCanvas.width = canvasWidth;
+        tempCanvas.height = canvasHeight;
+        const ctx = tempCanvas.getContext('2d');
+
+        // Fill background with solid color first (for areas not covered by image)
+        ctx.fillStyle = bg.bgColor;
+        ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+
+        // Draw image with fit mode
+        const img = new Image();
+        img.onload = () => {
+            ctx.drawImage(img, dims.offsetX, dims.offsetY, dims.drawWidth, dims.drawHeight);
+
+            // Create Three.js texture from canvas
+            backgroundTexture = new THREE.CanvasTexture(tempCanvas);
+            backgroundTexture.needsUpdate = true;
+            scene.background = backgroundTexture;
+
+            // Set clear color to match
+            const color = new THREE.Color(bg.bgColor);
+            renderer.setClearColor(color, 1);
+            renderer.setClearAlpha(1);
+        };
+        img.onerror = () => {
+            console.error('Failed to load background image');
+            // Fallback to solid color
+            const fallbackColor = new THREE.Color(bg.bgColor);
+            renderer.setClearColor(fallbackColor, 1);
+            renderer.setClearAlpha(1);
+            scene.background = null;
+        };
+        img.src = bg.bgImageURL;
+    } else {
+        // Solid color background
+        const color = new THREE.Color(bg.bgColor);
+        renderer.setClearColor(color, 1);
+        renderer.setClearAlpha(1);
+        scene.background = null;
+
+        // Clean up old texture
+        if (backgroundTexture) {
+            backgroundTexture.dispose();
+            backgroundTexture = null;
+        }
+    }
 }
+
+// Call this in your event listeners
+updateBackground();
 ```
+
+**🔴 CRITICAL for Three.js tools:**
+- You MUST implement the complete `updateBackground()` function above
+- Background images require creating a CanvasTexture - DO NOT skip this step
+- Call `updateBackground()` in ALL background control event listeners
+- Call `updateBackground()` after canvas resize events
+- Always dispose old textures to prevent memory leaks
 
 ##### DOM-based:
 ```javascript
@@ -258,3 +353,24 @@ Reset to defaults.
 **Export missing background?**
 - Include background in `renderHighResolution()`
 - Draw background FIRST in export
+
+**🔴 Three.js Specific Issues:**
+
+**Background image upload doesn't show anything?**
+- You probably only implemented solid color/transparency handling
+- You MUST implement the complete `updateBackground()` function with CanvasTexture creation
+- See the Three.js section above for the COMPLETE implementation
+- Background images in Three.js require creating a 2D canvas texture - this is not optional
+
+**Three.js background is black instead of the selected color?**
+- Make sure you're using `new THREE.Color(bg.bgColor)` to convert hex to Three.js color
+- Call `renderer.setClearColor(color, 1)` with the converted color
+
+**Memory leak when changing background images?**
+- You forgot to dispose old textures
+- Always call `backgroundTexture.dispose()` before creating a new texture
+- See texture disposal in the Three.js implementation above
+
+**Background doesn't update when canvas resizes?**
+- Call `updateBackground()` in your canvas resize event handler
+- The CanvasTexture needs to be recreated with new dimensions
