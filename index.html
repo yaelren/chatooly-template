@@ -1,18 +1,134 @@
 <!DOCTYPE html>
 <!--
-    Chatooly Tool Template
+    Chatooly Tool Template v2.0
     Author: Yael Renous - Studio Video
 
-    🤖 AI AGENTS: Before modifying this file, ALWAYS check:
-    - https://raw.githubusercontent.com/yaelren/chatooly-cdn/main/css/variables.css
-    - https://raw.githubusercontent.com/yaelren/chatooly-cdn/main/css/components.css
-    - https://raw.githubusercontent.com/yaelren/chatooly-cdn/main/css/base.css
-    - Ensure CDN script tag remains: https://yaelren.github.io/chatooly-cdn/js/core.min.js
+    ═══════════════════════════════════════════════════════════════════════════
+    🤖 AI AGENT INSTRUCTIONS - READ THIS BEFORE BUILDING ANY TOOL
+    ═══════════════════════════════════════════════════════════════════════════
 
-    📁 FILE STRUCTURE:
+    📋 REQUIRED STRUCTURE - DO NOT DEVIATE:
+
+    1. SECTIONS (Collapsible groups like "Background", "Effects"):
+       ✅ CORRECT:
+       <div class="chatooly-section-card">
+           <h3 class="chatooly-section-header">✨ Section Name</h3>
+           <div class="chatooly-section-content">
+               <!-- Controls go here -->
+           </div>
+       </div>
+
+       ❌ WRONG:
+       <h3 class="section-header">Section Name <span>▼</span></h3>
+       <div class="section-content">...</div>
+
+    2. TOGGLE SWITCHES (On/Off controls):
+       ✅ CORRECT:
+       <div class="chatooly-toggle-group">
+           <button type="button" class="chatooly-toggle" id="my-toggle" role="switch" aria-pressed="false">
+               <span class="chatooly-toggle-slider"></span>
+           </button>
+           <label class="chatooly-toggle-label" for="my-toggle">Enable Feature</label>
+       </div>
+
+       ❌ WRONG:
+       <label><input type="checkbox" id="my-toggle"> Enable Feature</label>
+
+    3. COLOR PICKERS:
+       ✅ CORRECT:
+       <div class="chatooly-color-group">
+           <label class="chatooly-color-label" for="my-color">Color</label>
+           <input type="color" class="chatooly-color-input" id="my-color" value="#ff0000">
+       </div>
+
+       ❌ WRONG:
+       <div class="chatooly-control-group">
+           <label for="my-color">Color</label>
+           <input type="color" id="my-color">
+       </div>
+
+    4. SLIDERS (Range inputs):
+       ✅ CORRECT:
+       <div class="chatooly-control-group">
+           <label for="my-slider">Size</label>
+           <input type="range" id="my-slider" min="0" max="100" value="50">
+           <span id="my-slider-value">50</span>
+       </div>
+
+    5. DROPDOWNS (Select elements):
+       ✅ CORRECT:
+       <div class="chatooly-input-group">
+           <label class="chatooly-input-label" for="my-select">Options</label>
+           <select class="chatooly-select" id="my-select">
+               <option value="a">Option A</option>
+           </select>
+       </div>
+
+       ❌ WRONG:
+       <select id="my-select">...</select>
+
+    6. TEXT INPUTS:
+       ✅ CORRECT:
+       <div class="chatooly-input-group">
+           <label class="chatooly-input-label" for="my-input">Text</label>
+           <input type="text" class="chatooly-input" id="my-input" value="">
+       </div>
+
+    7. FILE UPLOADS:
+       ✅ CORRECT:
+       <div class="chatooly-input-group">
+           <label class="chatooly-input-label" for="my-file">Upload</label>
+           <input type="file" class="chatooly-input" id="my-file" accept="image/*">
+       </div>
+
+    ═══════════════════════════════════════════════════════════════════════════
+    🎯 QUICK REFERENCE: COMPONENT CLASS NAMES
+    ═══════════════════════════════════════════════════════════════════════════
+
+    CONTAINERS:
+    • chatooly-section-card         → Wrapper for collapsible sections
+    • chatooly-section-header       → Section title (h3)
+    • chatooly-section-content      → Section body content
+    • chatooly-control-group        → Generic control wrapper
+    • chatooly-input-group          → Text/file input wrapper
+    • chatooly-color-group          → Color picker wrapper
+    • chatooly-toggle-group         → Toggle switch wrapper
+
+    INPUTS:
+    • chatooly-toggle               → Toggle button
+    • chatooly-toggle-slider        → Toggle slider span
+    • chatooly-toggle-label         → Toggle label
+    • chatooly-color-input          → Color input
+    • chatooly-color-label          → Color label
+    • chatooly-select               → Dropdown select
+    • chatooly-input                → Text/file input
+    • chatooly-input-label          → Input label
+    • chatooly-btn                  → Button
+
+    SPECIAL:
+    • Range inputs → No special class, use in chatooly-control-group
+    • Value displays → Plain <span> next to range input
+
+    ═══════════════════════════════════════════════════════════════════════════
+    📁 FILE STRUCTURE
+    ═══════════════════════════════════════════════════════════════════════════
+    - index.html: This file - tool structure and layout
     - js/main.js: Canvas/tool logic and rendering
     - js/ui.js: UI controls, collapsible sections, form interactions
     - js/chatooly-config.js: Tool configuration and metadata
+
+    ═══════════════════════════════════════════════════════════════════════════
+    🔗 CDN REFERENCES (Auto-loaded, verify these exist)
+    ═══════════════════════════════════════════════════════════════════════════
+    - https://yaelren.github.io/chatooly-cdn/css/unified.min.css
+    - https://yaelren.github.io/chatooly-cdn/js/core.min.js
+
+    CDN Source Files (for reference only):
+    - https://raw.githubusercontent.com/yaelren/chatooly-cdn/main/css/variables.css
+    - https://raw.githubusercontent.com/yaelren/chatooly-cdn/main/css/components.css
+    - https://raw.githubusercontent.com/yaelren/chatooly-cdn/main/css/base.css
+
+    ═══════════════════════════════════════════════════════════════════════════
 -->
 <html lang="en">
 <head>
@@ -46,47 +162,108 @@
 
                 <!-- ========== EDIT BELOW: Add Your Custom Tool Controls Here ========== -->
 
-                <!-- Example control group -->
-                <div class="chatooly-control-group">
-                </div>
+                <!-- ========== EXAMPLE CONTROLS (DELETE OR MODIFY AS NEEDED) ========== -->
 
-                <!-- Add more controls as needed -->
+                <!-- Example Section with Multiple Control Types -->
+                <div class="chatooly-section-card">
+                    <h3 class="chatooly-section-header">🎨 Example Controls</h3>
+                    <div class="chatooly-section-content">
+
+                        <!-- Text Input Example -->
+                        <div class="chatooly-input-group">
+                            <label class="chatooly-input-label" for="example-text">Text Input</label>
+                            <input type="text" class="chatooly-input" id="example-text" value="Example Text" placeholder="Enter text...">
+                        </div>
+
+                        <!-- Slider Example -->
+                        <div class="chatooly-control-group">
+                            <label for="example-slider">Slider (0-100)</label>
+                            <input type="range" id="example-slider" min="0" max="100" value="50">
+                            <span id="example-slider-value">50</span>
+                        </div>
+
+                        <!-- Color Picker Example -->
+                        <div class="chatooly-color-group">
+                            <label class="chatooly-color-label" for="example-color">Color Picker</label>
+                            <input type="color" class="chatooly-color-input" id="example-color" value="#ff5500">
+                        </div>
+
+                        <!-- Dropdown Example -->
+                        <div class="chatooly-input-group">
+                            <label class="chatooly-input-label" for="example-select">Dropdown</label>
+                            <select class="chatooly-select" id="example-select">
+                                <option value="option1">Option 1</option>
+                                <option value="option2">Option 2</option>
+                                <option value="option3">Option 3</option>
+                            </select>
+                        </div>
+
+                        <!-- Toggle Switch Example -->
+                        <div class="chatooly-toggle-group">
+                            <button type="button" class="chatooly-toggle" id="example-toggle" role="switch" aria-pressed="false">
+                                <span class="chatooly-toggle-slider"></span>
+                            </button>
+                            <label class="chatooly-toggle-label" for="example-toggle">Enable Example Feature</label>
+                        </div>
+
+                        <!-- File Upload Example -->
+                        <div class="chatooly-input-group">
+                            <label class="chatooly-input-label" for="example-file">File Upload</label>
+                            <input type="file" class="chatooly-input" id="example-file" accept="image/*" style="font-size: 13px; padding: 6px 10px;">
+                        </div>
+
+                    </div>
+                </div>
+                <!-- ========== END EXAMPLE CONTROLS ========== -->
 
                 <!-- ========== BACKGROUND CONTROLS ========== -->
-                <h3 class="section-header" id="background-header">
-                    ◼ Background <span class="section-toggle">▼</span>
-                </h3>
-                <div id="background-section" class="section-content">
-                    <!-- Transparent Background Checkbox -->
-                    <div class="chatooly-control-group">
-                        <label>
-                            <input type="checkbox" id="transparent-bg"> Transparent Background
-                        </label>
-                    </div>
-
-                    <!-- Background Color Picker -->
-                    <div class="chatooly-control-group" id="bg-color-group">
-                        <label for="bg-color">Background Color</label>
-                        <input type="color" id="bg-color" value="#FFFFFF">
-                    </div>
-
-                    <!-- Background Image Upload with Remove Button (X) -->
-                    <div class="chatooly-control-group">
-                        <label for="bg-image">Background Image</label>
-                        <div class="chatooly-bg-image-wrapper">
-                            <input type="file" id="bg-image" accept="image/*">
-                            <button id="clear-bg-image" type="button" class="chatooly-bg-image-remove" style="display: none;" title="Remove image">×</button>
+                <div class="chatooly-section-card">
+                    <h3 class="chatooly-section-header">◼ Background</h3>
+                    <div class="chatooly-section-content">
+                        <!-- Transparent Background Toggle -->
+                        <div class="chatooly-toggle-group">
+                            <button type="button"
+                                    class="chatooly-toggle"
+                                    id="transparent-bg"
+                                    role="switch"
+                                    aria-pressed="false">
+                                <span class="chatooly-toggle-slider"></span>
+                            </button>
+                            <label class="chatooly-toggle-label" for="transparent-bg">Transparent Background</label>
                         </div>
-                    </div>
 
-                    <!-- Image Fit Dropdown (hidden until image uploaded) -->
-                    <div class="chatooly-control-group" id="bg-fit-group" style="display: none;">
-                        <label for="bg-fit">Image Fit</label>
-                        <select id="bg-fit">
-                            <option value="cover">Fill Frame</option>
-                            <option value="contain">Fit in Frame</option>
-                            <option value="fill">Stretch to Fill</option>
-                        </select>
+                        <!-- Background Color Picker -->
+                        <div class="chatooly-color-group" id="bg-color-group">
+                            <label class="chatooly-color-label" for="bg-color">Background Color</label>
+                            <input type="color" class="chatooly-color-input" id="bg-color" value="#FFFFFF">
+                        </div>
+
+                        <!-- Background Image Upload -->
+                        <div class="chatooly-input-group">
+                            <label class="chatooly-input-label" for="bg-image">Background Image</label>
+                            <div style="display: flex; gap: 8px; align-items: center;">
+                                <input type="file"
+                                       class="chatooly-input"
+                                       id="bg-image"
+                                       accept="image/*"
+                                       style="flex: 1; font-size: 13px; padding: 6px 10px;">
+                                <button id="clear-bg-image"
+                                        type="button"
+                                        class="chatooly-btn"
+                                        style="display: none; padding: 6px 12px; min-width: auto;"
+                                        title="Remove image">×</button>
+                            </div>
+                        </div>
+
+                        <!-- Image Fit Dropdown -->
+                        <div class="chatooly-input-group" id="bg-fit-group" style="display: none;">
+                            <label class="chatooly-input-label" for="bg-fit">Image Fit</label>
+                            <select class="chatooly-select" id="bg-fit">
+                                <option value="cover">Fill Frame</option>
+                                <option value="contain">Fit in Frame</option>
+                                <option value="fill">Stretch to Fill</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
                 <!-- ========== END BACKGROUND CONTROLS ========== -->
