@@ -32,7 +32,7 @@ When a designer says **"Let's build a tool"** or **"I want to create..."**:
 
 📋 **See [02-workflow-setup.md](claude-rules/02-workflow-setup.md) Step 0.5** for complete design discovery process.
 
-⚠️ **CRITICAL**: Any design decisions MUST be validated against Chatooly rules. After gathering references, always verify they align with mandatory requirements (canvas structure, export containers, CDN usage, etc.).
+⚠️ **CRITICAL**: Any design decisions MUST be validated against Chatooly rules. After gathering references, always verify they align with mandatory requirements (canvas structure, export containers, CDN usage, explicit `.chatooly-*` classes, etc.).
 
 ### 📖 STEP 1: Read ALL Claude Rules
 

@@ -84,22 +84,25 @@ CDN provides styled toggle buttons that match the design system. Plain checkboxe
 ### ✅ Sliders (Range Inputs)
 
 ```html
-<div class="chatooly-control-row">
-    <label>Size</label>
-    <input type="range" id="my-slider" min="0" max="100" value="50" class="chatooly-control-slider">
-    <span id="my-slider-value">50</span>
+<div class="chatooly-slider-group">
+    <div class="chatooly-slider-label">
+        <span>Size</span>
+        <span class="chatooly-slider-value" id="my-slider-value">50</span>
+    </div>
+    <input type="range" class="chatooly-slider" id="my-slider" min="0" max="100" value="50">
 </div>
 ```
 
 **Important:**
-- Use `chatooly-control-row` (not `chatooly-control-group`)
-- Add `chatooly-control-slider` class to `<input type="range">`
-- Value display span is separate and updated via JavaScript
+- Use `chatooly-slider-group` as container
+- Label wrapper is `chatooly-slider-label` containing both label text and value
+- Add `chatooly-slider` class to `<input type="range">`
+- Value display uses `chatooly-slider-value` class inside the label div
 
 **Common Mistakes:**
-- ❌ Using `chatooly-control-group` instead of `chatooly-control-row`
-- ❌ Missing `chatooly-control-slider` class on the input
-- ❌ Adding `for` attribute to label (not needed for control-row pattern)
+- ❌ Using `chatooly-control-row` or `chatooly-control-group` instead of `chatooly-slider-group`
+- ❌ Missing `chatooly-slider-label` wrapper div
+- ❌ Using `chatooly-control-slider` instead of `chatooly-slider`
 
 ---
 
@@ -156,7 +159,7 @@ CDN provides styled toggle buttons that match the design system. Plain checkboxe
 | **Section** | `chatooly-section-card` + `data-section` | `chatooly-section-header` | `chatooly-section-content` |
 | **Toggle** | `chatooly-toggle-group` | `chatooly-toggle-label` | `chatooly-toggle` + `chatooly-toggle-slider` |
 | **Color** | `chatooly-color-group` | `chatooly-color-label` | `chatooly-color-input` |
-| **Slider** | `chatooly-control-row` | `<label>` (plain) | `chatooly-control-slider` |
+| **Slider** | `chatooly-slider-group` | `chatooly-slider-label` (wrapper div) | `chatooly-slider` |
 | **Select** | `chatooly-input-group` | `chatooly-input-label` | `chatooly-select` |
 | **Text** | `chatooly-input-group` | `chatooly-input-label` | `chatooly-input` |
 | **File** | `chatooly-input-group` | `chatooly-input-label` | `chatooly-input` |
@@ -166,7 +169,7 @@ CDN provides styled toggle buttons that match the design system. Plain checkboxe
 
 ## 🚫 Common Anti-Patterns
 
-### ❌ DO NOT USE THESE CLASSES (Old Template)
+### ❌ DO NOT USE THESE CLASSES (Old/Wrong Patterns)
 
 ```html
 <!-- WRONG - Old template classes -->
@@ -176,8 +179,14 @@ CDN provides styled toggle buttons that match the design system. Plain checkboxe
 <label><input type="checkbox" id="toggle"> Feature</label>
 
 <div class="control-group">
-    <label>Color</label>
-    <input type="color">
+    <label>Slider</label>
+    <input type="range">
+</div>
+
+<!-- WRONG - Incorrect slider patterns -->
+<div class="chatooly-control-row">
+    <label>Slider</label>
+    <input type="range" class="chatooly-control-slider">
 </div>
 ```
 
@@ -195,6 +204,14 @@ CDN provides styled toggle buttons that match the design system. Plain checkboxe
         <span class="chatooly-toggle-slider"></span>
     </button>
     <label class="chatooly-toggle-label" for="toggle">Feature</label>
+</div>
+
+<div class="chatooly-slider-group">
+    <div class="chatooly-slider-label">
+        <span>Slider</span>
+        <span class="chatooly-slider-value">50</span>
+    </div>
+    <input type="range" class="chatooly-slider" min="0" max="100" value="50">
 </div>
 
 <div class="chatooly-color-group">
@@ -232,7 +249,7 @@ Before delivering a tool to the user, verify:
 
 ## 📖 Additional Resources
 
-- **CDN Demo**: https://yaelren.github.io/chatooly-cdn/sv-tools-example.html
+- **CDN Demo**: https://yaelren.github.io/chatooly-cdn/component-demo.html
 - **Template Source**: See `index.html` for complete annotated examples
 - **CSS Variables**: https://raw.githubusercontent.com/yaelren/chatooly-cdn/main/css/variables.css
 - **Components**: https://raw.githubusercontent.com/yaelren/chatooly-cdn/main/css/components.css

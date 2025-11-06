@@ -73,6 +73,7 @@ document.getElementById('chatooly-canvas').appendChild(canvas);
 ### 7. VERIFICATION CHECKLIST
 After EVERY code change, verify:
 ✓ All visual content is inside #chatooly-canvas
+✓ All form controls use explicit `.chatooly-*` classes (`.chatooly-btn`, `.chatooly-input`, `.chatooly-select`, `.chatooly-slider`, etc.)
 ✓ CDN script is intact and loading
 ✓ Export button appears in correct position
 ✓ Tool exports properly when button is clicked
@@ -108,11 +109,19 @@ Then check the CSS files above before implementing.
 - ❌ Custom styling that breaks export functionality
 - ❌ Layout changes that don't use Chatooly classes
 
-## 🎯 ALWAYS USE
+## 🎯 ALWAYS USE (MANDATORY FOR NEW TOOLS)
+- ✅ **Explicit `.chatooly-*` classes** on ALL form controls (buttons, inputs, selects, sliders)
+- ✅ `class="chatooly-btn"` for all buttons (NOT plain `<button>`)
+- ✅ `class="chatooly-input"` for text/number inputs
+- ✅ `class="chatooly-select"` for dropdowns
+- ✅ `class="chatooly-slider"` for range inputs
+- ✅ `class="chatooly-toggle"` for switch controls
+- ✅ `class="chatooly-color-input"` for color pickers
 - ✅ `var(--chatooly-color-primary)` instead of `#007bff`
-- ✅ `var(--chatooly-spacing-4)` instead of `16px` 
-- ✅ `.chatooly-btn` instead of custom button styles
+- ✅ `var(--chatooly-spacing-4)` instead of `16px`
 - ✅ `.chatooly-control-group` for form sections
 - ✅ `#chatooly-canvas` for the main canvas element
+
+**Why explicit classes?** This prevents breaking changes when the design system updates. Plain HTML elements rely on a universal fallback layer that may be removed in future versions.
 
 ## REMINDER: Read START_HERE.md for full implementation details

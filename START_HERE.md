@@ -28,10 +28,10 @@ The template provides background control HTML (transparent checkbox, color picke
 // 1. Initialize background manager
 Chatooly.backgroundManager.init(canvas);
 
-// 2. Connect transparent background
-document.getElementById('transparent-bg').addEventListener('change', (e) => {
-    Chatooly.backgroundManager.setTransparent(e.target.checked);
-    document.getElementById('bg-color-group').style.display = e.target.checked ? 'none' : 'block';
+// 2. Connect transparent background toggle
+document.getElementById('transparent-bg').addEventListener('click', (e) => {
+    const isPressed = e.target.getAttribute('aria-pressed') === 'true';
+    Chatooly.backgroundManager.setTransparent(isPressed);
     render();
 });
 
@@ -880,9 +880,9 @@ const canvas = document.getElementById('chatooly-canvas');
 Chatooly.backgroundManager.init(canvas);
 
 // 2. Connect Event Listeners (add these to your initialization)
-document.getElementById('transparent-bg').addEventListener('change', (e) => {
-    Chatooly.backgroundManager.setTransparent(e.target.checked);
-    document.getElementById('bg-color-group').style.display = e.target.checked ? 'none' : 'block';
+document.getElementById('transparent-bg').addEventListener('click', (e) => {
+    const isPressed = e.target.getAttribute('aria-pressed') === 'true';
+    Chatooly.backgroundManager.setTransparent(isPressed);
     render(); // Call your render function
 });
 
@@ -1064,29 +1064,55 @@ After ANY code modification, check:
 
 If any check fails, immediately fix it before proceeding!
 
-## 🎨 CSS Styling with CDN v2.0 (NEW!)
+## 🎨 CSS Styling with CDN v2.0 - EXPLICIT CLASSES RECOMMENDED
 
-### ✅ AUTOMATICALLY STYLED ELEMENTS
-These HTML elements get the Chatooly design system automatically (no classes needed):
+### ✅ RECOMMENDED: USE EXPLICIT CHATOOLY CLASSES (Future-Proof)
+
+**🎯 Best Practice**: Always use explicit `.chatooly-*` classes for future-proof tools that won't break with design system updates:
 
 ```html
-<!-- Form Controls - Automatically styled -->
-<input type="text" placeholder="Enter text">     <!-- ✅ Dark theme input -->
-<input type="range" min="0" max="100">           <!-- ✅ Dark theme slider -->
-<input type="color" value="#ff0000">             <!-- ✅ Dark theme color picker -->
-<select><option>Option 1</option></select>       <!-- ✅ Dark theme dropdown -->
-<textarea placeholder="Description"></textarea>   <!-- ✅ Dark theme textarea -->
-<button>Click Me</button>                        <!-- ✅ Dark theme button -->
+<!-- Form Controls - USE EXPLICIT CLASSES -->
+<input type="text" class="chatooly-input" placeholder="Enter text">
+<input type="range" class="chatooly-slider" min="0" max="100">
+<input type="color" class="chatooly-color-input" value="#ff0000">
+<select class="chatooly-select"><option>Option 1</option></select>
+<textarea class="chatooly-textarea" placeholder="Description"></textarea>
+<button class="chatooly-btn">Click Me</button>
 
-<!-- Typography - Automatically styled -->
-<h1>Tool Title</h1>                             <!-- ✅ Lucida Console font -->
-<h2>Section Title</h2>                          <!-- ✅ Proper sizing -->
-<p>Description text</p>                          <!-- ✅ White text on dark -->
-<label>Input Label</label>                       <!-- ✅ Consistent labels -->
+<!-- Structured Controls with Explicit Classes -->
+<div class="chatooly-input-group">
+    <label class="chatooly-input-label" for="text-input">Text</label>
+    <input type="text" class="chatooly-input" id="text-input">
+</div>
+
+<div class="chatooly-slider-group">
+    <label class="chatooly-slider-label">
+        <span>Value</span>
+        <span class="chatooly-slider-value" id="value-display">50</span>
+    </label>
+    <input type="range" class="chatooly-slider" id="slider" min="0" max="100" value="50">
+</div>
+
+<div class="chatooly-toggle-group">
+    <button type="button" class="chatooly-toggle" id="toggle" role="switch" aria-pressed="false">
+        <span class="chatooly-toggle-slider"></span>
+    </button>
+    <label class="chatooly-toggle-label" for="toggle">Enable Feature</label>
+</div>
 ```
 
-### 🎨 ENHANCED CHATOOLY CLASSES (Optional)
-Use these for additional styling options:
+### 🔄 FALLBACK: Automatically Styled Elements (Legacy Support)
+
+Plain HTML elements will still work (via universal fallback), but explicit classes are recommended:
+
+```html
+<!-- These work but are NOT recommended for new tools -->
+<input type="text" placeholder="Enter text">     <!-- ⚠️ Works but use .chatooly-input instead -->
+<button>Click Me</button>                        <!-- ⚠️ Works but use .chatooly-btn instead -->
+```
+
+### 🎨 ADDITIONAL CHATOOLY CLASSES
+Use these for enhanced functionality and styling:
 
 ```html
 <!-- Button Variants -->

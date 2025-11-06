@@ -12,21 +12,23 @@
  * - Form validation and UI state management
  */
 
-// Setup collapsible sections
+// Setup toggle button functionality for transparent background
 document.addEventListener('DOMContentLoaded', () => {
-    const backgroundHeader = document.getElementById('background-header');
-    const backgroundSection = document.getElementById('background-section');
+    const transparentToggle = document.getElementById('transparent-bg');
 
-    if (backgroundHeader && backgroundSection) {
-        backgroundHeader.style.cursor = 'pointer';
+    if (transparentToggle) {
+        // Initialize toggle button click handler
+        transparentToggle.addEventListener('click', () => {
+            const isPressed = transparentToggle.getAttribute('aria-pressed') === 'true';
+            const newState = !isPressed;
 
-        backgroundHeader.addEventListener('click', () => {
-            const isOpen = backgroundSection.style.display !== 'none';
-            backgroundSection.style.display = isOpen ? 'none' : 'block';
+            // Update toggle button state
+            transparentToggle.setAttribute('aria-pressed', newState);
 
-            const toggle = backgroundHeader.querySelector('.section-toggle');
-            if (toggle) {
-                toggle.textContent = isOpen ? '▶' : '▼';
+            // Show/hide background color picker based on toggle state
+            const bgColorGroup = document.getElementById('bg-color-group');
+            if (bgColorGroup) {
+                bgColorGroup.style.display = newState ? 'none' : 'block';
             }
         });
     }

@@ -35,7 +35,7 @@ canvas.height = 1080;  // HD resolution height
 // Chatooly.backgroundManager.init(canvas);
 //
 // Then connect these event listeners (see claude-rules/08-background-system.md):
-// - transparent-bg (checkbox)
+// - transparent-bg (toggle button - use getAttribute('aria-pressed') to check state)
 // - bg-color (color picker)
 // - bg-image (file upload)
 // - clear-bg-image (X button)

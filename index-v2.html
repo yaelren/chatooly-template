@@ -1,45 +1,47 @@
 <!DOCTYPE html>
 <!--
-    Chatooly Tool Template v2.0
+    Chatooly Tool Template v2.0 - Future-Proof Edition
     Author: Yael Renous - Studio Video
 
-    ═══════════════════════════════════════════════════════════════════════════
-    🤖 AI AGENTS: REQUIRED READING BEFORE BUILDING ANY TOOL
-    ═══════════════════════════════════════════════════════════════════════════
+    ✅ DESIGN SYSTEM: This template uses EXPLICIT Chatooly component classes
+    ✅ FUTURE-PROOF: Will automatically inherit design system updates
+    ✅ NO BREAKING CHANGES: Uses v2.0 class-based architecture
 
-    1. READ AGENT-INSTRUCTIONS.md IN THIS DIRECTORY FIRST
-       - Contains all component patterns and class names
-       - Shows correct vs incorrect examples
-       - Includes validation checklist
+    🤖 AI AGENTS: Before modifying this file, ALWAYS check:
+    - https://raw.githubusercontent.com/yaelren/chatooly-cdn/main/css/variables.css
+    - https://raw.githubusercontent.com/yaelren/chatooly-cdn/main/css/components.css
+    - https://raw.githubusercontent.com/yaelren/chatooly-cdn/main/css/base.css
+    - Ensure CDN script tag remains: https://yaelren.github.io/chatooly-cdn/js/core.min.js
 
-    2. VIEW THE WORKING DEMO:
-       https://yaelren.github.io/chatooly-cdn/component-demo.html
-       - This is what your tool should look like
-       - Compare your output to this reference
+    📁 FILE STRUCTURE:
+    - js/main.js: Canvas/tool logic and rendering
+    - js/ui.js: UI controls, collapsible sections, form interactions
+    - js/chatooly-config.js: Tool configuration and metadata
 
-    3. COPY THE EXAMPLES IN THIS FILE:
-       - Scroll down to see all control types properly implemented
-       - Use these as copy-paste templates
-       - Don't improvise or create your own patterns
+    🎨 COMPONENT CLASSES USED (Future-Proof):
+    - .chatooly-section-card: Collapsible card containers
+    - .chatooly-section-header: Section titles
+    - .chatooly-btn: Buttons
+    - .chatooly-input: Text inputs
+    - .chatooly-select: Dropdowns
+    - .chatooly-toggle: Switch controls
+    - .chatooly-slider: Range inputs
+    - .chatooly-color-input: Color pickers
 
-    4. KEY RULES:
-       ✅ Sections: chatooly-section-card + chatooly-section-header (auto-collapsible!)
-       ✅ Sliders: chatooly-slider-group + chatooly-slider-label + chatooly-slider
-       ✅ Toggles: <button class="chatooly-toggle">, NOT <input type="checkbox">
-       ✅ Colors: chatooly-color-group + chatooly-color-input
-       ❌ NEVER use old class names like "section-header" or "control-group"
-       ❌ NEVER create local style.css files (CDN handles all styling)
-
-    ═══════════════════════════════════════════════════════════════════════════
+    📖 WHY EXPLICIT CLASSES?
+    - ✅ Guaranteed to work with all future CDN updates
+    - ✅ No reliance on universal fallback (more performant)
+    - ✅ Clear intent in HTML (better maintainability)
+    - ✅ Consistent styling across all browsers
 -->
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
+
     <!-- ========== EDIT THIS: Your Tool Name ========== -->
     <title>Tool Name - Chatooly</title>
-    
+
     <!-- ========== DO NOT EDIT: Required CDN Styles ========== -->
     <link rel="stylesheet" href="https://yaelren.github.io/chatooly-cdn/css/unified.min.css">
 </head>
@@ -55,44 +57,35 @@
         <div class="chatooly-controls-panel">
             <!-- ========== EDIT THIS: Tool Description ========== -->
             <div class="chatooly-controls-header">
-                <p>Tool description goes here</p>
+                <p>Tool description goes here. Explain what your tool does and how to use it.</p>
             </div>
-            
+
             <div class="chatooly-controls-content">
                 <!-- ========== CANVAS CONTROLS AUTO-INJECTED BY CDN ========== -->
-                <!-- The Chatooly CDN automatically injects canvas controls here when it detects chatooly-canvas -->
+                <!-- The Chatooly CDN automatically injects canvas resize controls here -->
 
                 <!-- ========== EDIT BELOW: Add Your Custom Tool Controls Here ========== -->
 
-                <!-- ========== EXAMPLE CONTROLS (DELETE OR MODIFY AS NEEDED) ========== -->
-
-                <!-- Example Section with Multiple Control Types (Click header to collapse) -->
-                <div class="chatooly-section-card" data-section="examples">
-                    <h3 class="chatooly-section-header">🎨 Example Controls</h3>
+                <!-- ========== EXAMPLE: Text Input ========== -->
+                <div class="chatooly-section-card">
+                    <h3 class="chatooly-section-header">Example Controls</h3>
                     <div class="chatooly-section-content">
-
-                        <!-- Text Input Example -->
+                        <!-- Text Input -->
                         <div class="chatooly-input-group">
                             <label class="chatooly-input-label" for="example-text">Text Input</label>
-                            <input type="text" class="chatooly-input" id="example-text" value="Example Text" placeholder="Enter text...">
+                            <input type="text" class="chatooly-input" id="example-text" placeholder="Enter text...">
                         </div>
 
-                        <!-- Slider Example -->
+                        <!-- Number Input with Slider -->
                         <div class="chatooly-slider-group">
-                            <div class="chatooly-slider-label">
-                                <span>Slider (0-100)</span>
-                                <span class="chatooly-slider-value" id="example-slider-value">50</span>
-                            </div>
+                            <label class="chatooly-slider-label">
+                                <span>Number Value</span>
+                                <span class="chatooly-slider-value" id="example-value">50</span>
+                            </label>
                             <input type="range" class="chatooly-slider" id="example-slider" min="0" max="100" value="50">
                         </div>
 
-                        <!-- Color Picker Example -->
-                        <div class="chatooly-color-group">
-                            <label class="chatooly-color-label" for="example-color">Color Picker</label>
-                            <input type="color" class="chatooly-color-input" id="example-color" value="#ff5500">
-                        </div>
-
-                        <!-- Dropdown Example -->
+                        <!-- Dropdown Select -->
                         <div class="chatooly-input-group">
                             <label class="chatooly-input-label" for="example-select">Dropdown</label>
                             <select class="chatooly-select" id="example-select">
@@ -102,26 +95,33 @@
                             </select>
                         </div>
 
-                        <!-- Toggle Switch Example -->
+                        <!-- Toggle Switch -->
                         <div class="chatooly-toggle-group">
-                            <button type="button" class="chatooly-toggle" id="example-toggle" role="switch" aria-pressed="false">
+                            <button type="button"
+                                    class="chatooly-toggle"
+                                    id="example-toggle"
+                                    role="switch"
+                                    aria-pressed="false">
                                 <span class="chatooly-toggle-slider"></span>
                             </button>
-                            <label class="chatooly-toggle-label" for="example-toggle">Enable Example Feature</label>
+                            <label class="chatooly-toggle-label" for="example-toggle">Enable Feature</label>
                         </div>
 
-                        <!-- File Upload Example -->
-                        <div class="chatooly-input-group">
-                            <label class="chatooly-input-label" for="example-file">File Upload</label>
-                            <input type="file" class="chatooly-input" id="example-file" accept="image/*" style="font-size: 13px; padding: 6px 10px;">
+                        <!-- Color Picker -->
+                        <div class="chatooly-color-group">
+                            <label class="chatooly-color-label" for="example-color">Color</label>
+                            <input type="color" class="chatooly-color-input" id="example-color" value="#667EEA">
                         </div>
 
+                        <!-- Button -->
+                        <button type="button" class="chatooly-btn" id="example-button">
+                            Apply Changes
+                        </button>
                     </div>
                 </div>
-                <!-- ========== END EXAMPLE CONTROLS ========== -->
 
                 <!-- ========== BACKGROUND CONTROLS ========== -->
-                <div class="chatooly-section-card" data-section="background">
+                <div class="chatooly-section-card">
                     <h3 class="chatooly-section-header">◼ Background</h3>
                     <div class="chatooly-section-content">
                         <!-- Transparent Background Toggle -->
@@ -175,7 +175,7 @@
                 <!-- ========== END EDIT SECTION ========== -->
             </div>
         </div>
-        
+
         <!-- Right Panel: Preview/Canvas Area -->
         <div class="chatooly-preview-panel">
             <!-- ========== DO NOT EDIT: Required Export Container ========== -->
@@ -189,12 +189,12 @@
             </div>
         </div>
     </div>
-    
+
     <!-- ========== DO NOT EDIT: Chatooly CDN v2.0 Integration ========== -->
     <!-- This script automatically provides: Dark theme styling + Static/Video export functionality -->
     <!-- Video support: Detects p5.js, Three.js, Canvas animations and provides MediaRecorder API export -->
     <script src="https://yaelren.github.io/chatooly-cdn/js/core.min.js"></script>
-    
+
     <!-- ========== DO NOT EDIT: Chatooly Configuration ========== -->
     <script src="js/chatooly-config.js"></script>
 
