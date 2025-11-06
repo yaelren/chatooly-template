@@ -135,20 +135,31 @@ CDN provides styled toggle buttons that match the design system. Plain checkboxe
 
 ---
 
-### ✅ File Uploads
+### ✅ File Uploads (Upload Areas)
 
 ```html
-<div class="chatooly-input-group">
-    <label class="chatooly-input-label" for="my-file">Upload</label>
-    <input type="file"
-           class="chatooly-input"
-           id="my-file"
-           accept="image/*"
-           style="font-size: 13px; padding: 6px 10px;">
+<div class="chatooly-upload-area" style="height: 100px;">
+    <div class="chatooly-upload-icon">
+        <svg viewBox="0 0 11 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M7.94444 0L11 3V11.4048C10.9998 11.5627 10.9358 11.7141 10.822 11.8257C10.7083 11.9373 10.554 12 10.3932 12H0.606833C0.446342 11.9989 0.292733 11.9359 0.179189 11.8245C0.0656443 11.7131 0.00128006 11.5624 0 11.4048V0.5952C0 0.2664 0.271944 0 0.606833 0H7.94444ZM6.11111 6H7.94444L5.5 3.6L3.05556 6H4.88889V8.4H6.11111V6Z" fill="var(--fill-0, #454545)"/>
+        </svg>
+    </div>
+    <div class="chatooly-upload-text">Upload Image</div>
+    <input type="file" class="chatooly-upload-input" accept="image/*">
 </div>
 ```
 
-**Note:** File inputs need inline style adjustments for proper sizing
+**Important:**
+- Use `chatooly-upload-area` as container (styled clickable area)
+- Include `chatooly-upload-icon` with the standard upload SVG icon
+- Add `chatooly-upload-text` for the label
+- File input uses `chatooly-upload-input` class (hidden, triggered by clicking area)
+- Set height inline: `style="height: 100px;"` (adjust as needed)
+
+**Common Mistakes:**
+- ❌ Using `chatooly-input-group` + `chatooly-input` for file uploads
+- ❌ Missing the upload icon SVG
+- ❌ Not using the proper upload area structure
 
 ---
 
@@ -162,7 +173,7 @@ CDN provides styled toggle buttons that match the design system. Plain checkboxe
 | **Slider** | `chatooly-slider-group` | `chatooly-slider-label` (wrapper div) | `chatooly-slider` |
 | **Select** | `chatooly-input-group` | `chatooly-input-label` | `chatooly-select` |
 | **Text** | `chatooly-input-group` | `chatooly-input-label` | `chatooly-input` |
-| **File** | `chatooly-input-group` | `chatooly-input-label` | `chatooly-input` |
+| **Upload** | `chatooly-upload-area` | `chatooly-upload-text` | `chatooly-upload-input` + `chatooly-upload-icon` |
 | **Button** | N/A | N/A | `chatooly-btn` |
 
 ---
