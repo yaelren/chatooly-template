@@ -4,129 +4,30 @@
     Author: Yael Renous - Studio Video
 
     ═══════════════════════════════════════════════════════════════════════════
-    🤖 AI AGENT INSTRUCTIONS - READ THIS BEFORE BUILDING ANY TOOL
+    🤖 AI AGENTS: REQUIRED READING BEFORE BUILDING ANY TOOL
     ═══════════════════════════════════════════════════════════════════════════
 
-    📋 REQUIRED STRUCTURE - DO NOT DEVIATE:
+    1. READ AGENT-INSTRUCTIONS.md IN THIS DIRECTORY FIRST
+       - Contains all component patterns and class names
+       - Shows correct vs incorrect examples
+       - Includes validation checklist
 
-    1. SECTIONS (Collapsible groups like "Background", "Effects"):
-       ✅ CORRECT:
-       <div class="chatooly-section-card">
-           <h3 class="chatooly-section-header">✨ Section Name</h3>
-           <div class="chatooly-section-content">
-               <!-- Controls go here -->
-           </div>
-       </div>
+    2. VIEW THE WORKING DEMO:
+       https://yaelren.github.io/chatooly-cdn/sv-tools-example.html
+       - This is what your tool should look like
+       - Compare your output to this reference
 
-       ❌ WRONG:
-       <h3 class="section-header">Section Name <span>▼</span></h3>
-       <div class="section-content">...</div>
+    3. COPY THE EXAMPLES IN THIS FILE:
+       - Scroll down to see all control types properly implemented
+       - Use these as copy-paste templates
+       - Don't improvise or create your own patterns
 
-    2. TOGGLE SWITCHES (On/Off controls):
-       ✅ CORRECT:
-       <div class="chatooly-toggle-group">
-           <button type="button" class="chatooly-toggle" id="my-toggle" role="switch" aria-pressed="false">
-               <span class="chatooly-toggle-slider"></span>
-           </button>
-           <label class="chatooly-toggle-label" for="my-toggle">Enable Feature</label>
-       </div>
-
-       ❌ WRONG:
-       <label><input type="checkbox" id="my-toggle"> Enable Feature</label>
-
-    3. COLOR PICKERS:
-       ✅ CORRECT:
-       <div class="chatooly-color-group">
-           <label class="chatooly-color-label" for="my-color">Color</label>
-           <input type="color" class="chatooly-color-input" id="my-color" value="#ff0000">
-       </div>
-
-       ❌ WRONG:
-       <div class="chatooly-control-group">
-           <label for="my-color">Color</label>
-           <input type="color" id="my-color">
-       </div>
-
-    4. SLIDERS (Range inputs):
-       ✅ CORRECT:
-       <div class="chatooly-control-group">
-           <label for="my-slider">Size</label>
-           <input type="range" id="my-slider" min="0" max="100" value="50">
-           <span id="my-slider-value">50</span>
-       </div>
-
-    5. DROPDOWNS (Select elements):
-       ✅ CORRECT:
-       <div class="chatooly-input-group">
-           <label class="chatooly-input-label" for="my-select">Options</label>
-           <select class="chatooly-select" id="my-select">
-               <option value="a">Option A</option>
-           </select>
-       </div>
-
-       ❌ WRONG:
-       <select id="my-select">...</select>
-
-    6. TEXT INPUTS:
-       ✅ CORRECT:
-       <div class="chatooly-input-group">
-           <label class="chatooly-input-label" for="my-input">Text</label>
-           <input type="text" class="chatooly-input" id="my-input" value="">
-       </div>
-
-    7. FILE UPLOADS:
-       ✅ CORRECT:
-       <div class="chatooly-input-group">
-           <label class="chatooly-input-label" for="my-file">Upload</label>
-           <input type="file" class="chatooly-input" id="my-file" accept="image/*">
-       </div>
-
-    ═══════════════════════════════════════════════════════════════════════════
-    🎯 QUICK REFERENCE: COMPONENT CLASS NAMES
-    ═══════════════════════════════════════════════════════════════════════════
-
-    CONTAINERS:
-    • chatooly-section-card         → Wrapper for collapsible sections
-    • chatooly-section-header       → Section title (h3)
-    • chatooly-section-content      → Section body content
-    • chatooly-control-group        → Generic control wrapper
-    • chatooly-input-group          → Text/file input wrapper
-    • chatooly-color-group          → Color picker wrapper
-    • chatooly-toggle-group         → Toggle switch wrapper
-
-    INPUTS:
-    • chatooly-toggle               → Toggle button
-    • chatooly-toggle-slider        → Toggle slider span
-    • chatooly-toggle-label         → Toggle label
-    • chatooly-color-input          → Color input
-    • chatooly-color-label          → Color label
-    • chatooly-select               → Dropdown select
-    • chatooly-input                → Text/file input
-    • chatooly-input-label          → Input label
-    • chatooly-btn                  → Button
-
-    SPECIAL:
-    • Range inputs → No special class, use in chatooly-control-group
-    • Value displays → Plain <span> next to range input
-
-    ═══════════════════════════════════════════════════════════════════════════
-    📁 FILE STRUCTURE
-    ═══════════════════════════════════════════════════════════════════════════
-    - index.html: This file - tool structure and layout
-    - js/main.js: Canvas/tool logic and rendering
-    - js/ui.js: UI controls, collapsible sections, form interactions
-    - js/chatooly-config.js: Tool configuration and metadata
-
-    ═══════════════════════════════════════════════════════════════════════════
-    🔗 CDN REFERENCES (Auto-loaded, verify these exist)
-    ═══════════════════════════════════════════════════════════════════════════
-    - https://yaelren.github.io/chatooly-cdn/css/unified.min.css
-    - https://yaelren.github.io/chatooly-cdn/js/core.min.js
-
-    CDN Source Files (for reference only):
-    - https://raw.githubusercontent.com/yaelren/chatooly-cdn/main/css/variables.css
-    - https://raw.githubusercontent.com/yaelren/chatooly-cdn/main/css/components.css
-    - https://raw.githubusercontent.com/yaelren/chatooly-cdn/main/css/base.css
+    4. KEY RULES:
+       ✅ All sections must use: chatooly-section-card + chatooly-section-header
+       ✅ Toggles are <button>, NOT <input type="checkbox">
+       ✅ Always include proper class prefixes (chatooly-color-group, not control-group)
+       ❌ NEVER use old class names like "section-header" or "section-content"
+       ❌ NEVER create local style.css files (CDN handles all styling)
 
     ═══════════════════════════════════════════════════════════════════════════
 -->
