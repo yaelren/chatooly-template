@@ -20,7 +20,7 @@ This document provides critical instructions for AI agents (Claude, GPT-4, etc.)
 ### ✅ Sections (Collapsible Groups)
 
 ```html
-<div class="chatooly-section-card">
+<div class="chatooly-section-card" data-section="section-name">
     <h3 class="chatooly-section-header">✨ Section Name</h3>
     <div class="chatooly-section-content">
         <!-- Controls here -->
@@ -28,10 +28,16 @@ This document provides critical instructions for AI agents (Claude, GPT-4, etc.)
 </div>
 ```
 
+**Collapsible Behavior:**
+- Sections are automatically collapsible when clicked
+- `data-section` attribute is optional but recommended for JS targeting
+- CSS automatically adds down arrow (▼) that rotates when collapsed
+- Add `collapsed` class to start section collapsed: `<div class="chatooly-section-card collapsed">`
+
 **Common Mistakes:**
 - ❌ `<h3 class="section-header">` (missing `chatooly-` prefix)
-- ❌ Adding `<span>▼</span>` arrows (handled by CSS)
-- ❌ Using `id` attributes for styling hooks
+- ❌ Manually adding `<span>▼</span>` arrows (handled by CSS automatically)
+- ❌ Forgetting `chatooly-section-card` wrapper
 
 ---
 
@@ -78,14 +84,22 @@ CDN provides styled toggle buttons that match the design system. Plain checkboxe
 ### ✅ Sliders (Range Inputs)
 
 ```html
-<div class="chatooly-control-group">
-    <label for="my-slider">Size</label>
-    <input type="range" id="my-slider" min="0" max="100" value="50">
+<div class="chatooly-control-row">
+    <label>Size</label>
+    <input type="range" id="my-slider" min="0" max="100" value="50" class="chatooly-control-slider">
     <span id="my-slider-value">50</span>
 </div>
 ```
 
-**Note:** Range inputs don't need special classes, but value display is separate `<span>`
+**Important:**
+- Use `chatooly-control-row` (not `chatooly-control-group`)
+- Add `chatooly-control-slider` class to `<input type="range">`
+- Value display span is separate and updated via JavaScript
+
+**Common Mistakes:**
+- ❌ Using `chatooly-control-group` instead of `chatooly-control-row`
+- ❌ Missing `chatooly-control-slider` class on the input
+- ❌ Adding `for` attribute to label (not needed for control-row pattern)
 
 ---
 
@@ -139,10 +153,10 @@ CDN provides styled toggle buttons that match the design system. Plain checkboxe
 
 | Element Type | Container | Label | Input |
 |-------------|-----------|-------|-------|
-| **Section** | `chatooly-section-card` | `chatooly-section-header` | `chatooly-section-content` |
+| **Section** | `chatooly-section-card` + `data-section` | `chatooly-section-header` | `chatooly-section-content` |
 | **Toggle** | `chatooly-toggle-group` | `chatooly-toggle-label` | `chatooly-toggle` + `chatooly-toggle-slider` |
 | **Color** | `chatooly-color-group` | `chatooly-color-label` | `chatooly-color-input` |
-| **Slider** | `chatooly-control-group` | `<label>` (plain) | `<input type="range">` (no class) |
+| **Slider** | `chatooly-control-row` | `<label>` (plain) | `chatooly-control-slider` |
 | **Select** | `chatooly-input-group` | `chatooly-input-label` | `chatooly-select` |
 | **Text** | `chatooly-input-group` | `chatooly-input-label` | `chatooly-input` |
 | **File** | `chatooly-input-group` | `chatooly-input-label` | `chatooly-input` |
