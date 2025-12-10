@@ -20,6 +20,8 @@
   const inputEl = document.getElementById('ai-input');
   const sendBtn = document.getElementById('ai-send');
   const clearBtn = document.getElementById('ai-clear');
+  const toggleBtn = document.getElementById('ai-sidebar-toggle');
+  const appContainer = document.querySelector('.chatooly-app-container.with-ai-sidebar');
 
   // State
   let socket = null;
@@ -360,6 +362,28 @@
   }
 
   /**
+   * Toggle sidebar visibility
+   */
+  function toggleSidebar() {
+    if (appContainer) {
+      appContainer.classList.toggle('ai-sidebar-collapsed');
+      // Save state to localStorage
+      const isCollapsed = appContainer.classList.contains('ai-sidebar-collapsed');
+      localStorage.setItem('ai-sidebar-collapsed', isCollapsed);
+    }
+  }
+
+  /**
+   * Restore sidebar state from localStorage
+   */
+  function restoreSidebarState() {
+    const isCollapsed = localStorage.getItem('ai-sidebar-collapsed') === 'true';
+    if (isCollapsed && appContainer) {
+      appContainer.classList.add('ai-sidebar-collapsed');
+    }
+  }
+
+  /**
    * Setup event listeners
    */
   function setupEventListeners() {
@@ -368,6 +392,14 @@
 
     // Clear button
     clearBtn.addEventListener('click', clearConversation);
+
+    // Toggle button
+    if (toggleBtn) {
+      toggleBtn.addEventListener('click', toggleSidebar);
+    }
+
+    // Restore sidebar state
+    restoreSidebarState();
 
     // Enter to send (Shift+Enter for new line)
     inputEl.addEventListener('keydown', (e) => {
@@ -402,6 +434,7 @@
     connect,
     sendMessage,
     clearConversation,
+    toggleSidebar,
     isConnected: () => isConnected,
     isThinking: () => isThinking
   };
