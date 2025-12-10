@@ -1,34 +1,20 @@
 <!DOCTYPE html>
 <!--
-    Chatooly Tool Template v2.0
+    Chatooly Tool Template v2.0 - AI Builder Edition
     Author: Yael Renous - Studio Video
 
     ═══════════════════════════════════════════════════════════════════════════
-    🤖 AI AGENTS: REQUIRED READING BEFORE BUILDING ANY TOOL
+    🤖 AI-POWERED TOOL BUILDER
     ═══════════════════════════════════════════════════════════════════════════
 
-    1. READ AGENT-INSTRUCTIONS.md IN THIS DIRECTORY FIRST
-       - Contains all component patterns and class names
-       - Shows correct vs incorrect examples
-       - Includes validation checklist
+    This template includes an AI sidebar that uses the Claude Agent SDK to
+    help you build Chatooly tools through natural language conversation.
 
-    2. VIEW THE WORKING DEMO:
-       https://yaelren.github.io/chatooly-cdn/component-demo.html
-       - This is what your tool should look like
-       - Compare your output to this reference
-
-    3. COPY THE EXAMPLES IN THIS FILE:
-       - Scroll down to see all control types properly implemented
-       - Use these as copy-paste templates
-       - Don't improvise or create your own patterns
-
-    4. KEY RULES:
-       ✅ Sections: chatooly-section-card + chatooly-section-header (auto-collapsible!)
-       ✅ Sliders: chatooly-slider-group + chatooly-slider-label + chatooly-slider
-       ✅ Toggles: <button class="chatooly-toggle">, NOT <input type="checkbox">
-       ✅ Colors: chatooly-color-group + chatooly-color-input
-       ❌ NEVER use old class names like "section-header" or "control-group"
-       ❌ NEVER create local style.css files (CDN handles all styling)
+    To use:
+    1. Add your ANTHROPIC_API_KEY to the .env file
+    2. Run: npm install && npm start
+    3. Open http://localhost:3001 in your browser
+    4. Use the AI sidebar to describe the tool you want to build
 
     ═══════════════════════════════════════════════════════════════════════════
 -->
@@ -36,94 +22,339 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
+
     <!-- ========== EDIT THIS: Your Tool Name ========== -->
-    <title>Tool Name - Chatooly</title>
-    
+    <title>Bouncy Balls - Chatooly</title>
+
     <!-- ========== DO NOT EDIT: Required CDN Styles ========== -->
     <link rel="stylesheet" href="https://yaelren.github.io/chatooly-cdn/css/unified.min.css?v=2.1">
+
+    <!-- AI Sidebar Styles -->
+    <style>
+        /* AI Sidebar Layout */
+        .chatooly-app-container.with-ai-sidebar {
+            grid-template-columns: 300px 1fr 380px;
+        }
+
+        .chatooly-ai-sidebar {
+            background: var(--chatooly-color-surface, #1a1a1a);
+            border-left: 1px solid var(--chatooly-color-border, #333);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .ai-sidebar-header {
+            padding: 16px;
+            border-bottom: 1px solid var(--chatooly-color-border, #333);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .ai-sidebar-header h3 {
+            margin: 0;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--chatooly-color-text, #fff);
+        }
+
+        .ai-status {
+            font-size: 11px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+
+        .ai-status.disconnected {
+            background: #4a3030;
+            color: #ff6b6b;
+        }
+
+        .ai-status.connected {
+            background: #2a4a2a;
+            color: #6bff6b;
+        }
+
+        .ai-status.thinking {
+            background: #4a4a2a;
+            color: #ffff6b;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .ai-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .ai-message {
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            line-height: 1.5;
+            max-width: 95%;
+            word-wrap: break-word;
+        }
+
+        .ai-message.user {
+            background: var(--chatooly-color-primary, #4a90d9);
+            color: #fff;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+
+        .ai-message.assistant {
+            background: var(--chatooly-color-surface-alt, #2a2a2a);
+            color: var(--chatooly-color-text, #fff);
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+
+        .ai-message.system {
+            background: transparent;
+            color: var(--chatooly-color-text-muted, #888);
+            font-size: 11px;
+            text-align: center;
+            align-self: center;
+            padding: 8px;
+        }
+
+        .ai-message.error {
+            background: #4a2a2a;
+            color: #ff6b6b;
+            border: 1px solid #ff6b6b33;
+        }
+
+        .ai-message.tool-use {
+            background: #2a3a4a;
+            color: #6bb3ff;
+            font-size: 11px;
+            font-family: monospace;
+            padding: 8px 12px;
+        }
+
+        .ai-message pre {
+            margin: 8px 0 0 0;
+            padding: 8px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 4px;
+            overflow-x: auto;
+            font-size: 11px;
+        }
+
+        .ai-message code {
+            font-family: 'Monaco', 'Consolas', monospace;
+        }
+
+        .ai-input-area {
+            padding: 16px;
+            border-top: 1px solid var(--chatooly-color-border, #333);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .ai-input-area textarea {
+            width: 100%;
+            min-height: 80px;
+            max-height: 200px;
+            padding: 12px;
+            border: 1px solid var(--chatooly-color-border, #333);
+            border-radius: 8px;
+            background: var(--chatooly-color-input-bg, #2a2a2a);
+            color: var(--chatooly-color-text, #fff);
+            font-size: 13px;
+            font-family: inherit;
+            resize: vertical;
+        }
+
+        .ai-input-area textarea:focus {
+            outline: none;
+            border-color: var(--chatooly-color-primary, #4a90d9);
+        }
+
+        .ai-input-area textarea::placeholder {
+            color: var(--chatooly-color-text-muted, #888);
+        }
+
+        .ai-input-buttons {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+
+        .ai-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .ai-btn-primary {
+            background: var(--chatooly-color-primary, #4a90d9);
+            color: #fff;
+        }
+
+        .ai-btn-primary:hover:not(:disabled) {
+            background: var(--chatooly-color-primary-hover, #5aa0e9);
+        }
+
+        .ai-btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .ai-btn-secondary {
+            background: transparent;
+            color: var(--chatooly-color-text-muted, #888);
+            border: 1px solid var(--chatooly-color-border, #333);
+        }
+
+        .ai-btn-secondary:hover {
+            background: var(--chatooly-color-surface-alt, #2a2a2a);
+        }
+
+        /* Welcome message */
+        .ai-welcome {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--chatooly-color-text-muted, #888);
+        }
+
+        .ai-welcome h4 {
+            margin: 0 0 8px 0;
+            color: var(--chatooly-color-text, #fff);
+            font-size: 16px;
+        }
+
+        .ai-welcome p {
+            margin: 0;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        /* Responsive: hide sidebar on small screens */
+        @media (max-width: 1200px) {
+            .chatooly-app-container.with-ai-sidebar {
+                grid-template-columns: 280px 1fr;
+            }
+            .chatooly-ai-sidebar {
+                display: none;
+            }
+        }
+    </style>
 </head>
 <body>
     <!-- ========== EDIT THIS: Update header title to match your tool ========== -->
     <header class="chatooly-header">
-        <div class="chatooly-header-title">Tool Name</div>
+        <div class="chatooly-header-title">Bouncy Balls</div>
         <div class="chatooly-header-credit">MADE WITH CHATOOLY</div>
     </header>
 
-    <div class="chatooly-app-container">
+    <div class="chatooly-app-container with-ai-sidebar">
         <!-- Left Panel: Tool Controls -->
         <div class="chatooly-controls-panel">
             <!-- ========== EDIT THIS: Tool Description ========== -->
             <div class="chatooly-controls-header">
-                <p>Tool description goes here</p>
+                <p>Click anywhere on the canvas to drop bouncy balls! Control their size, color, and physics properties.</p>
             </div>
-            
+
             <div class="chatooly-controls-content">
                 <!-- ========== CANVAS CONTROLS AUTO-INJECTED BY CDN ========== -->
                 <!-- The Chatooly CDN automatically injects canvas controls here when it detects chatooly-canvas -->
 
                 <!-- ========== EDIT BELOW: Add Your Custom Tool Controls Here ========== -->
 
-                <!-- ========== EXAMPLE CONTROLS (DELETE OR MODIFY AS NEEDED) ========== -->
+                <!-- ========== BALL CONTROLS ========== -->
 
-                <!-- Example Section with Multiple Control Types (Click header to collapse) -->
-                <div class="chatooly-section-card" data-section="examples">
-                    <h3 class="chatooly-section-header">🎨 Example Controls</h3>
+                <!-- Ball Properties Section -->
+                <div class="chatooly-section-card" data-section="ball-properties">
+                    <h3 class="chatooly-section-header">⚽ Ball Properties</h3>
                     <div class="chatooly-section-content">
 
-                        <!-- Text Input Example -->
+                        <!-- Ball Shape -->
                         <div class="chatooly-input-group">
-                            <label class="chatooly-input-label" for="example-text">Text Input</label>
-                            <input type="text" class="chatooly-input" id="example-text" value="Example Text" placeholder="Enter text...">
-                        </div>
-
-                        <!-- Slider Example -->
-                        <div class="chatooly-slider-group">
-                            <div class="chatooly-slider-label">
-                                <span>Slider (0-100)</span>
-                                <span class="chatooly-slider-value" id="example-slider-value">50</span>
-                            </div>
-                            <input type="range" class="chatooly-slider" id="example-slider" min="0" max="100" value="50">
-                        </div>
-
-                        <!-- Color Picker Example -->
-                        <div class="chatooly-color-group">
-                            <label class="chatooly-color-label" for="example-color">Color Picker</label>
-                            <input type="color" class="chatooly-color-input" id="example-color" value="#ff5500">
-                        </div>
-
-                        <!-- Dropdown Example -->
-                        <div class="chatooly-input-group">
-                            <label class="chatooly-input-label" for="example-select">Dropdown</label>
-                            <select class="chatooly-select" id="example-select">
-                                <option value="option1">Option 1</option>
-                                <option value="option2">Option 2</option>
-                                <option value="option3">Option 3</option>
+                            <label class="chatooly-input-label" for="ball-shape">Ball Shape</label>
+                            <select class="chatooly-select" id="ball-shape">
+                                <option value="circle">● Circle</option>
+                                <option value="square">■ Square</option>
+                                <option value="triangle">▲ Triangle</option>
+                                <option value="star">★ Star</option>
                             </select>
                         </div>
 
-                        <!-- Toggle Switch Example -->
-                        <div class="chatooly-toggle-group">
-                            <button type="button" class="chatooly-toggle" id="example-toggle" role="switch" aria-pressed="false">
-                                <span class="chatooly-toggle-slider"></span>
-                            </button>
-                            <label class="chatooly-toggle-label" for="example-toggle">Enable Example Feature</label>
+                        <!-- Ball Color -->
+                        <div class="chatooly-color-group">
+                            <label class="chatooly-color-label" for="ball-color">Ball Color</label>
+                            <input type="color" class="chatooly-color-input" id="ball-color" value="#4a90d9">
                         </div>
 
-                        <!-- File Upload Example -->
-                        <div class="chatooly-upload-area" style="height: 100px;">
-                            <div class="chatooly-upload-icon">
-                                <svg viewBox="0 0 11 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M7.94444 0L11 3V11.4048C10.9998 11.5627 10.9358 11.7141 10.822 11.8257C10.7083 11.9373 10.554 12 10.3932 12H0.606833C0.446342 11.9989 0.292733 11.9359 0.179189 11.8245C0.0656443 11.7131 0.00128006 11.5624 0 11.4048V0.5952C0 0.2664 0.271944 0 0.606833 0H7.94444ZM6.11111 6H7.94444L5.5 3.6L3.05556 6H4.88889V8.4H6.11111V6Z" fill="var(--fill-0, #454545)"/>
-                                </svg>
+                        <!-- Ball Size -->
+                        <div class="chatooly-slider-group">
+                            <div class="chatooly-slider-label">
+                                <span>Ball Size</span>
+                                <span class="chatooly-slider-value" id="ball-size-value">20</span>
                             </div>
-                            <div class="chatooly-upload-text">Upload Image</div>
-                            <input type="file" class="chatooly-upload-input" id="example-file" accept="image/*">
+                            <input type="range" class="chatooly-slider" id="ball-size" min="5" max="50" value="20">
+                        </div>
+
+                        <!-- Initial Speed -->
+                        <div class="chatooly-slider-group">
+                            <div class="chatooly-slider-label">
+                                <span>Initial Speed</span>
+                                <span class="chatooly-slider-value" id="ball-speed-value">5</span>
+                            </div>
+                            <input type="range" class="chatooly-slider" id="ball-speed" min="1" max="15" value="5">
                         </div>
 
                     </div>
                 </div>
-                <!-- ========== END EXAMPLE CONTROLS ========== -->
+
+                <!-- Physics Settings Section -->
+                <div class="chatooly-section-card" data-section="physics">
+                    <h3 class="chatooly-section-header">⚖️ Physics</h3>
+                    <div class="chatooly-section-content">
+
+                        <!-- Gravity -->
+                        <div class="chatooly-slider-group">
+                            <div class="chatooly-slider-label">
+                                <span>Gravity</span>
+                                <span class="chatooly-slider-value" id="gravity-value">0.5</span>
+                            </div>
+                            <input type="range" class="chatooly-slider" id="gravity" min="0" max="2" step="0.1" value="0.5">
+                        </div>
+
+                        <!-- Bounce Damping -->
+                        <div class="chatooly-slider-group">
+                            <div class="chatooly-slider-label">
+                                <span>Bounce Damping</span>
+                                <span class="chatooly-slider-value" id="bounce-damping-value">0.8</span>
+                            </div>
+                            <input type="range" class="chatooly-slider" id="bounce-damping" min="0.1" max="1" step="0.1" value="0.8">
+                        </div>
+
+                        <!-- Clear All Balls Button -->
+                        <div style="margin-top: 16px;">
+                            <button type="button" class="chatooly-btn" id="clear-balls" style="width: 100%;">Clear All Balls</button>
+                        </div>
+
+                    </div>
+                </div>
 
                 <!-- ========== BACKGROUND CONTROLS ========== -->
                 <div class="chatooly-section-card" data-section="background">
@@ -181,8 +412,8 @@
                 <!-- ========== END EDIT SECTION ========== -->
             </div>
         </div>
-        
-        <!-- Right Panel: Preview/Canvas Area -->
+
+        <!-- Center Panel: Preview/Canvas Area -->
         <div class="chatooly-preview-panel">
             <!-- ========== DO NOT EDIT: Required Export Container ========== -->
             <div id="chatooly-container">
@@ -194,13 +425,44 @@
                 <!-- ========== END EDIT SECTION ========== -->
             </div>
         </div>
+
+        <!-- Right Panel: AI Sidebar -->
+        <div class="chatooly-ai-sidebar">
+            <div class="ai-sidebar-header">
+                <h3>🤖 AI Tool Builder</h3>
+                <span class="ai-status disconnected" id="ai-status">Disconnected</span>
+            </div>
+
+            <div class="ai-messages" id="ai-messages">
+                <div class="ai-welcome">
+                    <h4>Welcome to Chatooly AI</h4>
+                    <p>Describe the tool you want to build, and I'll create it for you following all Chatooly conventions.</p>
+                    <p style="margin-top: 12px; font-size: 11px;">Examples:<br>
+                    "Create a gradient generator"<br>
+                    "Build a mandala pattern tool"<br>
+                    "Make a color palette picker"</p>
+                </div>
+            </div>
+
+            <div class="ai-input-area">
+                <textarea
+                    id="ai-input"
+                    placeholder="Describe the tool you want to build..."
+                    rows="3"
+                ></textarea>
+                <div class="ai-input-buttons">
+                    <button class="ai-btn ai-btn-secondary" id="ai-clear" title="Clear conversation">Clear</button>
+                    <button class="ai-btn ai-btn-primary" id="ai-send" disabled>Send</button>
+                </div>
+            </div>
+        </div>
     </div>
-    
+
     <!-- ========== DO NOT EDIT: Chatooly CDN v2.0 Integration ========== -->
     <!-- This script automatically provides: Dark theme styling + Static/Video export functionality -->
     <!-- Video support: Detects p5.js, Three.js, Canvas animations and provides MediaRecorder API export -->
     <script src="https://yaelren.github.io/chatooly-cdn/js/core.min.js?v=2.1"></script>
-    
+
     <!-- ========== DO NOT EDIT: Chatooly Configuration ========== -->
     <script src="js/chatooly-config.js"></script>
 
@@ -209,5 +471,8 @@
 
     <!-- ========== DO NOT EDIT: Your Tool Logic ========== -->
     <script src="js/main.js"></script>
+
+    <!-- ========== AI Sidebar Logic ========== -->
+    <script src="js/ai-sidebar.js"></script>
 </body>
 </html>
