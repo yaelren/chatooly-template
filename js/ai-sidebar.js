@@ -12,6 +12,7 @@
   const WS_URL = `ws://${window.location.hostname}:3001/ws`;
   const RECONNECT_DELAY = 3000;
   const MAX_RECONNECT_ATTEMPTS = 5;
+  const AUTO_REFRESH_DELAY = 1500; // Delay before auto-refresh after task completion
 
   // DOM Elements
   const statusEl = document.getElementById('ai-status');
@@ -126,6 +127,8 @@
           updateStatus('connected', 'Connected');
           if (data.subtype === 'success') {
             addMessage('system', `✅ Task completed (${data.num_turns} turns, $${data.total_cost_usd?.toFixed(4) || '0.00'})`);
+            // Auto-refresh page after successful task completion
+            scheduleAutoRefresh();
           } else {
             addMessage('error', `❌ ${data.subtype}: ${data.errors?.join(', ') || 'Unknown error'}`);
           }
@@ -219,6 +222,18 @@
 
       addMessage('system', `♻️ Script reloaded: ${src}`);
     }
+  }
+
+  /**
+   * Schedule an automatic page refresh after task completion
+   */
+  function scheduleAutoRefresh() {
+    addMessage('system', `🔄 Refreshing page in ${AUTO_REFRESH_DELAY / 1000}s to show updates...`);
+    updateStatus('thinking', 'Refreshing...');
+
+    setTimeout(() => {
+      window.location.reload();
+    }, AUTO_REFRESH_DELAY);
   }
 
   /**

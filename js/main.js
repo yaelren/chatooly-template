@@ -20,11 +20,12 @@ if (window.Chatooly && window.Chatooly.backgroundManager) {
 
 // ========== BALL PHYSICS ENGINE ==========
 class Ball {
-    constructor(x, y, radius, color, vx, vy, shape = 'circle') {
+    constructor(x, y, radius, color, vx, vy, shape = 'circle', outlineColor = null) {
         this.x = x;
         this.y = y;
         this.radius = radius;
         this.color = color;
+        this.outlineColor = outlineColor || this.adjustBrightness(color, -50);
         this.vx = vx;
         this.vy = vy;
         this.shape = shape;
@@ -78,9 +79,6 @@ class Ball {
             case 'triangle':
                 this.drawTriangle(context);
                 break;
-            case 'star':
-                this.drawStar(context);
-                break;
             default:
                 this.drawCircle(context);
         }
@@ -102,6 +100,11 @@ class Ball {
 
         context.fillStyle = gradient;
         context.fill();
+
+        // Add border with custom outline color
+        context.strokeStyle = this.outlineColor;
+        context.lineWidth = 2;
+        context.stroke();
     }
 
     drawSquare(context) {
@@ -117,8 +120,8 @@ class Ball {
         context.fillStyle = gradient;
         context.fill();
 
-        // Add border
-        context.strokeStyle = this.adjustBrightness(this.color, -50);
+        // Add border with custom outline color
+        context.strokeStyle = this.outlineColor;
         context.lineWidth = 2;
         context.stroke();
     }
@@ -139,47 +142,12 @@ class Ball {
         context.fillStyle = gradient;
         context.fill();
 
-        // Add border
-        context.strokeStyle = this.adjustBrightness(this.color, -50);
+        // Add border with custom outline color
+        context.strokeStyle = this.outlineColor;
         context.lineWidth = 2;
         context.stroke();
     }
 
-    drawStar(context) {
-        const outerRadius = this.radius;
-        const innerRadius = this.radius * 0.5;
-        const spikes = 5;
-
-        context.beginPath();
-
-        for (let i = 0; i < spikes * 2; i++) {
-            const radius = i % 2 === 0 ? outerRadius : innerRadius;
-            const angle = (i * Math.PI) / spikes;
-            const x = Math.cos(angle) * radius;
-            const y = Math.sin(angle) * radius;
-
-            if (i === 0) {
-                context.moveTo(x, y);
-            } else {
-                context.lineTo(x, y);
-            }
-        }
-
-        context.closePath();
-
-        // Add gradient effect
-        const gradient = context.createRadialGradient(0, 0, 0, 0, 0, outerRadius);
-        gradient.addColorStop(0, this.adjustBrightness(this.color, 70));
-        gradient.addColorStop(1, this.adjustBrightness(this.color, -30));
-
-        context.fillStyle = gradient;
-        context.fill();
-
-        // Add border
-        context.strokeStyle = this.adjustBrightness(this.color, -50);
-        context.lineWidth = 2;
-        context.stroke();
-    }
 
     adjustBrightness(color, amount) {
         const hex = color.replace('#', '');
@@ -202,10 +170,19 @@ class BouncyBallsEngine {
         this.settings = {
             ballShape: 'circle',
             ballColor: '#4a90d9',
+            outlineColor: '#2c5aa0',
             ballSize: 20,
             ballSpeed: 5,
             gravity: 0.5,
             bounceDamping: 0.8
+        };
+
+        // Gradient settings
+        this.gradientSettings = {
+            enabled: false,
+            startColor: '#4a90d9',
+            endColor: '#e74c3c',
+            direction: 'vertical'
         };
 
         this.init();
@@ -225,6 +202,7 @@ class BouncyBallsEngine {
 
         // Background control event listeners
         this.setupBackgroundControls();
+        this.setupGradientControls();
     }
 
     setupBackgroundControls() {
@@ -285,6 +263,88 @@ class BouncyBallsEngine {
         }
     }
 
+    setupGradientControls() {
+        // Gradient toggle
+        const gradientBg = document.getElementById('gradient-bg');
+        if (gradientBg) {
+            gradientBg.addEventListener('change', (e) => {
+                this.gradientSettings.enabled = e.target.checked;
+                this.updateGradientUI();
+            });
+        }
+
+        // Gradient start color
+        const gradientStartColor = document.getElementById('gradient-start-color');
+        if (gradientStartColor) {
+            gradientStartColor.addEventListener('input', (e) => {
+                this.gradientSettings.startColor = e.target.value;
+            });
+        }
+
+        // Gradient end color
+        const gradientEndColor = document.getElementById('gradient-end-color');
+        if (gradientEndColor) {
+            gradientEndColor.addEventListener('input', (e) => {
+                this.gradientSettings.endColor = e.target.value;
+            });
+        }
+
+        // Gradient direction
+        const gradientDirection = document.getElementById('gradient-direction');
+        if (gradientDirection) {
+            gradientDirection.addEventListener('change', (e) => {
+                this.gradientSettings.direction = e.target.value;
+            });
+        }
+    }
+
+    updateGradientUI() {
+        const gradientControls = document.getElementById('gradient-controls');
+        const bgColorGroup = document.getElementById('bg-color-group');
+
+        if (gradientControls) {
+            gradientControls.style.display = this.gradientSettings.enabled ? 'block' : 'none';
+        }
+
+        if (bgColorGroup) {
+            bgColorGroup.style.display = this.gradientSettings.enabled ? 'none' : 'block';
+        }
+    }
+
+    createGradient(context, width, height) {
+        if (!this.gradientSettings.enabled) return null;
+
+        let gradient;
+
+        switch (this.gradientSettings.direction) {
+            case 'horizontal':
+                gradient = context.createLinearGradient(0, 0, width, 0);
+                break;
+            case 'vertical':
+                gradient = context.createLinearGradient(0, 0, 0, height);
+                break;
+            case 'diagonal-down':
+                gradient = context.createLinearGradient(0, 0, width, height);
+                break;
+            case 'diagonal-up':
+                gradient = context.createLinearGradient(0, height, width, 0);
+                break;
+            case 'radial':
+                gradient = context.createRadialGradient(
+                    width / 2, height / 2, 0,
+                    width / 2, height / 2, Math.min(width, height) / 2
+                );
+                break;
+            default:
+                gradient = context.createLinearGradient(0, 0, 0, height);
+        }
+
+        gradient.addColorStop(0, this.gradientSettings.startColor);
+        gradient.addColorStop(1, this.gradientSettings.endColor);
+
+        return gradient;
+    }
+
     onCanvasClick(e) {
         const coords = window.Chatooly && window.Chatooly.utils ?
             window.Chatooly.utils.mapMouseToCanvas(e, canvas) :
@@ -303,7 +363,8 @@ class BouncyBallsEngine {
             this.settings.ballSize,
             this.settings.ballColor,
             vx, vy,
-            this.settings.ballShape
+            this.settings.ballShape,
+            this.settings.outlineColor
         );
 
         // Update ball physics settings
@@ -384,8 +445,16 @@ class BouncyBallsEngine {
         // Clear canvas
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        // Draw background FIRST
-        if (window.Chatooly && window.Chatooly.backgroundManager) {
+        // Draw background FIRST - check for gradient background or use Chatooly background manager
+        if (this.gradientSettings.enabled) {
+            // Draw gradient background
+            const gradient = this.createGradient(ctx, canvas.width, canvas.height);
+            if (gradient) {
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+            }
+        } else if (window.Chatooly && window.Chatooly.backgroundManager) {
+            // Use Chatooly background manager for solid colors and images
             Chatooly.backgroundManager.drawToCanvas(ctx, canvas.width, canvas.height);
         }
 
@@ -438,8 +507,16 @@ window.renderHighResolution = function(targetCanvas, scale) {
     // Clear export canvas
     exportCtx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Draw background at export resolution
-    if (window.Chatooly && window.Chatooly.backgroundManager) {
+    // Draw background at export resolution - check for gradient or use Chatooly background manager
+    if (ballsEngine.gradientSettings.enabled) {
+        // Draw gradient background for export
+        const gradient = ballsEngine.createGradient(exportCtx, canvas.width, canvas.height);
+        if (gradient) {
+            exportCtx.fillStyle = gradient;
+            exportCtx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+    } else if (window.Chatooly && window.Chatooly.backgroundManager) {
+        // Use Chatooly background manager for solid colors and images
         Chatooly.backgroundManager.drawToCanvas(exportCtx, canvas.width, canvas.height);
     }
 

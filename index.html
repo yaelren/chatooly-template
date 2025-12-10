@@ -33,7 +33,7 @@
     <style>
         /* AI Sidebar Layout */
         .chatooly-app-container.with-ai-sidebar {
-            grid-template-columns: 300px 1fr 380px;
+            grid-template-columns: 300px 1fr 300px;
         }
 
         .chatooly-ai-sidebar {
@@ -43,6 +43,9 @@
             flex-direction: column;
             height: 100%;
             overflow: hidden;
+            width: 300px;
+            min-width: 300px;
+            max-width: 300px;
         }
 
         .ai-sidebar-header {
@@ -92,10 +95,13 @@
         .ai-messages {
             flex: 1;
             overflow-y: auto;
+            overflow-x: hidden;
             padding: 16px;
             display: flex;
             flex-direction: column;
             gap: 12px;
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .ai-message {
@@ -103,8 +109,12 @@
             border-radius: 8px;
             font-size: 13px;
             line-height: 1.5;
-            max-width: 95%;
+            max-width: 100%;
             word-wrap: break-word;
+            overflow-wrap: break-word;
+            word-break: break-word;
+            white-space: pre-wrap;
+            box-sizing: border-box;
         }
 
         .ai-message.user {
@@ -294,7 +304,6 @@
                                 <option value="circle">● Circle</option>
                                 <option value="square">■ Square</option>
                                 <option value="triangle">▲ Triangle</option>
-                                <option value="star">★ Star</option>
                             </select>
                         </div>
 
@@ -302,6 +311,12 @@
                         <div class="chatooly-color-group">
                             <label class="chatooly-color-label" for="ball-color">Ball Color</label>
                             <input type="color" class="chatooly-color-input" id="ball-color" value="#4a90d9">
+                        </div>
+
+                        <!-- Outline Color -->
+                        <div class="chatooly-color-group">
+                            <label class="chatooly-color-label" for="outline-color">Outline Color</label>
+                            <input type="color" class="chatooly-color-input" id="outline-color" value="#2c5aa0">
                         </div>
 
                         <!-- Ball Size -->
@@ -376,6 +391,45 @@
                         <div class="chatooly-color-group" id="bg-color-group">
                             <label class="chatooly-color-label" for="bg-color">Background Color</label>
                             <input type="color" class="chatooly-color-input" id="bg-color" value="#FFFFFF">
+                        </div>
+
+                        <!-- Gradient Background Toggle -->
+                        <div class="chatooly-toggle-group" id="gradient-toggle-group">
+                            <button type="button"
+                                    class="chatooly-toggle"
+                                    id="gradient-bg"
+                                    role="switch"
+                                    aria-pressed="false">
+                                <span class="chatooly-toggle-slider"></span>
+                            </button>
+                            <label class="chatooly-toggle-label" for="gradient-bg">Gradient Background</label>
+                        </div>
+
+                        <!-- Gradient Controls (hidden by default) -->
+                        <div id="gradient-controls" style="display: none;">
+                            <!-- Gradient Start Color -->
+                            <div class="chatooly-color-group">
+                                <label class="chatooly-color-label" for="gradient-start-color">Start Color</label>
+                                <input type="color" class="chatooly-color-input" id="gradient-start-color" value="#4a90d9">
+                            </div>
+
+                            <!-- Gradient End Color -->
+                            <div class="chatooly-color-group">
+                                <label class="chatooly-color-label" for="gradient-end-color">End Color</label>
+                                <input type="color" class="chatooly-color-input" id="gradient-end-color" value="#e74c3c">
+                            </div>
+
+                            <!-- Gradient Direction -->
+                            <div class="chatooly-input-group">
+                                <label class="chatooly-input-label" for="gradient-direction">Direction</label>
+                                <select class="chatooly-select" id="gradient-direction">
+                                    <option value="vertical">↕ Vertical (Top to Bottom)</option>
+                                    <option value="horizontal">↔ Horizontal (Left to Right)</option>
+                                    <option value="diagonal-down">↘ Diagonal (Top-Left to Bottom-Right)</option>
+                                    <option value="diagonal-up">↗ Diagonal (Bottom-Left to Top-Right)</option>
+                                    <option value="radial">○ Radial (Center Outward)</option>
+                                </select>
+                            </div>
                         </div>
 
                         <!-- Background Image Upload -->

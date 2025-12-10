@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupBallControls();
     setupPhysicsControls();
     setupBackgroundToggle();
+    setupGradientControls();
     setupUtilityButtons();
 });
 
@@ -32,6 +33,20 @@ function setupBallControls() {
         ballColorInput.addEventListener('input', (e) => {
             if (window.ballsEngine) {
                 window.ballsEngine.updateSettings({ ballColor: e.target.value });
+            }
+        });
+    }
+
+    // Outline Color Control
+    const outlineColorInput = document.getElementById('outline-color');
+    if (outlineColorInput) {
+        outlineColorInput.addEventListener('input', (e) => {
+            if (window.ballsEngine) {
+                window.ballsEngine.updateSettings({ outlineColor: e.target.value });
+                // Update existing balls' outline color
+                window.ballsEngine.balls.forEach(ball => {
+                    ball.outlineColor = e.target.value;
+                });
             }
         });
     }
@@ -128,6 +143,28 @@ function setupBackgroundToggle() {
             const changeEvent = new Event('change');
             transparentToggle.checked = newState;
             transparentToggle.dispatchEvent(changeEvent);
+        });
+    }
+}
+
+// ========== GRADIENT CONTROLS ==========
+function setupGradientControls() {
+    const gradientToggle = document.getElementById('gradient-bg');
+
+    if (gradientToggle) {
+        // Initialize gradient toggle button click handler
+        gradientToggle.addEventListener('click', () => {
+            const isPressed = gradientToggle.getAttribute('aria-pressed') === 'true';
+            const newState = !isPressed;
+
+            // Update toggle button state
+            gradientToggle.setAttribute('aria-pressed', newState);
+
+            // Create a custom event for the gradient background change
+            // The main.js setupGradientControls will handle this via its own event listener
+            const changeEvent = new Event('change');
+            gradientToggle.checked = newState;
+            gradientToggle.dispatchEvent(changeEvent);
         });
     }
 }
