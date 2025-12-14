@@ -26,9 +26,11 @@
   const sendBtn = document.getElementById('ai-send');
   const clearBtn = document.getElementById('ai-clear');
   const toggleBtn = document.getElementById('ai-sidebar-toggle');
+  const resetBtn = document.getElementById('ai-reset');
   const shellContainer = document.getElementById('shell-container');
   const toolFrame = document.getElementById('tool-frame');
   const loadingOverlay = document.getElementById('tool-loading-overlay');
+  const typingIndicator = document.getElementById('ai-typing');
 
   // State
   let socket = null;
@@ -123,25 +125,26 @@
         case 'thinking':
           isThinking = true;
           updateStatus('thinking', 'Thinking...');
+          showTypingIndicator(true);
           break;
 
         case 'assistant':
-          isThinking = false;
-          updateStatus('connected', 'Connected');
+          // Don't hide typing indicator yet - agent may still be working
+          // Only hide on 'result' message
           addMessage('assistant', data.content);
           break;
 
         case 'tool_use':
-          // Show loading overlay when agent is editing files
+          // Show loading overlay when agent is editing files - no chat message (too verbose)
           if (loadingOverlay && (data.tool === 'Edit' || data.tool === 'Write' || data.tool === 'MultiEdit')) {
             loadingOverlay.style.display = 'flex';
           }
-          addMessage('tool-use', `🔧 Using: ${data.tool}`);
           break;
 
         case 'result':
           isThinking = false;
           updateStatus('connected', 'Connected');
+          showTypingIndicator(false);
 
           // Hide loading overlay
           if (loadingOverlay) {
@@ -149,7 +152,7 @@
           }
 
           if (data.subtype === 'success') {
-            addMessage('system', `✅ Task completed (${data.num_turns} turns, $${data.total_cost_usd?.toFixed(4) || '0.00'})`);
+            addMessage('system', `✅ Done`);
 
             // Only auto-refresh if HTML was changed during this task
             const htmlChanged = Array.from(changedFilesInTask).some(f => f.endsWith('.html'));
@@ -158,20 +161,19 @@
             }
             changedFilesInTask.clear(); // Reset for next task
           } else {
-            addMessage('error', `❌ ${data.subtype}: ${data.errors?.join(', ') || 'Unknown error'}`);
+            addMessage('error', `❌ ${data.errors?.join(', ') || 'Error'}`);
             changedFilesInTask.clear(); // Reset on error too
           }
           break;
 
         case 'system':
-          if (data.subtype === 'init') {
-            addMessage('system', `🚀 Agent initialized with ${data.tools?.length || 0} tools`);
-          }
+          // Don't show init message - too noisy
           break;
 
         case 'error':
           isThinking = false;
           updateStatus('connected', 'Connected');
+          showTypingIndicator(false);
           // Hide loading overlay on error
           if (loadingOverlay) {
             loadingOverlay.style.display = 'none';
@@ -192,12 +194,18 @@
         case 'cancelled':
           isThinking = false;
           updateStatus('connected', 'Connected');
+          showTypingIndicator(false);
           // Hide loading overlay on cancellation
           if (loadingOverlay) {
             loadingOverlay.style.display = 'none';
           }
           changedFilesInTask.clear();
           addMessage('system', '🛑 ' + data.message);
+          break;
+
+        case 'reset-complete':
+          addMessage('system', '✅ Tool reset to blank template');
+          refreshToolFrame();
           break;
 
         default:
@@ -222,9 +230,8 @@
       eventType
     });
 
-    // For HTML changes (index.html), refresh the iframe
+    // For HTML changes (index.html), refresh the iframe silently
     if (file.endsWith('.html') && file.includes('index')) {
-      addMessage('system', `📄 HTML changed - refreshing tool...`);
       refreshToolFrame();
     }
   }
@@ -234,13 +241,12 @@
    * This is the KEY DIFFERENCE from the original ai-sidebar.js
    */
   function scheduleAutoRefresh() {
-    addMessage('system', `🔄 Refreshing tool in ${AUTO_REFRESH_DELAY / 1000}s...`);
+    // No message - just show loading state briefly
     updateStatus('thinking', 'Refreshing...');
 
     setTimeout(() => {
       refreshToolFrame();
       updateStatus('connected', 'Connected');
-      addMessage('system', '✨ Tool refreshed - chat preserved!');
     }, AUTO_REFRESH_DELAY);
   }
 
@@ -309,6 +315,15 @@
   }
 
   /**
+   * Show or hide the typing indicator
+   */
+  function showTypingIndicator(show) {
+    if (typingIndicator) {
+      typingIndicator.classList.toggle('visible', show);
+    }
+  }
+
+  /**
    * Add a message to the chat
    */
   function addMessage(type, content) {
@@ -321,8 +336,27 @@
     const messageEl = document.createElement('div');
     messageEl.className = `ai-message ${type}`;
 
-    // Format content (handle markdown-like formatting)
-    messageEl.innerHTML = formatContent(content);
+    // For assistant messages, wrap content and add collapse button
+    if (type === 'assistant') {
+      const contentWrapper = document.createElement('div');
+      contentWrapper.className = 'ai-message-content';
+      contentWrapper.innerHTML = formatContent(content);
+
+      const collapseBtn = document.createElement('button');
+      collapseBtn.className = 'ai-message-collapse';
+      collapseBtn.textContent = '▼';
+      collapseBtn.title = 'Collapse/Expand';
+      collapseBtn.onclick = () => {
+        messageEl.classList.toggle('collapsed');
+        collapseBtn.textContent = messageEl.classList.contains('collapsed') ? '▶' : '▼';
+      };
+
+      messageEl.appendChild(collapseBtn);
+      messageEl.appendChild(contentWrapper);
+    } else {
+      // Format content (handle markdown-like formatting)
+      messageEl.innerHTML = formatContent(content);
+    }
 
     messagesEl.appendChild(messageEl);
 
@@ -437,6 +471,16 @@
     // Toggle button
     if (toggleBtn) {
       toggleBtn.addEventListener('click', toggleSidebar);
+    }
+
+    // Reset button
+    if (resetBtn) {
+      resetBtn.addEventListener('click', () => {
+        if (confirm('Reset tool to blank template? This will clear all current work.')) {
+          socket.send(JSON.stringify({ type: 'reset' }));
+          addMessage('system', '🔄 Resetting tool...');
+        }
+      });
     }
 
     // Restore sidebar state

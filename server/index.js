@@ -12,6 +12,7 @@ import { createServer } from 'http';
 import { WebSocketServer, WebSocket } from 'ws';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
+import { execSync } from 'child_process';
 import dotenv from 'dotenv';
 
 import { createAgent, handleAgentMessage } from './agent.js';
@@ -86,6 +87,10 @@ wss.on('connection', (ws) => {
 
         case 'ping':
           ws.send(JSON.stringify({ type: 'pong' }));
+          break;
+
+        case 'reset':
+          await resetToolToTemplate(ws);
           break;
 
         default:
@@ -170,6 +175,27 @@ function cancelAgentSession(ws) {
     agent.abortController.abort();
     agentSessions.delete(ws);
     console.log('🛑 Agent session cancelled');
+  }
+}
+
+/**
+ * Reset tool files to blank template state
+ */
+async function resetToolToTemplate(ws) {
+  try {
+    execSync('git checkout origin/main -- index.html js/main.js js/ui.js js/chatooly-config.js', {
+      cwd: PROJECT_ROOT
+    });
+    ws.send(JSON.stringify({ type: 'reset-complete' }));
+    // Broadcast file change to trigger iframe refresh
+    broadcastFileChange('index.html', 'change');
+    console.log('🔄 Tool reset to blank template');
+  } catch (error) {
+    console.error('Reset error:', error);
+    ws.send(JSON.stringify({
+      type: 'error',
+      message: 'Reset failed: ' + error.message
+    }));
   }
 }
 
