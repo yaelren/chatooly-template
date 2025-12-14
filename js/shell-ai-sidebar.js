@@ -27,10 +27,14 @@
   const clearBtn = document.getElementById('ai-clear');
   const toggleBtn = document.getElementById('ai-sidebar-toggle');
   const resetBtn = document.getElementById('ai-reset');
+  const themeToggleBtn = document.getElementById('ai-theme-toggle');
   const shellContainer = document.getElementById('shell-container');
   const toolFrame = document.getElementById('tool-frame');
   const loadingOverlay = document.getElementById('tool-loading-overlay');
   const typingIndicator = document.getElementById('ai-typing');
+  const resizeHandle = document.getElementById('ai-resize-handle');
+  const sidebar = document.querySelector('.chatooly-ai-sidebar');
+  const resizeOverlay = document.getElementById('resize-overlay');
 
   // State
   let socket = null;
@@ -38,6 +42,14 @@
   let isConnected = false;
   let isThinking = false;
   let changedFilesInTask = new Set(); // Track files changed during agent execution
+
+  // Resize state
+  let isResizing = false;
+  let startX = 0;
+  let startWidth = 0;
+  const MIN_WIDTH = 280;
+  const MAX_WIDTH = 600;
+  const DEFAULT_WIDTH = 400;
 
   /**
    * Initialize the AI sidebar
@@ -449,12 +461,127 @@
   }
 
   /**
+   * Toggle dark/light theme
+   */
+  function toggleTheme() {
+    if (shellContainer) {
+      shellContainer.classList.toggle('dark-theme');
+      const isDark = shellContainer.classList.contains('dark-theme');
+      localStorage.setItem('ai-sidebar-dark-theme', isDark);
+      // Update button icon
+      if (themeToggleBtn) {
+        themeToggleBtn.textContent = isDark ? '☀️' : '🌙';
+      }
+    }
+  }
+
+  /**
+   * Restore theme from localStorage
+   */
+  function restoreTheme() {
+    const isDark = localStorage.getItem('ai-sidebar-dark-theme') === 'true';
+    if (isDark && shellContainer) {
+      shellContainer.classList.add('dark-theme');
+      if (themeToggleBtn) {
+        themeToggleBtn.textContent = '☀️';
+      }
+    }
+  }
+
+  /**
    * Restore sidebar state from localStorage
    */
   function restoreSidebarState() {
     const isCollapsed = localStorage.getItem('ai-sidebar-collapsed') === 'true';
     if (isCollapsed && shellContainer) {
       shellContainer.classList.add('ai-sidebar-collapsed');
+    }
+  }
+
+  /**
+   * Restore sidebar width from localStorage
+   */
+  function restoreSidebarWidth() {
+    const savedWidth = localStorage.getItem('ai-sidebar-width');
+    if (savedWidth && sidebar) {
+      const width = parseInt(savedWidth, 10);
+      if (width >= MIN_WIDTH && width <= MAX_WIDTH) {
+        setSidebarWidth(width);
+      }
+    }
+  }
+
+  /**
+   * Set sidebar width and update CSS variable
+   */
+  function setSidebarWidth(width) {
+    if (sidebar) {
+      sidebar.style.width = width + 'px';
+      sidebar.style.minWidth = width + 'px';
+      sidebar.style.flexBasis = width + 'px';
+      document.documentElement.style.setProperty('--sidebar-current-width', width + 'px');
+    }
+  }
+
+  /**
+   * Initialize resize functionality
+   */
+  function initResize(e) {
+    if (!sidebar) return;
+
+    isResizing = true;
+    startX = e.clientX;
+    startWidth = sidebar.offsetWidth;
+
+    resizeHandle.classList.add('resizing');
+    document.body.style.cursor = 'ew-resize';
+    document.body.style.userSelect = 'none';
+
+    // Show overlay to capture mouse events over iframe
+    if (resizeOverlay) {
+      resizeOverlay.classList.add('active');
+    }
+
+    document.addEventListener('mousemove', handleResize);
+    document.addEventListener('mouseup', stopResize);
+    e.preventDefault();
+  }
+
+  /**
+   * Handle resize mouse move
+   */
+  function handleResize(e) {
+    if (!isResizing) return;
+
+    // Since sidebar is on the right, dragging left increases width
+    const diff = startX - e.clientX;
+    const newWidth = Math.min(MAX_WIDTH, Math.max(MIN_WIDTH, startWidth + diff));
+
+    setSidebarWidth(newWidth);
+  }
+
+  /**
+   * Stop resize operation
+   */
+  function stopResize() {
+    if (!isResizing) return;
+
+    isResizing = false;
+    resizeHandle.classList.remove('resizing');
+    document.body.style.cursor = '';
+    document.body.style.userSelect = '';
+
+    // Hide overlay
+    if (resizeOverlay) {
+      resizeOverlay.classList.remove('active');
+    }
+
+    document.removeEventListener('mousemove', handleResize);
+    document.removeEventListener('mouseup', stopResize);
+
+    // Persist width preference
+    if (sidebar) {
+      localStorage.setItem('ai-sidebar-width', sidebar.offsetWidth);
     }
   }
 
@@ -483,8 +610,20 @@
       });
     }
 
-    // Restore sidebar state
+    // Restore sidebar state, width, and theme
     restoreSidebarState();
+    restoreSidebarWidth();
+    restoreTheme();
+
+    // Theme toggle button
+    if (themeToggleBtn) {
+      themeToggleBtn.addEventListener('click', toggleTheme);
+    }
+
+    // Resize handle
+    if (resizeHandle) {
+      resizeHandle.addEventListener('mousedown', initResize);
+    }
 
     // Enter to send (Shift+Enter for new line)
     inputEl.addEventListener('keydown', (e) => {
@@ -520,7 +659,9 @@
     sendMessage,
     clearConversation,
     toggleSidebar,
+    toggleTheme,
     refreshToolFrame,
+    setSidebarWidth,
     isConnected: () => isConnected,
     isThinking: () => isThinking,
     ipcChannel

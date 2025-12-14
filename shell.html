@@ -16,6 +16,34 @@
     <link rel="stylesheet" href="https://yaelren.github.io/chatooly-cdn/css/unified.min.css?v=2.1">
 
     <style>
+        /* CSS Variables for sidebar */
+        :root {
+            --sidebar-width: 400px;
+            --sidebar-min-width: 280px;
+            --sidebar-max-width: 600px;
+            --sidebar-current-width: 400px;
+
+            /* Light theme colors for sidebar (default) */
+            --sidebar-bg: #ffffff;
+            --sidebar-surface: #f5f5f5;
+            --sidebar-text: #1a1a1a;
+            --sidebar-text-muted: #666666;
+            --sidebar-border: #e0e0e0;
+            --sidebar-user-bg: #4ade80;
+            --sidebar-user-text: #1a1a1a;
+        }
+
+        /* Dark theme */
+        .shell-container.dark-theme {
+            --sidebar-bg: #1a1a1a;
+            --sidebar-surface: #2a2a2a;
+            --sidebar-text: #ffffff;
+            --sidebar-text-muted: #888888;
+            --sidebar-border: #333333;
+            --sidebar-user-bg: #4ade80;
+            --sidebar-user-text: #1a1a1a;
+        }
+
         /* Shell Layout */
         * {
             margin: 0;
@@ -43,18 +71,20 @@
             background: var(--chatooly-color-bg, #0a0a0a);
         }
 
-        /* AI Sidebar */
+        /* AI Sidebar - Light Theme */
         .chatooly-ai-sidebar {
-            width: 300px;
-            min-width: 300px;
-            max-width: 300px;
-            background: var(--chatooly-color-surface, #1a1a1a);
-            border-left: 1px solid var(--chatooly-color-border, #333);
+            position: relative;
+            width: var(--sidebar-current-width, 400px);
+            min-width: var(--sidebar-min-width);
+            max-width: var(--sidebar-max-width);
+            flex-shrink: 0;
+            background: var(--sidebar-bg);
+            border-left: 1px solid var(--sidebar-border);
             display: flex;
             flex-direction: column;
             height: 100%;
             overflow: hidden;
-            transition: transform 0.3s ease, opacity 0.3s ease, width 0.3s ease, min-width 0.3s ease;
+            transition: transform 0.3s ease, opacity 0.3s ease;
         }
 
         .shell-container.ai-sidebar-collapsed .chatooly-ai-sidebar {
@@ -65,16 +95,50 @@
             pointer-events: none;
         }
 
+        /* Resize handle */
+        .ai-sidebar-resize-handle {
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 6px;
+            cursor: ew-resize;
+            background: transparent;
+            transition: background 0.2s;
+            z-index: 10;
+        }
+
+        .ai-sidebar-resize-handle:hover,
+        .ai-sidebar-resize-handle.resizing {
+            background: var(--chatooly-color-primary, #4a90d9);
+        }
+
+        /* Overlay to capture mouse events during resize (prevents iframe from stealing events) */
+        .resize-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 9999;
+            cursor: ew-resize;
+            display: none;
+        }
+
+        .resize-overlay.active {
+            display: block;
+        }
+
         /* Toggle button */
         .ai-sidebar-toggle {
             position: fixed;
-            right: 300px;
+            right: var(--sidebar-current-width, 400px);
             top: 50%;
             transform: translateY(-50%);
             width: 24px;
             height: 48px;
-            background: var(--chatooly-color-surface, #1a1a1a);
-            border: 1px solid var(--chatooly-color-border, #333);
+            background: var(--sidebar-bg);
+            border: 1px solid var(--sidebar-border);
             border-right: none;
             border-radius: 6px 0 0 6px;
             cursor: pointer;
@@ -86,7 +150,7 @@
         }
 
         .ai-sidebar-toggle:hover {
-            background: var(--chatooly-color-surface-alt, #2a2a2a);
+            background: var(--sidebar-surface);
         }
 
         .ai-sidebar-toggle svg {
@@ -94,6 +158,10 @@
             height: 20px;
             transition: transform 0.3s ease;
             transform: rotate(180deg);
+        }
+
+        .ai-sidebar-toggle svg path {
+            stroke: var(--sidebar-text);
         }
 
         .shell-container.ai-sidebar-collapsed .ai-sidebar-toggle {
@@ -113,7 +181,7 @@
 
         .ai-btn-icon {
             background: transparent;
-            border: 1px solid var(--chatooly-color-border, #333);
+            border: 1px solid var(--sidebar-border);
             border-radius: 4px;
             padding: 4px 8px;
             cursor: pointer;
@@ -122,7 +190,7 @@
         }
 
         .ai-btn-icon:hover {
-            background: var(--chatooly-color-surface-alt, #2a2a2a);
+            background: var(--sidebar-surface);
         }
 
         /* Typing indicator - fixed above input */
@@ -131,10 +199,10 @@
             align-items: center;
             gap: 4px;
             padding: 8px 16px;
-            color: var(--chatooly-color-text-muted, #888);
+            color: var(--sidebar-text-muted);
             font-size: 13px;
-            background: var(--chatooly-color-surface, #1a1a1a);
-            border-top: 1px solid var(--chatooly-color-border, #333);
+            background: var(--sidebar-bg);
+            border-top: 1px solid var(--sidebar-border);
         }
 
         .ai-typing-indicator.visible {
@@ -152,7 +220,7 @@
             right: 8px;
             background: transparent;
             border: none;
-            color: var(--chatooly-color-text-muted, #888);
+            color: var(--sidebar-text-muted);
             cursor: pointer;
             font-size: 10px;
             padding: 2px 6px;
@@ -163,7 +231,7 @@
 
         .ai-message-collapse:hover {
             opacity: 1;
-            background: rgba(255,255,255,0.1);
+            background: rgba(0, 0, 0, 0.1);
         }
 
         .ai-message.assistant.collapsed .ai-message-content {
@@ -179,7 +247,7 @@
             left: 0;
             right: 0;
             height: 20px;
-            background: linear-gradient(transparent, var(--chatooly-color-surface-alt, #2a2a2a));
+            background: linear-gradient(transparent, var(--sidebar-surface));
         }
 
         .ai-typing-dots {
@@ -190,7 +258,7 @@
         .ai-typing-dots span {
             width: 6px;
             height: 6px;
-            background: var(--chatooly-color-text-muted, #888);
+            background: var(--sidebar-text-muted);
             border-radius: 50%;
             animation: typing-bounce 1.4s infinite ease-in-out both;
         }
@@ -209,7 +277,7 @@
             position: fixed;
             top: 0;
             left: 0;
-            right: 300px; /* Leave space for sidebar */
+            right: var(--sidebar-current-width, 400px);
             bottom: 0;
             background: rgba(0, 0, 0, 0.7);
             display: none;
@@ -244,7 +312,7 @@
 
         .ai-sidebar-header {
             padding: 16px;
-            border-bottom: 1px solid var(--chatooly-color-border, #333);
+            border-bottom: 1px solid var(--sidebar-border);
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -255,7 +323,7 @@
             margin: 0;
             font-size: 14px;
             font-weight: 600;
-            color: var(--chatooly-color-text, #fff);
+            color: var(--sidebar-text);
         }
 
         .ai-status {
@@ -266,18 +334,18 @@
         }
 
         .ai-status.disconnected {
-            background: #4a3030;
-            color: #ff6b6b;
+            background: #ffebee;
+            color: #c62828;
         }
 
         .ai-status.connected {
-            background: #2a4a2a;
-            color: #6bff6b;
+            background: #e8f5e9;
+            color: #2e7d32;
         }
 
         .ai-status.thinking {
-            background: #4a4a2a;
-            color: #ffff6b;
+            background: #fff8e1;
+            color: #f57f17;
             animation: pulse 1.5s infinite;
         }
 
@@ -298,6 +366,24 @@
             box-sizing: border-box;
         }
 
+        /* Custom scrollbar for light theme */
+        .ai-messages::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .ai-messages::-webkit-scrollbar-track {
+            background: var(--sidebar-surface);
+        }
+
+        .ai-messages::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 4px;
+        }
+
+        .ai-messages::-webkit-scrollbar-thumb:hover {
+            background: #aaa;
+        }
+
         .ai-message {
             padding: 12px;
             border-radius: 8px;
@@ -312,22 +398,22 @@
         }
 
         .ai-message.user {
-            background: var(--chatooly-color-primary, #4a90d9);
-            color: #fff;
+            background: var(--sidebar-user-bg);
+            color: var(--sidebar-user-text);
             align-self: flex-end;
             border-bottom-right-radius: 4px;
         }
 
         .ai-message.assistant {
-            background: var(--chatooly-color-surface-alt, #2a2a2a);
-            color: var(--chatooly-color-text, #fff);
+            background: var(--sidebar-surface);
+            color: var(--sidebar-text);
             align-self: flex-start;
             border-bottom-left-radius: 4px;
         }
 
         .ai-message.system {
             background: transparent;
-            color: var(--chatooly-color-text-muted, #888);
+            color: var(--sidebar-text-muted);
             font-size: 11px;
             text-align: center;
             align-self: center;
@@ -335,14 +421,14 @@
         }
 
         .ai-message.error {
-            background: #4a2a2a;
-            color: #ff6b6b;
-            border: 1px solid #ff6b6b33;
+            background: #ffebee;
+            color: #c62828;
+            border: 1px solid #ffcdd2;
         }
 
         .ai-message.tool-use {
-            background: #2a3a4a;
-            color: #6bb3ff;
+            background: #e3f2fd;
+            color: #1565c0;
             font-size: 11px;
             font-family: monospace;
             padding: 8px 12px;
@@ -351,7 +437,7 @@
         .ai-message pre {
             margin: 8px 0 0 0;
             padding: 8px;
-            background: rgba(0,0,0,0.3);
+            background: rgba(0, 0, 0, 0.05);
             border-radius: 4px;
             overflow-x: auto;
             font-size: 11px;
@@ -363,7 +449,7 @@
 
         .ai-input-area {
             padding: 16px;
-            border-top: 1px solid var(--chatooly-color-border, #333);
+            border-top: 1px solid var(--sidebar-border);
             display: flex;
             flex-direction: column;
             gap: 8px;
@@ -375,10 +461,10 @@
             min-height: 80px;
             max-height: 200px;
             padding: 12px;
-            border: 1px solid var(--chatooly-color-border, #333);
+            border: 1px solid var(--sidebar-border);
             border-radius: 8px;
-            background: var(--chatooly-color-input-bg, #2a2a2a);
-            color: var(--chatooly-color-text, #fff);
+            background: var(--sidebar-bg);
+            color: var(--sidebar-text);
             font-size: 13px;
             font-family: inherit;
             resize: vertical;
@@ -391,7 +477,7 @@
         }
 
         .ai-input-area textarea::placeholder {
-            color: var(--chatooly-color-text-muted, #888);
+            color: var(--sidebar-text-muted);
         }
 
         .ai-input-buttons {
@@ -426,24 +512,24 @@
 
         .ai-btn-secondary {
             background: transparent;
-            color: var(--chatooly-color-text-muted, #888);
-            border: 1px solid var(--chatooly-color-border, #333);
+            color: var(--sidebar-text-muted);
+            border: 1px solid var(--sidebar-border);
         }
 
         .ai-btn-secondary:hover {
-            background: var(--chatooly-color-surface-alt, #2a2a2a);
+            background: var(--sidebar-surface);
         }
 
         /* Welcome message */
         .ai-welcome {
             text-align: center;
             padding: 40px 20px;
-            color: var(--chatooly-color-text-muted, #888);
+            color: var(--sidebar-text-muted);
         }
 
         .ai-welcome h4 {
             margin: 0 0 8px 0;
-            color: var(--chatooly-color-text, #fff);
+            color: var(--sidebar-text);
             font-size: 16px;
         }
 
@@ -451,6 +537,52 @@
             margin: 0;
             font-size: 13px;
             line-height: 1.6;
+        }
+
+        /* Emoji Hover Effects */
+        .emoji-hover {
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .emoji-hover::after {
+            content: attr(data-emoji);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: inherit;
+            opacity: 0;
+            transform: scale(0.8);
+            transition: all 0.3s ease;
+            font-size: 1.2em;
+        }
+
+        .emoji-hover:hover::after {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .emoji-hover:hover {
+            color: transparent;
+        }
+
+        /* Special styling for shell elements */
+        .ai-sidebar-header h3.emoji-hover:hover::after {
+            font-size: 1.4em;
+        }
+
+        .ai-welcome h4.emoji-hover:hover::after {
+            font-size: 1.6em;
+        }
+
+        .ai-btn.emoji-hover:hover::after {
+            font-size: 1.1em;
         }
 
         /* Responsive: hide sidebar on small screens */
@@ -466,6 +598,9 @@
 </head>
 <body>
     <div class="shell-container" id="shell-container">
+        <!-- Resize overlay - captures mouse events during sidebar resize -->
+        <div class="resize-overlay" id="resize-overlay"></div>
+
         <!-- Tool iframe - loads index.html (agent edits this file) -->
         <iframe id="tool-frame" src="index.html"></iframe>
 
@@ -478,15 +613,19 @@
         <!-- AI Sidebar Toggle Button -->
         <button class="ai-sidebar-toggle" id="ai-sidebar-toggle" title="Toggle AI Sidebar">
             <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path d="M9 6l6 6-6 6" stroke="#ffffff" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
         </button>
 
         <!-- AI Sidebar (persists across tool refreshes) -->
         <div class="chatooly-ai-sidebar">
+            <!-- Resize handle - drag to resize sidebar -->
+            <div class="ai-sidebar-resize-handle" id="ai-resize-handle"></div>
+
             <div class="ai-sidebar-header">
                 <h3>AI Tool Builder</h3>
                 <div class="ai-header-actions">
+                    <button class="ai-btn-icon" id="ai-theme-toggle" title="Toggle dark/light mode">🌙</button>
                     <button class="ai-btn-icon" id="ai-reset" title="Reset to blank template">🔄</button>
                     <span class="ai-status disconnected" id="ai-status">Disconnected</span>
                 </div>
