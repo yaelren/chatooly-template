@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<!--
+    Chatooly Shell - Persistent AI Chat Container
+
+    This is the parent container that NEVER refreshes.
+    - AI sidebar lives here (WebSocket persists)
+    - Tool loads in iframe (can refresh independently)
+-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatooly AI Builder</title>
+
+    <!-- Chatooly CDN for base styles -->
+    <link rel="stylesheet" href="https://yaelren.github.io/chatooly-cdn/css/unified.min.css?v=2.1">
+
+    <style>
+        /* Shell Layout */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            overflow: hidden;
+            background: var(--chatooly-color-bg, #0a0a0a);
+        }
+
+        .shell-container {
+            display: flex;
+            height: 100%;
+            width: 100%;
+        }
+
+        /* Tool iframe - takes all space except sidebar */
+        #tool-frame {
+            flex: 1;
+            border: none;
+            height: 100%;
+            background: var(--chatooly-color-bg, #0a0a0a);
+        }
+
+        /* AI Sidebar */
+        .chatooly-ai-sidebar {
+            width: 300px;
+            min-width: 300px;
+            max-width: 300px;
+            background: var(--chatooly-color-surface, #1a1a1a);
+            border-left: 1px solid var(--chatooly-color-border, #333);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            overflow: hidden;
+            transition: transform 0.3s ease, opacity 0.3s ease, width 0.3s ease, min-width 0.3s ease;
+        }
+
+        .shell-container.ai-sidebar-collapsed .chatooly-ai-sidebar {
+            width: 0;
+            min-width: 0;
+            transform: translateX(100%);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* Toggle button */
+        .ai-sidebar-toggle {
+            position: fixed;
+            right: 300px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 24px;
+            height: 48px;
+            background: var(--chatooly-color-surface, #1a1a1a);
+            border: 1px solid var(--chatooly-color-border, #333);
+            border-right: none;
+            border-radius: 6px 0 0 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            transition: right 0.3s ease, background 0.2s;
+        }
+
+        .ai-sidebar-toggle:hover {
+            background: var(--chatooly-color-surface-alt, #2a2a2a);
+        }
+
+        .ai-sidebar-toggle svg {
+            width: 20px;
+            height: 20px;
+            transition: transform 0.3s ease;
+            transform: rotate(180deg);
+        }
+
+        .shell-container.ai-sidebar-collapsed .ai-sidebar-toggle {
+            right: 0;
+        }
+
+        .shell-container.ai-sidebar-collapsed .ai-sidebar-toggle svg {
+            transform: rotate(0deg);
+        }
+
+        /* Loading overlay for tool iframe */
+        #tool-loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 300px; /* Leave space for sidebar */
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+        }
+
+        .shell-container.ai-sidebar-collapsed #tool-loading-overlay {
+            right: 0; /* Full width when sidebar collapsed */
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #333;
+            border-top-color: var(--chatooly-color-primary, #4a90d9);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .loading-text {
+            margin-top: 16px;
+            color: var(--chatooly-color-text, #fff);
+            font-size: 14px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .ai-sidebar-header {
+            padding: 16px;
+            border-bottom: 1px solid var(--chatooly-color-border, #333);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .ai-sidebar-header h3 {
+            margin: 0;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--chatooly-color-text, #fff);
+        }
+
+        .ai-status {
+            font-size: 11px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+
+        .ai-status.disconnected {
+            background: #4a3030;
+            color: #ff6b6b;
+        }
+
+        .ai-status.connected {
+            background: #2a4a2a;
+            color: #6bff6b;
+        }
+
+        .ai-status.thinking {
+            background: #4a4a2a;
+            color: #ffff6b;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .ai-messages {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .ai-message {
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            line-height: 1.5;
+            max-width: 100%;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            word-break: break-word;
+            white-space: pre-wrap;
+            box-sizing: border-box;
+        }
+
+        .ai-message.user {
+            background: var(--chatooly-color-primary, #4a90d9);
+            color: #fff;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+
+        .ai-message.assistant {
+            background: var(--chatooly-color-surface-alt, #2a2a2a);
+            color: var(--chatooly-color-text, #fff);
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+
+        .ai-message.system {
+            background: transparent;
+            color: var(--chatooly-color-text-muted, #888);
+            font-size: 11px;
+            text-align: center;
+            align-self: center;
+            padding: 8px;
+        }
+
+        .ai-message.error {
+            background: #4a2a2a;
+            color: #ff6b6b;
+            border: 1px solid #ff6b6b33;
+        }
+
+        .ai-message.tool-use {
+            background: #2a3a4a;
+            color: #6bb3ff;
+            font-size: 11px;
+            font-family: monospace;
+            padding: 8px 12px;
+        }
+
+        .ai-message pre {
+            margin: 8px 0 0 0;
+            padding: 8px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 4px;
+            overflow-x: auto;
+            font-size: 11px;
+        }
+
+        .ai-message code {
+            font-family: 'Monaco', 'Consolas', monospace;
+        }
+
+        .ai-input-area {
+            padding: 16px;
+            border-top: 1px solid var(--chatooly-color-border, #333);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .ai-input-area textarea {
+            width: 100%;
+            min-height: 80px;
+            max-height: 200px;
+            padding: 12px;
+            border: 1px solid var(--chatooly-color-border, #333);
+            border-radius: 8px;
+            background: var(--chatooly-color-input-bg, #2a2a2a);
+            color: var(--chatooly-color-text, #fff);
+            font-size: 13px;
+            font-family: inherit;
+            resize: vertical;
+            box-sizing: border-box;
+        }
+
+        .ai-input-area textarea:focus {
+            outline: none;
+            border-color: var(--chatooly-color-primary, #4a90d9);
+        }
+
+        .ai-input-area textarea::placeholder {
+            color: var(--chatooly-color-text-muted, #888);
+        }
+
+        .ai-input-buttons {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+
+        .ai-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .ai-btn-primary {
+            background: var(--chatooly-color-primary, #4a90d9);
+            color: #fff;
+        }
+
+        .ai-btn-primary:hover:not(:disabled) {
+            background: var(--chatooly-color-primary-hover, #5aa0e9);
+        }
+
+        .ai-btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .ai-btn-secondary {
+            background: transparent;
+            color: var(--chatooly-color-text-muted, #888);
+            border: 1px solid var(--chatooly-color-border, #333);
+        }
+
+        .ai-btn-secondary:hover {
+            background: var(--chatooly-color-surface-alt, #2a2a2a);
+        }
+
+        /* Welcome message */
+        .ai-welcome {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--chatooly-color-text-muted, #888);
+        }
+
+        .ai-welcome h4 {
+            margin: 0 0 8px 0;
+            color: var(--chatooly-color-text, #fff);
+            font-size: 16px;
+        }
+
+        .ai-welcome p {
+            margin: 0;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        /* Responsive: hide sidebar on small screens */
+        @media (max-width: 900px) {
+            .chatooly-ai-sidebar {
+                display: none;
+            }
+            .ai-sidebar-toggle {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="shell-container" id="shell-container">
+        <!-- Tool iframe - loads index.html (agent edits this file) -->
+        <iframe id="tool-frame" src="index.html"></iframe>
+
+        <!-- Loading overlay for tool (shown when agent is editing files) -->
+        <div id="tool-loading-overlay">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">Updating tool...</div>
+        </div>
+
+        <!-- AI Sidebar Toggle Button -->
+        <button class="ai-sidebar-toggle" id="ai-sidebar-toggle" title="Toggle AI Sidebar">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M9 6l6 6-6 6" stroke="#ffffff" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </button>
+
+        <!-- AI Sidebar (persists across tool refreshes) -->
+        <div class="chatooly-ai-sidebar">
+            <div class="ai-sidebar-header">
+                <h3>AI Tool Builder</h3>
+                <span class="ai-status disconnected" id="ai-status">Disconnected</span>
+            </div>
+
+            <div class="ai-messages" id="ai-messages">
+                <div class="ai-welcome">
+                    <h4>Welcome to Chatooly AI</h4>
+                    <p>Describe the tool you want to build, and I'll create it for you following all Chatooly conventions.</p>
+                    <p style="margin-top: 12px; font-size: 11px;">Examples:<br>
+                    "Create a gradient generator"<br>
+                    "Build a mandala pattern tool"<br>
+                    "Make a color palette picker"</p>
+                </div>
+            </div>
+
+            <div class="ai-input-area">
+                <textarea
+                    id="ai-input"
+                    placeholder="Describe the tool you want to build..."
+                    rows="3"
+                ></textarea>
+                <div class="ai-input-buttons">
+                    <button class="ai-btn ai-btn-secondary" id="ai-clear" title="Clear conversation">Clear</button>
+                    <button class="ai-btn ai-btn-primary" id="ai-send" disabled>Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Shell AI Sidebar Script (modified to refresh iframe, not page) -->
+    <script src="js/shell-ai-sidebar.js"></script>
+</body>
+</html>

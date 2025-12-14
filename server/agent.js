@@ -204,6 +204,7 @@ export async function createAgent(projectRoot) {
     systemPrompt,
     chatoolyMcp,
     abortController,
+    sessionId: null, // Will be set after first query
     options: {
       systemPrompt: {
         type: 'preset',
@@ -233,9 +234,16 @@ export async function createAgent(projectRoot) {
  */
 export async function handleAgentMessage(agent, prompt, onEvent) {
   try {
+    // Build query options - use resume if we have a session ID
+    const queryOptions = { ...agent.options };
+    if (agent.sessionId) {
+      queryOptions.resume = agent.sessionId;
+      console.log(`📝 Resuming session: ${agent.sessionId}`);
+    }
+
     const queryGenerator = query({
       prompt,
-      options: agent.options
+      options: queryOptions
     });
 
     for await (const message of queryGenerator) {
@@ -279,12 +287,22 @@ export async function handleAgentMessage(agent, prompt, onEvent) {
 
         case 'system':
           if (message.subtype === 'init') {
-            onEvent({
-              type: 'system',
-              subtype: 'init',
-              tools: message.tools,
-              model: message.model
-            });
+            // Capture session ID for future resumption
+            if (message.session_id && !agent.sessionId) {
+              agent.sessionId = message.session_id;
+              console.log(`🆔 Session ID captured: ${agent.sessionId}`);
+            }
+
+            // Only send init event for NEW sessions (not resumed ones)
+            if (!queryOptions.resume) {
+              onEvent({
+                type: 'system',
+                subtype: 'init',
+                tools: message.tools,
+                model: message.model,
+                session_id: message.session_id
+              });
+            }
           }
           break;
       }

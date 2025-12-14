@@ -1,20 +1,34 @@
 <!DOCTYPE html>
 <!--
-    Chatooly Tool Template v2.0 - AI Builder Edition
+    Chatooly Tool Template v2.0
     Author: Yael Renous - Studio Video
 
     ═══════════════════════════════════════════════════════════════════════════
-    🤖 AI-POWERED TOOL BUILDER
+    🤖 AI AGENTS: REQUIRED READING BEFORE BUILDING ANY TOOL
     ═══════════════════════════════════════════════════════════════════════════
 
-    This template includes an AI sidebar that uses the Claude Agent SDK to
-    help you build Chatooly tools through natural language conversation.
+    1. READ AGENT-INSTRUCTIONS.md IN THIS DIRECTORY FIRST
+       - Contains all component patterns and class names
+       - Shows correct vs incorrect examples
+       - Includes validation checklist
 
-    To use:
-    1. Add your ANTHROPIC_API_KEY to the .env file
-    2. Run: npm install && npm start
-    3. Open http://localhost:3001 in your browser
-    4. Use the AI sidebar to describe the tool you want to build
+    2. VIEW THE WORKING DEMO:
+       https://yaelren.github.io/chatooly-cdn/component-demo.html
+       - This is what your tool should look like
+       - Compare your output to this reference
+
+    3. COPY THE EXAMPLES IN THIS FILE:
+       - Scroll down to see all control types properly implemented
+       - Use these as copy-paste templates
+       - Don't improvise or create your own patterns
+
+    4. KEY RULES:
+       ✅ Sections: chatooly-section-card + chatooly-section-header (auto-collapsible!)
+       ✅ Sliders: chatooly-slider-group + chatooly-slider-label + chatooly-slider
+       ✅ Toggles: <button class="chatooly-toggle">, NOT <input type="checkbox">
+       ✅ Colors: chatooly-color-group + chatooly-color-input
+       ❌ NEVER use old class names like "section-header" or "control-group"
+       ❌ NEVER create local style.css files (CDN handles all styling)
 
     ═══════════════════════════════════════════════════════════════════════════
 -->
@@ -22,304 +36,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+    
     <!-- ========== EDIT THIS: Your Tool Name ========== -->
     <title>Tool Name - Chatooly</title>
-
+    
     <!-- ========== DO NOT EDIT: Required CDN Styles ========== -->
     <link rel="stylesheet" href="https://yaelren.github.io/chatooly-cdn/css/unified.min.css?v=2.1">
 
-    <!-- AI Sidebar Styles -->
+    <!-- Tool Layout Styles (AI sidebar is in shell.html) -->
     <style>
-        /* AI Sidebar Layout */
-        .chatooly-app-container.with-ai-sidebar {
-            grid-template-columns: 300px 1fr 300px;
-            transition: grid-template-columns 0.3s ease;
-        }
-
-        .chatooly-app-container.with-ai-sidebar.ai-sidebar-collapsed {
-            grid-template-columns: 300px 1fr 0px;
-        }
-
-        .chatooly-ai-sidebar {
-            background: var(--chatooly-color-surface, #1a1a1a);
-            border-left: 1px solid var(--chatooly-color-border, #333);
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-            overflow: hidden;
-            width: 300px;
-            min-width: 300px;
-            max-width: 300px;
-            transition: transform 0.3s ease, opacity 0.3s ease;
-        }
-
-        .ai-sidebar-collapsed .chatooly-ai-sidebar {
-            transform: translateX(100%);
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        /* Toggle button */
-        .ai-sidebar-toggle {
-            position: fixed;
-            right: 16px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 24px;
-            height: 48px;
-            background: var(--chatooly-color-surface, #1a1a1a);
-            border: 1px solid var(--chatooly-color-border, #333);
-            border-radius: 6px 0 0 6px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 100;
-            transition: right 0.3s ease, background 0.2s;
-        }
-
-        .ai-sidebar-toggle:hover {
-            background: var(--chatooly-color-surface-alt, #2a2a2a);
-        }
-
-        .ai-sidebar-toggle svg {
-            width: 20px;
-            height: 20px;
-            transition: transform 0.3s ease;
-            transform: rotate(180deg);
-        }
-
-        .with-ai-sidebar:not(.ai-sidebar-collapsed) .ai-sidebar-toggle {
-            right: 316px;
-        }
-
-        .ai-sidebar-collapsed .ai-sidebar-toggle svg {
-            transform: rotate(0deg);
-        }
-
-        .ai-sidebar-header {
-            padding: 16px;
-            border-bottom: 1px solid var(--chatooly-color-border, #333);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-shrink: 0;
-        }
-
-        .ai-sidebar-header h3 {
-            margin: 0;
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--chatooly-color-text, #fff);
-        }
-
-        .ai-status {
-            font-size: 11px;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-weight: 500;
-        }
-
-        .ai-status.disconnected {
-            background: #4a3030;
-            color: #ff6b6b;
-        }
-
-        .ai-status.connected {
-            background: #2a4a2a;
-            color: #6bff6b;
-        }
-
-        .ai-status.thinking {
-            background: #4a4a2a;
-            color: #ffff6b;
-            animation: pulse 1.5s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        .ai-messages {
-            flex: 1;
-            overflow-y: auto;
-            overflow-x: hidden;
-            padding: 16px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            width: 100%;
-            box-sizing: border-box;
-        }
-
-        .ai-message {
-            padding: 12px;
-            border-radius: 8px;
-            font-size: 13px;
-            line-height: 1.5;
-            max-width: 100%;
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-            word-break: break-word;
-            white-space: pre-wrap;
-            box-sizing: border-box;
-        }
-
-        .ai-message.user {
-            background: var(--chatooly-color-primary, #4a90d9);
-            color: #fff;
-            align-self: flex-end;
-            border-bottom-right-radius: 4px;
-        }
-
-        .ai-message.assistant {
-            background: var(--chatooly-color-surface-alt, #2a2a2a);
-            color: var(--chatooly-color-text, #fff);
-            align-self: flex-start;
-            border-bottom-left-radius: 4px;
-        }
-
-        .ai-message.system {
-            background: transparent;
-            color: var(--chatooly-color-text-muted, #888);
-            font-size: 11px;
-            text-align: center;
-            align-self: center;
-            padding: 8px;
-        }
-
-        .ai-message.error {
-            background: #4a2a2a;
-            color: #ff6b6b;
-            border: 1px solid #ff6b6b33;
-        }
-
-        .ai-message.tool-use {
-            background: #2a3a4a;
-            color: #6bb3ff;
-            font-size: 11px;
-            font-family: monospace;
-            padding: 8px 12px;
-        }
-
-        .ai-message pre {
-            margin: 8px 0 0 0;
-            padding: 8px;
-            background: rgba(0,0,0,0.3);
-            border-radius: 4px;
-            overflow-x: auto;
-            font-size: 11px;
-        }
-
-        .ai-message code {
-            font-family: 'Monaco', 'Consolas', monospace;
-        }
-
-        .ai-input-area {
-            padding: 16px;
-            border-top: 1px solid var(--chatooly-color-border, #333);
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            flex-shrink: 0;
-        }
-
-        .ai-input-area textarea {
-            width: 100%;
-            min-height: 80px;
-            max-height: 200px;
-            padding: 12px;
-            border: 1px solid var(--chatooly-color-border, #333);
-            border-radius: 8px;
-            background: var(--chatooly-color-input-bg, #2a2a2a);
-            color: var(--chatooly-color-text, #fff);
-            font-size: 13px;
-            font-family: inherit;
-            resize: vertical;
-            box-sizing: border-box;
-        }
-
-        .ai-input-area textarea:focus {
-            outline: none;
-            border-color: var(--chatooly-color-primary, #4a90d9);
-        }
-
-        .ai-input-area textarea::placeholder {
-            color: var(--chatooly-color-text-muted, #888);
-        }
-
-        .ai-input-buttons {
-            display: flex;
-            gap: 8px;
-            justify-content: flex-end;
-        }
-
-        .ai-btn {
-            padding: 8px 16px;
-            border: none;
-            border-radius: 6px;
-            font-size: 13px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .ai-btn-primary {
-            background: var(--chatooly-color-primary, #4a90d9);
-            color: #fff;
-        }
-
-        .ai-btn-primary:hover:not(:disabled) {
-            background: var(--chatooly-color-primary-hover, #5aa0e9);
-        }
-
-        .ai-btn-primary:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .ai-btn-secondary {
-            background: transparent;
-            color: var(--chatooly-color-text-muted, #888);
-            border: 1px solid var(--chatooly-color-border, #333);
-        }
-
-        .ai-btn-secondary:hover {
-            background: var(--chatooly-color-surface-alt, #2a2a2a);
-        }
-
-        /* Welcome message */
-        .ai-welcome {
-            text-align: center;
-            padding: 40px 20px;
-            color: var(--chatooly-color-text-muted, #888);
-        }
-
-        .ai-welcome h4 {
-            margin: 0 0 8px 0;
-            color: var(--chatooly-color-text, #fff);
-            font-size: 16px;
-        }
-
-        .ai-welcome p {
-            margin: 0;
-            font-size: 13px;
-            line-height: 1.6;
-        }
-
-        /* Responsive: hide sidebar on small screens */
-        @media (max-width: 1200px) {
-            .chatooly-app-container.with-ai-sidebar {
-                grid-template-columns: 280px 1fr;
-            }
-            .chatooly-ai-sidebar {
-                display: none;
-            }
-            .ai-sidebar-toggle {
-                display: none;
-            }
+        /* Two-column layout for tool (no AI sidebar - it's in parent shell) */
+        .chatooly-app-container {
+            grid-template-columns: 300px 1fr !important;
         }
     </style>
 </head>
@@ -330,21 +58,14 @@
         <div class="chatooly-header-credit">MADE WITH CHATOOLY</div>
     </header>
 
-    <div class="chatooly-app-container with-ai-sidebar">
-        <!-- AI Sidebar Toggle Button -->
-        <button class="ai-sidebar-toggle" id="ai-sidebar-toggle" title="Toggle AI Sidebar">
-            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path d="M9 6l6 6-6 6" stroke="#ffffff" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-        </button>
-
+    <div class="chatooly-app-container">
         <!-- Left Panel: Tool Controls -->
         <div class="chatooly-controls-panel">
             <!-- ========== EDIT THIS: Tool Description ========== -->
             <div class="chatooly-controls-header">
                 <p>Tool description goes here</p>
             </div>
-
+            
             <div class="chatooly-controls-content">
                 <!-- ========== CANVAS CONTROLS AUTO-INJECTED BY CDN ========== -->
                 <!-- The Chatooly CDN automatically injects canvas controls here when it detects chatooly-canvas -->
@@ -468,8 +189,8 @@
                 <!-- ========== END EDIT SECTION ========== -->
             </div>
         </div>
-
-        <!-- Center Panel: Preview/Canvas Area -->
+        
+        <!-- Right Panel: Preview/Canvas Area -->
         <div class="chatooly-preview-panel">
             <!-- ========== DO NOT EDIT: Required Export Container ========== -->
             <div id="chatooly-container">
@@ -481,44 +202,13 @@
                 <!-- ========== END EDIT SECTION ========== -->
             </div>
         </div>
-
-        <!-- Right Panel: AI Sidebar -->
-        <div class="chatooly-ai-sidebar">
-            <div class="ai-sidebar-header">
-                <h3>🤖 AI Tool Builder</h3>
-                <span class="ai-status disconnected" id="ai-status">Disconnected</span>
-            </div>
-
-            <div class="ai-messages" id="ai-messages">
-                <div class="ai-welcome">
-                    <h4>Welcome to Chatooly AI</h4>
-                    <p>Describe the tool you want to build, and I'll create it for you following all Chatooly conventions.</p>
-                    <p style="margin-top: 12px; font-size: 11px;">Examples:<br>
-                    "Create a gradient generator"<br>
-                    "Build a mandala pattern tool"<br>
-                    "Make a color palette picker"</p>
-                </div>
-            </div>
-
-            <div class="ai-input-area">
-                <textarea
-                    id="ai-input"
-                    placeholder="Describe the tool you want to build..."
-                    rows="3"
-                ></textarea>
-                <div class="ai-input-buttons">
-                    <button class="ai-btn ai-btn-secondary" id="ai-clear" title="Clear conversation">Clear</button>
-                    <button class="ai-btn ai-btn-primary" id="ai-send" disabled>Send</button>
-                </div>
-            </div>
-        </div>
     </div>
-
+    
     <!-- ========== DO NOT EDIT: Chatooly CDN v2.0 Integration ========== -->
     <!-- This script automatically provides: Dark theme styling + Static/Video export functionality -->
     <!-- Video support: Detects p5.js, Three.js, Canvas animations and provides MediaRecorder API export -->
     <script src="https://yaelren.github.io/chatooly-cdn/js/core.min.js?v=2.1"></script>
-
+    
     <!-- ========== DO NOT EDIT: Chatooly Configuration ========== -->
     <script src="js/chatooly-config.js"></script>
 
@@ -528,7 +218,7 @@
     <!-- ========== DO NOT EDIT: Your Tool Logic ========== -->
     <script src="js/main.js"></script>
 
-    <!-- ========== AI Sidebar Logic ========== -->
-    <script src="js/ai-sidebar.js"></script>
+    <!-- ========== Tool IPC (communication with parent shell) ========== -->
+    <script src="js/tool-ipc.js"></script>
 </body>
 </html>

@@ -30,8 +30,15 @@ const PORT = process.env.PORT || 3001;
 const app = express();
 app.use(express.json());
 
+// Default route serves shell.html (persistent AI sidebar container)
+// MUST come before static middleware to override index.html default
+app.get('/', (req, res) => {
+  res.sendFile(join(PROJECT_ROOT, 'shell.html'));
+});
+
 // Serve static files from project root
-app.use(express.static(PROJECT_ROOT));
+// index: false prevents serving index.html for / (we handle that above)
+app.use(express.static(PROJECT_ROOT, { index: false }));
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
@@ -122,13 +129,21 @@ async function handleChatMessage(ws, message) {
     return;
   }
 
-  // Notify client that agent is thinking
-  ws.send(JSON.stringify({ type: 'thinking', message: 'Agent is processing...' }));
-
   try {
-    // Create or resume agent session
-    const agent = await createAgent(PROJECT_ROOT);
-    agentSessions.set(ws, agent);
+    // Reuse existing agent session if available, otherwise create new one
+    let agent = agentSessions.get(ws);
+
+    if (!agent) {
+      // First message - create new agent
+      ws.send(JSON.stringify({ type: 'thinking', message: 'Initializing agent...' }));
+      agent = await createAgent(PROJECT_ROOT);
+      agentSessions.set(ws, agent);
+      console.log('🤖 New agent session created');
+    } else {
+      // Subsequent messages - reuse existing agent
+      ws.send(JSON.stringify({ type: 'thinking', message: 'Agent is processing...' }));
+      console.log('🤖 Reusing existing agent session');
+    }
 
     // Process the message and stream responses
     await handleAgentMessage(agent, prompt, (event) => {
