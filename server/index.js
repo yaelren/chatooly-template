@@ -124,7 +124,7 @@ wss.on('connection', (ws) => {
  * Handle incoming chat messages from the frontend
  */
 async function handleChatMessage(ws, message) {
-  const { prompt, sessionId } = message;
+  const { prompt, images } = message;
 
   if (!process.env.ANTHROPIC_API_KEY) {
     ws.send(JSON.stringify({
@@ -150,8 +150,13 @@ async function handleChatMessage(ws, message) {
       console.log('🤖 Reusing existing agent session');
     }
 
-    // Process the message and stream responses
-    await handleAgentMessage(agent, prompt, (event) => {
+    // Log if images are attached
+    if (images && images.length > 0) {
+      console.log(`📎 Message includes ${images.length} image(s)`);
+    }
+
+    // Process the message and stream responses (with images if provided)
+    await handleAgentMessage(agent, prompt, images || [], (event) => {
       if (ws.readyState === WebSocket.OPEN) {
         ws.send(JSON.stringify(event));
       }

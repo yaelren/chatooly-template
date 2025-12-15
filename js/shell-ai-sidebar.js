@@ -35,6 +35,9 @@
   const resizeHandle = document.getElementById('ai-resize-handle');
   const sidebar = document.querySelector('.chatooly-ai-sidebar');
   const resizeOverlay = document.getElementById('resize-overlay');
+  const attachBtn = document.getElementById('ai-attach');
+  const fileInput = document.getElementById('ai-file-input');
+  const attachmentsEl = document.getElementById('ai-attachments');
 
   // State
   let socket = null;
@@ -42,6 +45,7 @@
   let isConnected = false;
   let isThinking = false;
   let changedFilesInTask = new Set(); // Track files changed during agent execution
+  let attachedImages = []; // Array of {data: base64, media_type: string}
 
   // Resize state
   let isResizing = false;
@@ -408,26 +412,131 @@
   }
 
   /**
+   * Convert file to base64
+   */
+  function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const base64 = reader.result.split(',')[1]; // Remove data:image/...;base64, prefix
+        resolve(base64);
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  /**
+   * Render attachment previews
+   */
+  function renderAttachments() {
+    if (!attachmentsEl) return;
+
+    attachmentsEl.innerHTML = attachedImages.map((img, index) => `
+      <div class="ai-attachment-preview">
+        <img src="data:${img.media_type};base64,${img.data}" alt="Attachment ${index + 1}">
+        <button class="ai-attachment-remove" data-index="${index}">×</button>
+      </div>
+    `).join('');
+
+    // Add remove handlers
+    attachmentsEl.querySelectorAll('.ai-attachment-remove').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const index = parseInt(e.target.dataset.index);
+        attachedImages.splice(index, 1);
+        renderAttachments();
+        updateSendButton();
+      });
+    });
+  }
+
+  /**
+   * Clear attachments after send
+   */
+  function clearAttachments() {
+    attachedImages = [];
+    if (attachmentsEl) {
+      attachmentsEl.innerHTML = '';
+    }
+  }
+
+  /**
+   * Handle file selection for attachments
+   */
+  async function handleFileSelect(e) {
+    const files = Array.from(e.target.files);
+    for (const file of files) {
+      if (file.type.startsWith('image/')) {
+        // Limit file size to 5MB
+        if (file.size > 5 * 1024 * 1024) {
+          addMessage('error', `Image ${file.name} is too large (max 5MB)`);
+          continue;
+        }
+        // Limit to 5 images
+        if (attachedImages.length >= 5) {
+          addMessage('error', 'Maximum 5 images per message');
+          break;
+        }
+        try {
+          const base64 = await fileToBase64(file);
+          attachedImages.push({
+            data: base64,
+            media_type: file.type
+          });
+          renderAttachments();
+          updateSendButton();
+        } catch (err) {
+          console.error('Error reading file:', err);
+        }
+      }
+    }
+    if (fileInput) {
+      fileInput.value = ''; // Reset for re-selection
+    }
+  }
+
+  /**
+   * Update send button state based on input and attachments
+   */
+  function updateSendButton() {
+    sendBtn.disabled = !isConnected || (!inputEl.value.trim() && attachedImages.length === 0);
+  }
+
+  /**
    * Send a message to the agent
    */
   function sendMessage() {
     const text = inputEl.value.trim();
 
-    if (!text || !isConnected || isThinking) {
+    // Allow sending if we have text OR images
+    if ((!text && attachedImages.length === 0) || !isConnected || isThinking) {
       return;
     }
 
-    // Add user message to chat
-    addMessage('user', text);
+    // Show user message with image indicator
+    const displayText = attachedImages.length > 0
+      ? `${text || '(image)'} [${attachedImages.length} image(s) attached]`
+      : text;
+    addMessage('user', displayText);
+
+    // Build message with images
+    const message = {
+      type: 'chat',
+      prompt: text || 'What do you see in this image?',
+      images: attachedImages.map(img => ({
+        type: 'base64',
+        media_type: img.media_type,
+        data: img.data
+      }))
+    };
 
     // Send to server
-    socket.send(JSON.stringify({
-      type: 'chat',
-      prompt: text
-    }));
+    socket.send(JSON.stringify(message));
 
-    // Clear input
+    // Clear input and attachments
     inputEl.value = '';
+    clearAttachments();
+    updateSendButton();
     inputEl.focus();
   }
 
@@ -622,6 +731,12 @@
       themeToggleBtn.addEventListener('click', toggleTheme);
     }
 
+    // Attach button
+    if (attachBtn && fileInput) {
+      attachBtn.addEventListener('click', () => fileInput.click());
+      fileInput.addEventListener('change', handleFileSelect);
+    }
+
     // Resize handle
     if (resizeHandle) {
       resizeHandle.addEventListener('mousedown', initResize);
@@ -635,10 +750,8 @@
       }
     });
 
-    // Enable/disable send button based on input
-    inputEl.addEventListener('input', () => {
-      sendBtn.disabled = !isConnected || !inputEl.value.trim();
-    });
+    // Enable/disable send button based on input and attachments
+    inputEl.addEventListener('input', updateSendButton);
 
     // Heartbeat to keep connection alive
     setInterval(() => {

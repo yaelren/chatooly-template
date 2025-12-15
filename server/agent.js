@@ -8,9 +8,12 @@
  */
 
 import { query, tool, createSdkMcpServer } from '@anthropic-ai/claude-agent-sdk';
-import { readFileSync, existsSync } from 'fs';
+import { readFileSync, existsSync, writeFileSync, mkdirSync, unlinkSync } from 'fs';
 import { join } from 'path';
 import { z } from 'zod';
+
+// Directory for temporary image files
+const TEMP_IMAGE_DIR = 'temp-images';
 
 // Rule file mapping
 const RULE_FILES = {
@@ -215,6 +218,7 @@ export async function createAgent(projectRoot) {
       cwd: projectRoot,
       allowedTools: [
         'Read', 'Write', 'Edit', 'Glob', 'Grep', 'Bash',
+        'WebFetch', 'WebSearch',  // Enable web browsing
         'mcp__chatooly-tools__read_chatooly_rule',
         'mcp__chatooly-tools__validate_chatooly_tool'
       ],
@@ -230,10 +234,74 @@ export async function createAgent(projectRoot) {
 }
 
 /**
- * Handle a message to the agent and stream responses
+ * Save images to temporary files and return their paths
+ * The agent can read these using the Read tool (which supports images)
  */
-export async function handleAgentMessage(agent, prompt, onEvent) {
+function saveImagesToTemp(projectRoot, images) {
+  const tempDir = join(projectRoot, TEMP_IMAGE_DIR);
+
+  // Ensure temp directory exists
+  if (!existsSync(tempDir)) {
+    mkdirSync(tempDir, { recursive: true });
+  }
+
+  const savedPaths = [];
+  const timestamp = Date.now();
+
+  images.forEach((img, index) => {
+    // Determine file extension from media type
+    const ext = img.media_type.split('/')[1] || 'png';
+    const filename = `upload-${timestamp}-${index}.${ext}`;
+    const filePath = join(tempDir, filename);
+
+    // Decode base64 and write to file
+    const buffer = Buffer.from(img.data, 'base64');
+    writeFileSync(filePath, buffer);
+
+    savedPaths.push({
+      path: filePath,
+      relativePath: `${TEMP_IMAGE_DIR}/${filename}`,
+      mediaType: img.media_type
+    });
+
+    console.log(`   💾 Saved image ${index} to: ${filePath}`);
+  });
+
+  return savedPaths;
+}
+
+/**
+ * Clean up temporary image files
+ */
+function cleanupTempImages(imagePaths) {
+  imagePaths.forEach(({ path }) => {
+    try {
+      if (existsSync(path)) {
+        unlinkSync(path);
+        console.log(`   🗑️ Cleaned up: ${path}`);
+      }
+    } catch (err) {
+      console.warn(`   ⚠️ Failed to cleanup ${path}: ${err.message}`);
+    }
+  });
+}
+
+/**
+ * Handle a message to the agent and stream responses
+ * @param {Object} agent - The agent session object
+ * @param {string} prompt - The text prompt from the user
+ * @param {Array} images - Array of image objects with {type, media_type, data}
+ * @param {Function} onEvent - Callback for streaming events
+ */
+export async function handleAgentMessage(agent, prompt, images, onEvent) {
+  let savedImagePaths = [];
+
   try {
+    console.log(`\n${'='.repeat(60)}`);
+    console.log(`📨 handleAgentMessage called`);
+    console.log(`   prompt: "${prompt?.substring(0, 100)}${prompt?.length > 100 ? '...' : ''}"`);
+    console.log(`   images: ${images?.length || 0} image(s)`);
+
     // Build query options - use resume if we have a session ID
     const queryOptions = { ...agent.options };
     if (agent.sessionId) {
@@ -241,12 +309,58 @@ export async function handleAgentMessage(agent, prompt, onEvent) {
       console.log(`📝 Resuming session: ${agent.sessionId}`);
     }
 
-    const queryGenerator = query({
-      prompt,
-      options: queryOptions
-    });
+    // Build the prompt
+    let queryPrompt;
 
+    if (images && images.length > 0) {
+      // Save images to temp files - the agent's Read tool can read images!
+      console.log(`📷 Saving ${images.length} image(s) to temp files...`);
+      savedImagePaths = saveImagesToTemp(agent.projectRoot, images);
+
+      // Build prompt that instructs agent to read the images
+      // Use ABSOLUTE paths since the Read tool requires absolute paths
+      const imageInstructions = savedImagePaths.map((img, i) =>
+        `- Image ${i + 1}: ${img.path}`
+      ).join('\n');
+
+      queryPrompt = `The user has attached ${images.length} image(s). Please use the Read tool to view them (use the exact absolute paths provided):
+
+${imageInstructions}
+
+User's message: ${prompt || 'What do you see in these images? How can I help you build a tool based on this?'}
+
+IMPORTANT: Start by using the Read tool to view the attached image(s), then respond to the user's request.`;
+
+      console.log(`📝 Built prompt with absolute image paths`);
+      console.log(`   First image path: ${savedImagePaths[0]?.path}`);
+    } else {
+      // Simple text-only prompt
+      queryPrompt = prompt;
+      console.log(`📝 Using simple text prompt`);
+    }
+
+    console.log(`🚀 Calling query() with string prompt`);
+    console.log(`   queryOptions.resume: ${queryOptions.resume || 'none (new session)'}`);
+    console.log(`   queryOptions.cwd: ${queryOptions.cwd}`);
+    console.log(`   prompt length: ${queryPrompt?.length || 0} chars`);
+
+    let queryGenerator;
+    try {
+      queryGenerator = query({
+        prompt: queryPrompt,
+        options: queryOptions
+      });
+      console.log(`✅ query() returned generator`);
+    } catch (queryError) {
+      console.error(`❌ query() threw immediately:`, queryError);
+      throw queryError;
+    }
+
+    let messageCount = 0;
+    console.log(`🔄 Starting to iterate over messages...`);
     for await (const message of queryGenerator) {
+      messageCount++;
+      console.log(`📥 Message ${messageCount}: type=${message.type}, subtype=${message.subtype || 'n/a'}`);
       switch (message.type) {
         case 'assistant':
           // Extract text content from assistant message
@@ -308,6 +422,13 @@ export async function handleAgentMessage(agent, prompt, onEvent) {
       }
     }
   } catch (error) {
+    console.error(`\n❌ ERROR in handleAgentMessage:`);
+    console.error(`   name: ${error.name}`);
+    console.error(`   message: ${error.message}`);
+    console.error(`   stack: ${error.stack}`);
+    if (error.cause) {
+      console.error(`   cause: ${JSON.stringify(error.cause)}`);
+    }
     if (error.name === 'AbortError') {
       onEvent({
         type: 'cancelled',
@@ -315,6 +436,12 @@ export async function handleAgentMessage(agent, prompt, onEvent) {
       });
     } else {
       throw error;
+    }
+  } finally {
+    // Clean up temporary image files
+    if (savedImagePaths.length > 0) {
+      console.log(`🧹 Cleaning up ${savedImagePaths.length} temp image(s)...`);
+      cleanupTempImages(savedImagePaths);
     }
   }
 }

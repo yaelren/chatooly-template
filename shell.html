@@ -526,6 +526,76 @@
             background: var(--sidebar-surface);
         }
 
+        /* Image Attachments */
+        .ai-attachments {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 0;
+            margin-bottom: 8px;
+        }
+
+        .ai-attachments:empty {
+            display: none;
+        }
+
+        .ai-attachment-preview {
+            position: relative;
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--sidebar-border);
+        }
+
+        .ai-attachment-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .ai-attachment-remove {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            width: 18px;
+            height: 18px;
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 12px;
+            line-height: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .ai-attachment-remove:hover {
+            background: rgba(200, 0, 0, 0.8);
+        }
+
+        .ai-input-row {
+            display: flex;
+            gap: 8px;
+            align-items: flex-start;
+        }
+
+        .ai-input-row textarea {
+            flex: 1;
+        }
+
+        .ai-input-row .ai-btn-icon {
+            flex-shrink: 0;
+            height: 42px;
+            width: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
         /* Welcome message */
         .ai-welcome {
             text-align: center;
@@ -659,11 +729,18 @@
             </div>
 
             <div class="ai-input-area">
-                <textarea
-                    id="ai-input"
-                    placeholder="Describe the tool you want to build..."
-                    rows="3"
-                ></textarea>
+                <!-- Image attachment previews -->
+                <div class="ai-attachments" id="ai-attachments"></div>
+                <!-- Input row with attach button and textarea -->
+                <div class="ai-input-row">
+                    <button class="ai-btn-icon" id="ai-attach" title="Attach image">📎</button>
+                    <input type="file" id="ai-file-input" accept="image/*" multiple hidden>
+                    <textarea
+                        id="ai-input"
+                        placeholder="Describe the tool you want to build..."
+                        rows="3"
+                    ></textarea>
+                </div>
                 <div class="ai-input-buttons">
                     <button class="ai-btn ai-btn-secondary" id="ai-clear" title="Clear conversation">Clear</button>
                     <button class="ai-btn ai-btn-primary" id="ai-send" disabled>Send</button>
