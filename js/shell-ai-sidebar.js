@@ -147,7 +147,9 @@
           break;
 
         case 'tool_use':
-          // Show loading overlay when agent is editing files - no chat message (too verbose)
+          // Show tool usage in chat with subtle styling
+          addMessage('tool-use', `Using ${data.tool}...`);
+          // Show loading overlay when agent is editing files
           if (loadingOverlay && (data.tool === 'Edit' || data.tool === 'Write' || data.tool === 'MultiEdit')) {
             loadingOverlay.style.display = 'flex';
           }

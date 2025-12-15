@@ -427,11 +427,17 @@
         }
 
         .ai-message.tool-use {
-            background: #e3f2fd;
-            color: #1565c0;
+            background: transparent;
+            color: #999999;
             font-size: 11px;
-            font-family: monospace;
-            padding: 8px 12px;
+            font-family: inherit;
+            padding: 4px 12px;
+            font-style: italic;
+        }
+
+        /* Dark theme tool-use */
+        .shell-container.dark-theme .ai-message.tool-use {
+            color: #666666;
         }
 
         .ai-message pre {
