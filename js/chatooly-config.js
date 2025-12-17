@@ -1,4 +1,4 @@
-/* 
+/*
  * Chatooly Tool Template - Configuration
  * Author: Yael Renous - Studio Video
  */
@@ -17,5 +17,8 @@ window.ChatoolyConfig = {
     tags: ["animation", "text", "kinetic", "creative", "motion", "typography"],
     description: "Create dynamic kinetic text animations with floating, rotating, pulsing, and particle effects",
     version: "1.0.0",
-    author: "Claude Code"
+    author: "Claude Code",
+
+    // OPTIONAL: Publishing target
+    publishTarget: "chatooly"  // "chatooly" (Studio Video Tool Hub) or "designers" (Designers Tool Hub)
 };
