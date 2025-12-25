@@ -188,8 +188,10 @@ function cancelAgentSession(ws) {
  */
 async function resetToolToTemplate(ws) {
   try {
-    execSync('git checkout origin/main -- index.html js/main.js js/ui.js js/chatooly-config.js', {
-      cwd: PROJECT_ROOT
+    // Git paths are relative to repo root, which is parent of src/
+    const repoRoot = join(PROJECT_ROOT, '..');
+    execSync('git checkout origin/main -- src/index.html src/js/main.js src/js/ui.js src/js/chatooly-config.js', {
+      cwd: repoRoot
     });
     ws.send(JSON.stringify({ type: 'reset-complete' }));
     // Broadcast file change to trigger iframe refresh

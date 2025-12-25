@@ -407,7 +407,7 @@ function animate() {
 
 ### 📝 Video Export Process
 1. **Build Your Tool**: Create animations using any supported framework
-2. **Test Locally**: Run `npm run dev` and verify animation works
+2. **Test in Preview**: Verify animation works in the preview panel
 3. **Export Video**: Click export button (📥) → select "🎥 Video Export"
 4. **Configure Settings**: Choose duration (1-10 seconds), framerate (24-60 FPS), and format (MP4/WebM/MKV)
 5. **Download Video**: Get high-quality MP4/WebM/MKV video file directly
@@ -979,12 +979,12 @@ window.renderHighResolution = function(targetCanvas, scale) {
 </div>
 ```
 
-## Step 5: Testing & Viewing
-Tell the user:
-- Make sure you're in the project root folder (where package.json is located)
-- Run `npm run dev` to start the local server
-- If the command fails, navigate to the correct folder first
-- Open http://localhost:8000 to see your tool
+## Step 5: Real-Time Preview
+
+Your tool is automatically visible in the preview panel on the right side of the screen.
+- All changes appear instantly - no need to run any commands or start any servers
+- The preview auto-refreshes when you edit files (index.html, js/main.js, etc.)
+- Check the browser console in the preview for any errors
 - The export button (📥) appears automatically in the bottom-right corner
 - Click it to test PNG export at different resolutions (1x, 2x, 4x)
 
@@ -1033,12 +1033,11 @@ Tell the user to commit their work:
 ## Step 7: Publishing
 When the user is ready to publish, explain:
 1. First, save your work with git: `git add . && git commit -m "Ready to publish"`
-2. Make sure the tool is running locally (`npm run dev`)
-3. Click the export button (📥) in the bottom-right corner
-4. Select "📤 Publish" from the menu (only available in development mode)
-5. Enter your tool name when prompted
-6. The tool uploads to staging for review
-7. After approval, it goes live at `tools.chatooly.com/[tool-name]`
+2. Click the export button (📥) in the preview panel's bottom-right corner
+3. Select "📤 Publish" from the menu (only available in development mode)
+4. Enter your tool name when prompted
+5. The tool uploads to staging for review
+6. After approval, it goes live at `tools.chatooly.com/[tool-name]`
 
 ## Step 8: Iteration
 After initial build:

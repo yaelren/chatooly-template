@@ -147,7 +147,7 @@
         case 'assistant':
           // Don't hide typing indicator yet - agent may still be working
           // Only hide on 'result' message
-          addMessage('assistant', data.content);
+          addMessage('assistant', data.content, data.thinking);
           break;
 
         case 'tool_use':
@@ -343,8 +343,11 @@
 
   /**
    * Add a message to the chat
+   * @param {string} type - Message type (assistant, user, system, error, tool-use)
+   * @param {string} content - Message content
+   * @param {string|null} thinking - Optional thinking/reasoning content for assistant messages
    */
-  function addMessage(type, content) {
+  function addMessage(type, content, thinking = null) {
     // Remove welcome message if present
     const welcome = messagesEl.querySelector('.ai-welcome');
     if (welcome) {
@@ -356,6 +359,23 @@
 
     // For assistant messages, wrap content and add collapse button
     if (type === 'assistant') {
+      // Add thinking section if present (collapsible)
+      if (thinking) {
+        const thinkingSection = document.createElement('details');
+        thinkingSection.className = 'ai-thinking-section';
+
+        const summary = document.createElement('summary');
+        summary.textContent = 'Thinking...';
+        thinkingSection.appendChild(summary);
+
+        const thinkingContent = document.createElement('div');
+        thinkingContent.className = 'ai-thinking-content';
+        thinkingContent.innerHTML = formatContent(thinking);
+        thinkingSection.appendChild(thinkingContent);
+
+        messageEl.appendChild(thinkingSection);
+      }
+
       const contentWrapper = document.createElement('div');
       contentWrapper.className = 'ai-message-content';
       contentWrapper.innerHTML = formatContent(content);
