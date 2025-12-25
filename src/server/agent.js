@@ -228,7 +228,9 @@ export async function createAgent(projectRoot) {
       },
       abortController,
       maxTurns: 50,
-      model: 'claude-sonnet-4-20250514'
+      model: 'claude-sonnet-4-20250514',
+      // Enable interleaved thinking (reasoning between tool calls)
+      betas: ['interleaved-thinking-2025-05-14']
     }
   };
 }
@@ -363,16 +365,39 @@ IMPORTANT: Start by using the Read tool to view the attached image(s), then resp
       console.log(`📥 Message ${messageCount}: type=${message.type}, subtype=${message.subtype || 'n/a'}`);
       switch (message.type) {
         case 'assistant':
+          // DEBUG: Log all content block types to understand SDK structure
+          const blockTypes = message.message.content.map(b => b.type);
+          console.log(`📦 Content blocks (${message.message.content.length}):`, blockTypes);
+
+          // Log full structure of first few blocks for debugging
+          message.message.content.slice(0, 3).forEach((block, i) => {
+            console.log(`   Block ${i}:`, JSON.stringify(block).substring(0, 200));
+          });
+
           // Extract text content from assistant message
           const textContent = message.message.content
             .filter(block => block.type === 'text')
             .map(block => block.text)
             .join('\n');
 
+          // Extract thinking/reasoning content if present
+          // Check for both 'thinking' type and 'redacted_thinking' type
+          const thinkingBlocks = message.message.content
+            .filter(block => block.type === 'thinking' || block.type === 'redacted_thinking');
+          const thinkingContent = thinkingBlocks.length > 0
+            ? thinkingBlocks.map(block => block.thinking || block.text || block.data || '[redacted]').join('\n')
+            : null;
+
+          if (thinkingBlocks.length > 0) {
+            console.log('🧠 Thinking blocks found:', thinkingBlocks.length);
+            console.log('🧠 Thinking content preview:', thinkingContent?.substring(0, 100));
+          }
+
           if (textContent) {
             onEvent({
               type: 'assistant',
               content: textContent,
+              thinking: thinkingContent,
               uuid: message.uuid
             });
           }

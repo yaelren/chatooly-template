@@ -9,11 +9,9 @@
    git push
    ```
 
-2. **Test Locally**
-   ```bash
-   npm run dev
-   # Open http://localhost:8000
-   ```
+2. **Verify in Preview**
+   - Ensure tool works correctly in the preview panel
+   - Test all controls and export functionality
 
 3. **Publish via CDN**
    - Click export button (📥) in bottom-right
@@ -36,7 +34,7 @@
 
 ### Development Issues
 - **No export button?** → Check CDN script loaded
-- **Publishing unavailable?** → Must run on localhost
+- **Publishing unavailable?** → Must be running in development mode
 - **Console errors?** → Check browser developer tools
 
 ## 🛠️ Claude Code Best Practices

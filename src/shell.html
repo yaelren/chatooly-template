@@ -440,6 +440,48 @@
             color: #666666;
         }
 
+        /* Thinking/Reasoning Section - Collapsible */
+        .ai-thinking-section {
+            margin-bottom: 10px;
+            padding: 8px 10px;
+            background: rgba(99, 102, 241, 0.08);
+            border-radius: 6px;
+            font-size: 12px;
+            border-left: 3px solid #6366f1;
+        }
+
+        .ai-thinking-section summary {
+            cursor: pointer;
+            color: var(--sidebar-text-muted);
+            font-style: italic;
+            font-size: 11px;
+            user-select: none;
+        }
+
+        .ai-thinking-section summary:hover {
+            color: var(--sidebar-text);
+        }
+
+        .ai-thinking-section[open] summary {
+            margin-bottom: 8px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+        }
+
+        .ai-thinking-content {
+            color: var(--sidebar-text-muted);
+            white-space: pre-wrap;
+            max-height: 200px;
+            overflow-y: auto;
+            font-size: 11px;
+            line-height: 1.5;
+        }
+
+        /* Dark theme thinking section */
+        .shell-container.dark-theme .ai-thinking-section {
+            background: rgba(99, 102, 241, 0.12);
+        }
+
         .ai-message pre {
             margin: 8px 0 0 0;
             padding: 8px;

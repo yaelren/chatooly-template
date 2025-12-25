@@ -28,6 +28,7 @@ yarn-error.log*
 *.temp
 .cache/
 temp-images/
+.chatooly-server.pid
 
 # Local development
 .env

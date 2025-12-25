@@ -239,7 +239,7 @@ Chatooly CDN v2.0 uses a dual-layer approach:
 
 ### Visual Testing
 
-1. Run `npm run dev` and open tool
+1. View your tool in the preview panel
 2. Verify all controls render correctly:
    - Buttons have gray-green background
    - Inputs have green-beige background
