@@ -301,6 +301,10 @@ async function resetToolToTemplate(ws) {
     execSync('git checkout origin/main -- src/index.html src/js/main.js src/js/ui.js src/js/chatooly-config.js', {
       cwd: repoRoot
     });
+
+    // Restore author from USERNAME.txt
+    updateAuthorFromUsername();
+
     ws.send(JSON.stringify({ type: 'reset-complete' }));
     // Broadcast file change to trigger iframe refresh
     broadcastFileChange('index.html', 'change');
@@ -333,6 +337,29 @@ function broadcastFileChange(file, eventType) {
 
 // Setup file watcher for live updates
 setupFileWatcher(PROJECT_ROOT, broadcastFileChange);
+
+/**
+ * Update author in chatooly-config.js from USERNAME.txt
+ */
+function updateAuthorFromUsername() {
+  const repoRoot = join(PROJECT_ROOT, '..');
+  const usernamePath = join(repoRoot, 'USERNAME.txt');
+  if (existsSync(usernamePath)) {
+    const username = readFileSync(usernamePath, 'utf-8').trim();
+    if (username) {
+      const configPath = join(PROJECT_ROOT, 'js', 'chatooly-config.js');
+      if (existsSync(configPath)) {
+        let config = readFileSync(configPath, 'utf-8');
+        config = config.replace(/author:\s*["'][^"']*["']/, `author: "${username}"`);
+        writeFileSync(configPath, config);
+        console.log(`👤 Updated author from USERNAME.txt: ${username}`);
+      }
+    }
+  }
+}
+
+// Update author on server start
+updateAuthorFromUsername();
 
 // Start server
 server.listen(PORT, () => {
