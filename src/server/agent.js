@@ -220,11 +220,18 @@ export async function createAgent(projectRoot) {
         'Read', 'Write', 'Edit', 'Glob', 'Grep', 'Bash',
         'WebFetch', 'WebSearch',  // Enable web browsing
         'mcp__chatooly-tools__read_chatooly_rule',
-        'mcp__chatooly-tools__validate_chatooly_tool'
+        'mcp__chatooly-tools__validate_chatooly_tool',
+        // Context7 - library documentation lookup
+        'mcp__context7__resolve-library-id',
+        'mcp__context7__get-library-docs'
       ],
       permissionMode: 'acceptEdits',
       mcpServers: {
-        'chatooly-tools': chatoolyMcp
+        'chatooly-tools': chatoolyMcp,
+        'context7': {
+          command: 'npx',
+          args: ['-y', '@upstash/context7-mcp']
+        }
       },
       abortController,
       maxTurns: 50,
