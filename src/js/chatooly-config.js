@@ -6,7 +6,7 @@
 // ========== EDIT THIS: Chatooly Configuration ==========
 window.ChatoolyConfig = {
     // REQUIRED: Your tool name
-    name: "kinetic-text-animator",
+    name: "tool-name",
 
     // OPTIONAL: Export settings
     resolution: 2,              // 1, 2, or 4
@@ -15,10 +15,10 @@ window.ChatoolyConfig = {
     // REQUIRED FOR PUBLISHING: Tool metadata
     category: "art",
     tags: ["animation", "text", "kinetic", "creative", "motion", "typography"],
-    description: "Create dynamic kinetic text animations with floating, rotating, pulsing, and particle effects",
+    description: "tool-description",
     version: "1.0.0",
     author: "Claude Code",
 
     // OPTIONAL: Publishing target
-    publishTarget: "chatooly"  // "chatooly" (Studio Video Tool Hub) or "designers" (Designers Tool Hub)
+    publishTarget: "designers"  // "chatooly" (Studio Video Tool Hub) or "designers" (Designers Tool Hub)
 };

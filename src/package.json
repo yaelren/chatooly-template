@@ -5,7 +5,7 @@
   "author": "Yael Renous - Studio Video",
   "type": "module",
   "scripts": {
-    "start": "node server/index.js",
+    "start": "lsof -ti:3001 | xargs kill -9 2>/dev/null; node server/index.js",
     "server": "node server/index.js"
   },
   "dependencies": {

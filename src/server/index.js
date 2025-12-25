@@ -13,6 +13,7 @@ import { WebSocketServer, WebSocket } from 'ws';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import { execSync } from 'child_process';
+import { writeFileSync, readFileSync, existsSync, mkdirSync } from 'fs';
 import dotenv from 'dotenv';
 
 import { createAgent, handleAgentMessage } from './agent.js';
@@ -59,6 +60,11 @@ const wss = new WebSocketServer({ server, path: '/ws' });
 // Track active connections and agent sessions
 const clients = new Set();
 const agentSessions = new Map();
+const conversationHistory = new Map(); // Track chat history per WebSocket
+const sessionFilenames = new Map(); // Track log filename per WebSocket session
+
+// Logs directory
+const LOGS_DIR = join(PROJECT_ROOT, '..', 'logs');
 
 wss.on('connection', (ws) => {
   console.log('🔌 Client connected');
@@ -121,6 +127,80 @@ wss.on('connection', (ws) => {
 });
 
 /**
+ * Add a message to the conversation history
+ */
+function addToHistory(ws, role, content) {
+  if (!conversationHistory.has(ws)) {
+    conversationHistory.set(ws, []);
+  }
+  conversationHistory.get(ws).push({
+    timestamp: new Date().toISOString(),
+    role,
+    content
+  });
+  console.log(`📝 Added to history: ${role} (${content.substring(0, 50)}...)`);
+}
+
+/**
+ * Get current tool name from chatooly-config.js
+ */
+function getCurrentToolName() {
+  try {
+    const configPath = join(PROJECT_ROOT, 'js', 'chatooly-config.js');
+    if (existsSync(configPath)) {
+      const content = readFileSync(configPath, 'utf-8');
+      const match = content.match(/name:\s*["']([^"']+)["']/);
+      if (match) {
+        return match[1];
+      }
+    }
+  } catch (error) {
+    console.warn('Could not read tool name from config:', error.message);
+  }
+  return 'unnamed-tool';
+}
+
+/**
+ * Get or create a stable filename for this session's conversation log
+ */
+function getSessionFilename(ws) {
+  if (!sessionFilenames.has(ws)) {
+    const toolName = getCurrentToolName();
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    sessionFilenames.set(ws, `${toolName}_${timestamp}.txt`);
+  }
+  return sessionFilenames.get(ws);
+}
+
+/**
+ * Save conversation history to a txt file (overwrites same file each time)
+ */
+function saveConversationHistory(ws) {
+  console.log('📝 saveConversationHistory called');
+  const history = conversationHistory.get(ws);
+  console.log('📝 History length:', history?.length || 0);
+  if (!history || history.length === 0) {
+    return null;
+  }
+
+  // Ensure logs directory exists
+  if (!existsSync(LOGS_DIR)) {
+    mkdirSync(LOGS_DIR, { recursive: true });
+  }
+
+  const filename = getSessionFilename(ws);
+  const filepath = join(LOGS_DIR, filename);
+
+  const content = history.map(msg =>
+    `[${msg.timestamp}] ${msg.role.toUpperCase()}:\n${msg.content}\n`
+  ).join('\n---\n\n');
+
+  writeFileSync(filepath, content, 'utf-8');
+  console.log(`📝 Auto-saved conversation to: ${filename}`);
+  return filename;
+}
+
+/**
  * Handle incoming chat messages from the frontend
  */
 async function handleChatMessage(ws, message) {
@@ -133,6 +213,12 @@ async function handleChatMessage(ws, message) {
     }));
     return;
   }
+
+  // Track user message in history
+  const userContent = images && images.length > 0
+    ? `${prompt}\n[${images.length} image(s) attached]`
+    : prompt;
+  addToHistory(ws, 'user', userContent);
 
   try {
     // Reuse existing agent session if available, otherwise create new one
@@ -160,7 +246,15 @@ async function handleChatMessage(ws, message) {
       if (ws.readyState === WebSocket.OPEN) {
         ws.send(JSON.stringify(event));
       }
+
+      // Track assistant messages in history
+      if (event.type === 'assistant' && event.content) {
+        addToHistory(ws, 'assistant', event.content);
+      }
     });
+
+    // Auto-save conversation after each agent response
+    saveConversationHistory(ws);
 
   } catch (error) {
     console.error('Agent error:', error);
@@ -188,6 +282,20 @@ function cancelAgentSession(ws) {
  */
 async function resetToolToTemplate(ws) {
   try {
+    // Save conversation history before reset
+    const savedFile = saveConversationHistory(ws);
+    if (savedFile) {
+      ws.send(JSON.stringify({
+        type: 'system',
+        message: `💾 Conversation saved to logs/${savedFile}`
+      }));
+    }
+
+    // Clear conversation history, session filename, and agent session
+    conversationHistory.delete(ws);
+    sessionFilenames.delete(ws); // New session will get a new filename
+    cancelAgentSession(ws);
+
     // Git paths are relative to repo root, which is parent of src/
     const repoRoot = join(PROJECT_ROOT, '..');
     execSync('git checkout origin/main -- src/index.html src/js/main.js src/js/ui.js src/js/chatooly-config.js', {

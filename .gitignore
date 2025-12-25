@@ -30,6 +30,9 @@ yarn-error.log*
 temp-images/
 .chatooly-server.pid
 
+# Conversation logs (keep .gitkeep)
+logs/*.txt
+
 # Local development
 .env
 .env.local
