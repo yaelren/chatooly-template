@@ -38,6 +38,7 @@
   const attachBtn = document.getElementById('ai-attach');
   const fileInput = document.getElementById('ai-file-input');
   const attachmentsEl = document.getElementById('ai-attachments');
+  const stopBtn = document.getElementById('ai-stop');
 
   // State
   let socket = null;
@@ -139,7 +140,7 @@
           break;
 
         case 'thinking':
-          isThinking = true;
+          setThinkingUI(true);
           updateStatus('thinking', 'Thinking...');
           showTypingIndicator(true);
           break;
@@ -160,7 +161,7 @@
           break;
 
         case 'result':
-          isThinking = false;
+          setThinkingUI(false);
           updateStatus('connected', 'Connected');
           showTypingIndicator(false);
 
@@ -189,7 +190,7 @@
           break;
 
         case 'error':
-          isThinking = false;
+          setThinkingUI(false);
           updateStatus('connected', 'Connected');
           showTypingIndicator(false);
           // Hide loading overlay on error
@@ -210,7 +211,7 @@
           break;
 
         case 'cancelled':
-          isThinking = false;
+          setThinkingUI(false);
           updateStatus('connected', 'Connected');
           showTypingIndicator(false);
           // Hide loading overlay on cancellation
@@ -338,6 +339,20 @@
   function showTypingIndicator(show) {
     if (typingIndicator) {
       typingIndicator.classList.toggle('visible', show);
+    }
+  }
+
+  /**
+   * Update UI for thinking/idle state - toggles stop/send buttons
+   */
+  function setThinkingUI(thinking) {
+    isThinking = thinking;
+    if (stopBtn) {
+      stopBtn.style.display = thinking ? 'inline-block' : 'none';
+      stopBtn.disabled = false;
+    }
+    if (sendBtn) {
+      sendBtn.style.display = thinking ? 'none' : 'inline-block';
     }
   }
 
@@ -723,6 +738,17 @@
     // Send button
     sendBtn.addEventListener('click', sendMessage);
 
+    // Stop button - cancel agent execution
+    if (stopBtn) {
+      stopBtn.addEventListener('click', () => {
+        if (socket && socket.readyState === WebSocket.OPEN && isThinking) {
+          socket.send(JSON.stringify({ type: 'cancel' }));
+          updateStatus('thinking', 'Stopping...');
+          stopBtn.disabled = true;
+        }
+      });
+    }
+
     // Clear button
     clearBtn.addEventListener('click', clearConversation);
 
@@ -767,6 +793,13 @@
       if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault();
         sendMessage();
+      }
+    });
+
+    // Escape key to stop agent execution
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && isThinking && stopBtn) {
+        stopBtn.click();
       }
     });
 

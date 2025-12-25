@@ -568,6 +568,20 @@
             background: var(--sidebar-surface);
         }
 
+        .ai-btn-danger {
+            background: #dc3545;
+            color: #fff;
+        }
+
+        .ai-btn-danger:hover:not(:disabled) {
+            background: #c82333;
+        }
+
+        .ai-btn-danger:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
         /* Image Attachments */
         .ai-attachments {
             display: flex;
@@ -786,6 +800,7 @@
                 <div class="ai-input-buttons">
                     <button class="ai-btn ai-btn-secondary" id="ai-clear" title="Clear conversation">Clear</button>
                     <button class="ai-btn ai-btn-primary" id="ai-send" disabled>Send</button>
+                    <button class="ai-btn ai-btn-danger" id="ai-stop" style="display: none;">Stop</button>
                 </div>
             </div>
         </div>
