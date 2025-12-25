@@ -255,6 +255,22 @@ Before delivering a tool to the user, verify:
 - [ ] No local `style.css` file (CDN handles all styling)
 - [ ] Canvas has `id="chatooly-canvas"`
 - [ ] CDN script loaded: `https://yaelren.github.io/chatooly-cdn/js/core.min.js`
+- [ ] **If using p5.js:** Uses instance mode (`new p5(sketch)`) and binds to existing canvas
+
+---
+
+## 🎨 p5.js Tools - CRITICAL Canvas Rules
+
+**⚠️ IMPORTANT**: If using p5.js, you MUST use **instance mode** to avoid creating duplicate canvases.
+
+See **[claude-rules/05-library-selection.md](claude-rules/05-library-selection.md)** for the complete p5.js instance mode pattern.
+
+**Quick Summary:**
+- p5.js global mode auto-creates a canvas, conflicting with `#chatooly-canvas`
+- Use `new p5(sketch)` pattern instead of global `setup()`/`draw()` functions
+- All p5 functions need `p.` prefix: `p.fill()`, `p.circle()`, `p.random()`
+- Pass `p` instance to classes that use p5 functions
+- Store `p5Instance` globally for external access (UI controls, exports)
 
 ---
 

@@ -24,11 +24,61 @@ const renderer = new THREE.WebGLRenderer({
 });
 ```
 
-### p5.js:
+### p5.js (CRITICAL - MUST USE INSTANCE MODE):
+
+**⚠️ WARNING**: p5.js in global mode auto-creates its own canvas, causing duplicate canvas issues. You MUST use instance mode and bind to the existing `#chatooly-canvas` element.
+
 ```javascript
+// ========== CORRECT: Instance Mode ==========
+const sketch = (p) => {
+    p.setup = function() {
+        // Get the existing chatooly-canvas element
+        const existingCanvas = document.getElementById('chatooly-canvas');
+
+        // Create p5 canvas and parent it to the container
+        const canvas = p.createCanvas(1920, 1080);
+        canvas.parent('chatooly-container');
+
+        // Remove the p5-created canvas and bind p5 to the existing one
+        if (existingCanvas) {
+            existingCanvas.width = 1920;
+            existingCanvas.height = 1080;
+            if (canvas.elt !== existingCanvas) {
+                canvas.elt.remove();
+            }
+            p._renderer = new p5.Renderer2D(existingCanvas, p, true);
+            p._renderer.resize(1920, 1080);
+        }
+
+        // Initialize background manager
+        const canvasElement = document.getElementById('chatooly-canvas');
+        if (window.Chatooly && window.Chatooly.backgroundManager) {
+            Chatooly.backgroundManager.init(canvasElement);
+        }
+    };
+
+    p.draw = function() {
+        p.clear();
+        // Your drawing code using p.* methods
+    };
+};
+
+// Initialize p5 in instance mode
+let p5Instance = new p5(sketch);
+```
+
+**Key Rules for p5.js Instance Mode:**
+- All p5 functions need `p.` prefix: `p.fill()`, `p.circle()`, `p.random()`, etc.
+- Global variables like `width`, `height` become `p.width`, `p.height`
+- Classes that use p5 functions must receive the `p` instance as a parameter
+- Store `p5Instance` globally for external access (UI controls, exports)
+
+**❌ WRONG - Global Mode (Creates duplicate canvas):**
+```javascript
+// DO NOT USE THIS PATTERN
 function setup() {
     let canvas = createCanvas(800, 600);
-    canvas.parent('chatooly-canvas'); // Connect to export system
+    canvas.parent('chatooly-canvas');
 }
 ```
 
