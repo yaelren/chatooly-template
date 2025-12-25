@@ -219,6 +219,7 @@ export async function createAgent(projectRoot) {
       allowedTools: [
         'Read', 'Write', 'Edit', 'Glob', 'Grep', 'Bash',
         'WebFetch', 'WebSearch',  // Enable web browsing
+        'Skill',  // Enable model-invoked skills (like library-docs)
         'mcp__chatooly-tools__read_chatooly_rule',
         'mcp__chatooly-tools__validate_chatooly_tool',
         // Context7 - library documentation lookup

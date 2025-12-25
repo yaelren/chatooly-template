@@ -68,6 +68,48 @@ Use these when:
 
 ---
 
+## Library Documentation (Context7) - USE PROACTIVELY
+
+**Always consult Context7 before implementing features that use external libraries.** Users are designers, not developers - they describe what they want, not which libraries to use. When you decide to use a library, fetch its documentation first.
+
+### Automatic Lookup Triggers
+
+Use Context7 **before writing code** whenever you're about to:
+- Create animations → Look up GSAP or p5.js animation docs
+- Draw shapes, particles, or generative art → Look up p5.js docs
+- Add 3D elements → Look up Three.js docs
+- Create charts or data visualization → Look up Chart.js docs
+- Use any canvas API you're uncertain about → Look up Canvas API docs
+- Implement any library feature → Look up that library's docs
+
+### How to Use
+
+```
+1. resolve-library-id → Get the library ID (e.g., "p5.js" → "/processing/p5.js")
+2. get-library-docs → Fetch docs for your specific implementation need
+```
+
+### Examples
+
+| User Says | You Decide | Context7 Action |
+|-----------|------------|-----------------|
+| "Make it rain particles" | Use p5.js | Fetch p5.js docs for particles/vectors |
+| "Add smooth animations" | Use GSAP | Fetch GSAP docs for tweens/timelines |
+| "I want a 3D rotating cube" | Use Three.js | Fetch Three.js docs for mesh/rotation |
+| "Show data as a pie chart" | Use Chart.js | Fetch Chart.js docs for pie charts |
+| "Make the shapes bounce" | Use p5.js physics | Fetch p5.js docs for velocity/physics |
+
+### Why This Matters
+
+- Training data may be outdated - Context7 has current APIs
+- Prevents wrong method signatures and deprecated patterns
+- Gets accurate parameter options and usage examples
+- Results in working code the first time
+
+**Remember:** Context7 gives you accurate library APIs; Chatooly rules define how to integrate them into the tool (canvas ID, CDN, exports). Both are required.
+
+---
+
 ## CRITICAL RULES (Never Break These)
 
 ### 1. Canvas Structure

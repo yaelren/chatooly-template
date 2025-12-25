@@ -47,6 +47,7 @@
   let isThinking = false;
   let changedFilesInTask = new Set(); // Track files changed during agent execution
   let attachedImages = []; // Array of {data: base64, media_type: string}
+  let lastToolUsed = null; // Track last tool to avoid duplicate messages
 
   // Resize state
   let isResizing = false;
@@ -152,8 +153,11 @@
           break;
 
         case 'tool_use':
-          // Show tool usage in chat with subtle styling
-          addMessage('tool-use', `Using ${data.tool}...`);
+          // Only show tool message if it's a different tool than the last one
+          if (data.tool !== lastToolUsed) {
+            addMessage('tool-use', `Using ${data.tool}...`);
+            lastToolUsed = data.tool;
+          }
           // Show loading overlay when agent is editing files
           if (loadingOverlay && (data.tool === 'Edit' || data.tool === 'Write' || data.tool === 'MultiEdit')) {
             loadingOverlay.style.display = 'flex';
@@ -164,6 +168,7 @@
           setThinkingUI(false);
           updateStatus('connected', 'Connected');
           showTypingIndicator(false);
+          lastToolUsed = null; // Reset for next task
 
           // Hide loading overlay
           if (loadingOverlay) {

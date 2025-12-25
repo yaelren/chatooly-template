@@ -42,6 +42,5 @@ canvas.height = 1080;  // HD resolution height
 // - bg-fit (dropdown)
 //
 // Don't forget to render background FIRST in your render loop!
-
 // Your tool code goes below this line
 // ==========================================
