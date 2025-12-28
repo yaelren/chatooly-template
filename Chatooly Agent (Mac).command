@@ -9,7 +9,12 @@ echo "======================================"
 echo ""
 
 # Get project directory (script is in project root)
-cd "$(dirname "$0")/src"
+PROJECT_DIR="$(dirname "$0")"
+cd "$PROJECT_DIR/src"
+
+# Clear macOS quarantine flags from all files (fixes Gatekeeper blocks)
+echo "Preparing files for macOS..."
+xattr -dr com.apple.quarantine "$PROJECT_DIR" 2>/dev/null
 
 # Kill any process on port 3001
 echo "Checking for processes on port 3001..."
