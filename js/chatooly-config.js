@@ -20,5 +20,8 @@ window.ChatoolyConfig = {
     author: "Claude Code",
 
     // OPTIONAL: Publishing target
-    publishTarget: "chatooly"  // "chatooly" (Studio Video Tool Hub) or "designers" (Designers Tool Hub)
+    publishTarget: "chatooly",  // "chatooly" (Studio Video Tool Hub) or "designers" (Designers Tool Hub)
+
+    // REQUIRED FOR PUBLISHING: Creation date (YYYY-MM-DD format)
+    createdAt: "YYYY-MM-DD"  // Update this with the tool creation date
 };
